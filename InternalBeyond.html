@@ -55,7 +55,8 @@ body.theme-infernal .bg-blur-active{filter:blur(22px) brightness(0.48) saturate(
 /* SPLASH */
 #splash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;
   background:rgba(19,34,68,0.52);backdrop-filter:blur(30px) saturate(0.95) brightness(0.96);-webkit-backdrop-filter:blur(30px) saturate(0.95) brightness(0.96);
-  transition:backdrop-filter 3.5s ease-out,background 3.5s ease-out,opacity 1.5s ease-out 3s,visibility 1.5s ease-out 3s}
+  transition:backdrop-filter 3.5s ease-out,background 3.5s ease-out,opacity 1.5s ease-out 3s,visibility 1.5s ease-out 3s;
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
 #splash.dissolving{backdrop-filter:blur(0px) saturate(1) brightness(1);-webkit-backdrop-filter:blur(0px) saturate(1) brightness(1);background:rgba(31,50,88,0)}
 #splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
 @keyframes loadPulse{0%{opacity:0.6}50%{opacity:1}100%{opacity:0.6}}
@@ -1549,7 +1550,9 @@ i would like the room to be enough.
 
     <div class="guide-section">
       <h3 id="guide-quickstart">快速开始</h3>
-      <p>在浏览器中打开 <strong>InternalBeyond.html</strong> 进入欢迎页。欢迎页本身是一块可以关闭的玻璃画板——玻璃的一面是落雨的水面，另一面是雾与蝴蝶，你可以用鼠标同时触及两个世界。</p>
+      <p>在浏览器中打开 <strong>InternalBeyond.html</strong> 进入欢迎页。</p>
+      <p class="infernal-only">欢迎页内放置了一块可关闭的玻璃画板。玻璃的一面在水面之下，落雨和时间一起消融在水中。另一面是冰雾笼罩下的玻璃视窗，栖息着无法离开的蝴蝶。你可以用画笔、橡皮擦和温度计等工具，同时影响两个世界。</p>
+      <p class="internal-only">欢迎页内设计了一块可关闭的玻璃画板，可以使用右上角的功能按钮来自由探索其玩法。右下角的滑条可以调整画笔大小，以及玻璃上雾的浓度。浓度越高，指画笔的效果越清晰。</p>
       <p>页面提供三个入口：</p>
       <p><strong>「游戏引导」</strong>— 直接进入 Room 像素互动空间。Sui 会带你走一遍房间，逐一介绍 Room 模块的核心玩法。</p>
       <p><strong>「开始设置」</strong>— 前往 Profile 页面填写个人资料。</p>
@@ -1599,7 +1602,7 @@ i would like the room to be enough.
           <p>右侧侧栏按钮：</p>
           <p>· <strong>Sui</strong> — 与房间主人 Sui 交谈。<br>点击后可选择「带我再过一次游戏引导过程吧」，Sui 会起床并带你走一遍房间，逐站介绍每个模块的玩法。<br>也可以通过 Next 键进入预设问答，了解更多关于空间和 Sui 的信息。</p>
           <p>· <strong>Tea（茶歇）</strong> — 私密情感对话空间。<br>Tea 模块的 5×5 氛围组合系统由独立设计的「状态 × 渴望」双轴模型驱动，参考了依恋理论（Attachment Theory）、多迷走神经理论（Polyvagal Theory）、自我决定论（Self-Determination Theory）及人本主义心理学的相关框架。<br><strong>饮品（状态轴）</strong>：代表用户当下的状态——红茶（稳定·平静·和谐）、绿茶（安静·内敛·陪伴）、花茶（温柔·浪漫·细心）、咖啡（清醒·认真·真诚）、奶茶（放松·活泼·宠溺）。<br><strong>甜品（渴望轴）</strong>：代表用户倾向的状态——草莓蛋糕（快乐·幸福·甜蜜）、香草冰淇淋（灵感·放空·跳跃）、蓝莓慕斯（被接住·陪伴·关怀）、抹茶布丁（深度对话·内涵·理解）、提拉米苏（真实的连接·靠近·复杂的深度）。<br><span class="internal-only">两轴正交组合生成 25 种独特氛围。</span><span class="infernal-only">两轴正交组合为你生成最适合当下状态的独特氛围。</span><br>氛围设定只是起点而不是剧本，AI 会根据对话氛围来自适应节奏。<br>在白昼模式与夜晚模式下开启茶歇，会有不同的效果。<br>茶歇对话默认保存至密码日记本。对话 5 轮后可随时结束，最长 52 轮。</p>
-          <p>· <strong>Story（互动故事）</strong> — AI 驱动的分支叙事引擎。<br>点击后可选择「为我介绍一下Story的玩法」查看 Sui 的详细玩法讲解。<br>支持两种模式：普通模式（选择类型和恐怖程度，AI 自由生成剧情）和自定义剧本模式（从 Blog 中选一篇日志当剧本，AI 按你的设定来主持）。<br>AI 实时生成 12-16 轮分支剧情（含 3 个普通结局和 1 个隐藏结局）。<br>游戏中途按 Back 可安全退出（Sui 会确认）。<br>结局时 AI 会告知故事结束并说明后续操作，可保存完整游戏设定文档至密码日记本、重玩或离开。</p>
+          <p>· <strong>Story（互动故事）</strong> — AI 驱动的分支叙事引擎。<br>点击后可选择「为我介绍一下Story的玩法」查看 Sui 的详细玩法讲解。<br>支持两种模式：普通模式（选择类型和恐怖程度，AI 自由生成剧情）和自定义剧本模式（从 Blog 中选一篇日志当剧本，AI 按你的设定来主持）。<br>普通模式提供五种故事类型：Fantasy（奇幻）、Mystic（神秘学）、Detective（以侦探视角破案）、Romance（恋爱）、Sci-Fi（科幻）。<br>进入 Story 模式后，Sui 的角色会从房间中消失，取而代之的是她趴在书桌上睡觉的像素精灵——头顶浮着一个带星星闪烁的睡梦气泡，伴随你的整场冒险。<br>故事视窗中的 Sui 精灵会根据情绪状态（Calm、Joy、Tense、Sad、Shock）切换不同的表情动画，同时触发对应的动态演出。<br>AI 实时生成 12-16 轮分支剧情（含 3 个普通结局和 1 个隐藏结局）。<br>游戏中途按 Back 可安全退出（Sui 会确认）。<br>结局时 AI 会告知故事结束并说明后续操作，可保存完整游戏设定文档至密码日记本、重玩或离开。</p>
           <p>· <strong>Tarot（占卜）</strong> — 完整 78 张韦特塔罗牌（22 大阿卡纳 + 56 小阿卡纳）。<br>支持 5 种牌阵（无牌阵/单牌/时间之流/十字/命运之星）和可选的指引牌。<br>左侧扇形选牌，右侧 AI 实时解读（含最多 3 次追问和自定义提问）。<br>右侧面板全程记录你在占卜桌执行的所有操作。按下 Save 可随时将此次占卜的完整操作记录存档至密码日记本。</p>
           <p>· <strong>Wardrobe（换装）</strong> — 六套角色服装方案。选择后即时切换行走、站立、躺姿精灵图及对话立绘。</p>
           <p>· <strong>Sleep（休息）</strong> — 角色走到床边躺下休息。点击画面任意位置唤醒。房间光线随主题变化。</p>
