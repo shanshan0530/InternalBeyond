@@ -5069,8 +5069,12 @@ async function sendChatMessage(){
           if(m.role==='user')return {role:'user',content:'['+userLabel+'] '+m.content};
           if((m.senderName||'')===selfName){
             let c=sanitizeGroupReply(m.content,selfName,allNames);
-            /* Rebuild thinking in history so model continues the pattern (仅限最近几轮) */
-            if(thinkingOn&&m.thinking&&_keepThink.has(i)) c='<thinking>'+m.thinking+'</thinking>\n\n'+c;
+            /* 与 1对1 一致：本成员每条历史回复都以 <thinking> 开头，
+               最近一轮注入真实思考，更早的用占位标记，维持结构信号、抑制"思考漂移"。 */
+            if(thinkingOn&&m.thinking){
+              const tk=_keepThink.has(i)?m.thinking:'[此前的思考过程已省略]';
+              c='<thinking>'+tk+'</thinking>\n\n'+c;
+            }
             return {role:'assistant',content:c};
           }
           return {role:'user',content:'['+(m.senderName||'AI')+'] '+m.content};
@@ -5168,8 +5172,12 @@ async function sendChatMessage(){
     const _thinkIdx=[];history.forEach((mm,ii)=>{if(mm.role==='assistant'&&mm.thinking)_thinkIdx.push(ii)});
     const _keepThink=new Set(_thinkIdx.slice(-KEEP_THINKING_TURNS));
     const messages=history.map((m,i)=>{
-      if(thinkingOn&&m.role==='assistant'&&m.thinking&&_keepThink.has(i)){
-        return {role:'assistant',content:'<thinking>'+m.thinking+'</thinking>\n\n'+m.content};
+      if(thinkingOn&&m.role==='assistant'&&m.thinking){
+        /* 保持"每条 AI 回复都以 <thinking> 开头"的结构一致性：
+           最近一轮注入真实思考；更早的轮次注入占位标记（省略具体内容以控制 token），
+           避免模型因看到历史里大量"无思考"回复而学着不再输出思考。 */
+        const tk=_keepThink.has(i)?m.thinking:'[此前的思考过程已省略]';
+        return {role:'assistant',content:'<thinking>'+tk+'</thinking>\n\n'+m.content};
       }
       return {role:m.role==='assistant'?'assistant':'user',content:m.content};
     });
@@ -5329,6 +5337,10 @@ function _parseThinking(raw){
 /* Side-channel for native thinking from API response */
 var _lastApiThinking='';
 
+/* 思考链格式提醒——附加到"最后一条用户消息"末尾，是模型生成前读到的最后内容，
+   recency 效应最强，可显著降低长对话中漏掉 <thinking> 的概率。 */
+const THINK_REMINDER='\n\n[系统格式要求] 本次回复必须先输出 <thinking>……（你的思考过程）……</thinking>，然后另起一段再输出正文。<thinking></thinking> 标签对不可省略，这是强制格式要求。';
+
 /* Full API call for chat with history */
 async function callApiChat(cfg,messages,opts){
   opts=opts||{};
@@ -5339,9 +5351,26 @@ async function callApiChat(cfg,messages,opts){
   const pack=(text,truncated)=>opts.wantMeta?{text:text,truncated:!!truncated}:text;
   const fmt=PROVIDERS[cfg.provider]?.format||'openai';
 
+  /* ===== 思考链稳健化：修复"长对话中 <thinking> 逐渐消失" =====
+     根因：①格式要求只放在 system（离生成点最远，会被长上下文稀释）；
+          ②历史里大量 assistant 轮不带 thinking，模型模仿自身历史而逐渐停止思考。
+     对策：(a) 把格式提醒附到"最后一条 user 消息"末尾（所有 provider 通用）；
+          (b) 对 anthropic 额外用 assistant 预填 <thinking> 强制本轮以思考开头（最稳）。
+     注意：这里只改"发给 API 的临时副本"，不会改动任何已保存的历史对象。 */
+  let _msgs=messages, _prefillThinking=false;
+  if(wantThink){
+    _msgs=messages.map(m=>({role:m.role,content:m.content}));
+    for(let i=_msgs.length-1;i>=0;i--){
+      if(_msgs[i].role==='user'){ _msgs[i].content=_msgs[i].content+THINK_REMINDER; break; }
+    }
+    if(fmt==='anthropic' && _msgs.length && _msgs[_msgs.length-1].role==='user') _prefillThinking=true;
+  }
+
   if(fmt==='anthropic'){
-    const sysMsg=messages.find(m=>m.role==='system');
-    const chatMsgs=messages.filter(m=>m.role!=='system');
+    const sysMsg=_msgs.find(m=>m.role==='system');
+    const chatMsgs=_msgs.filter(m=>m.role!=='system');
+    /* 预填 <thinking>，强制模型本轮以思考开头（返回文本会拼回开头标签后再解析） */
+    if(_prefillThinking) chatMsgs.push({role:'assistant',content:'<thinking>'});
     const body={model:cfg.model,max_tokens:maxTok,messages:chatMsgs};
     if(sysMsg)body.system=sysMsg.content;
     if(cfg.temperature!=null)body.temperature=cfg.temperature;
@@ -5358,14 +5387,16 @@ async function callApiChat(cfg,messages,opts){
         if(thinkParts.length) _lastApiThinking=thinkParts.map(c=>c.thinking||c.text||'').join('\n').replace(/<\/?thinking>/gi,'').trim();
       }
       const textParts=(data.content||[]).filter(c=>c.type!=='thinking');
-      return pack(textParts.map(c=>c.text||'').join(''),data.stop_reason==='max_tokens');
+      let _out=textParts.map(c=>c.text||'').join('');
+      if(_prefillThinking) _out='<thinking>'+_out;
+      return pack(_out,data.stop_reason==='max_tokens');
     }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时');throw e}
   }
 
   if(fmt==='gemini'){
     const ep=cfg.endpoint.replace('{model}',cfg.model)+'?key='+cfg.apiKey;
-    const sysMsgG=messages.find(m=>m.role==='system');
-    const contents=messages.filter(m=>m.role!=='system').map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+    const sysMsgG=_msgs.find(m=>m.role==='system');
+    const contents=_msgs.filter(m=>m.role!=='system').map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
     const gBody={contents};
     if(sysMsgG)gBody.system_instruction={parts:[{text:sysMsgG.content}]};
     /* Gemini: thinking is handled by system prompt <thinking> tags, not native API */
@@ -5388,7 +5419,7 @@ async function callApiChat(cfg,messages,opts){
   /* OpenAI-compatible */
   const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),timeoutMs);
   try{
-  const oBody={model:cfg.model,messages,max_tokens:maxTok};
+  const oBody={model:cfg.model,messages:_msgs,max_tokens:maxTok};
   if(cfg.temperature!=null)oBody.temperature=cfg.temperature;
   const res=await fetch(cfg.endpoint,{
     method:'POST',signal:ac.signal,
