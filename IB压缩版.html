@@ -336,6 +336,25 @@ body.theme-infernal .glass-card:hover{border-color:rgba(155,185,232,0.35);box-sh
 .friend-item{padding:8px 10px;border-radius:10px;cursor:pointer;font-size:0.78rem;color:var(--text-secondary);transition:all 0.2s;display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .friend-item:hover,.friend-item.active{background:rgba(80,128,176,0.12);color:var(--white)}
 .friend-item .friend-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+/* Thread items under friends */
+.friend-thread-list{padding-left:20px;overflow:hidden;max-height:0;transition:max-height 0.3s ease}
+.friend-thread-list.open{max-height:600px}
+.thread-item{padding:6px 10px;border-radius:8px;cursor:pointer;font-size:0.78rem;color:var(--text-muted);transition:all 0.2s;display:flex;align-items:center;gap:7px;margin-bottom:2px}
+.thread-item:hover,.thread-item.active{background:rgba(80,128,176,0.10);color:var(--text-primary)}
+.thread-item .thread-dot{width:5px;height:5px;border-radius:50%;background:var(--text-muted);flex-shrink:0;transition:background 0.2s}
+.thread-item.active .thread-dot{background:var(--accent-light)}
+.thread-item .del-btn{margin-left:auto;font-size:0.75rem;cursor:pointer;opacity:0;transition:opacity 0.2s;padding:0 2px}
+.thread-item:hover .del-btn{opacity:0.5}
+.thread-item .del-btn:hover{opacity:1;color:#e88}
+.friend-actions{display:flex;align-items:center;margin-left:auto;gap:2px}
+.friend-add-thread{font-size:0.92rem;cursor:pointer;opacity:0.4;transition:opacity 0.2s;padding:0 5px;line-height:1}
+.friend-add-thread:hover{opacity:0.9}
+.friend-thread-badge{font-size:0.62rem;color:var(--text-muted);opacity:0.6;min-width:14px;text-align:center}
+body:not(.theme-infernal) .thread-item{color:#3a5a8c}
+body:not(.theme-infernal) .thread-item:hover,body:not(.theme-infernal) .thread-item.active{color:#0a1e42}
+body:not(.theme-infernal) .thread-item.active .thread-dot{background:#3a7ac0}
+body.theme-infernal .thread-item.active .thread-dot{background:rgba(240,248,255,0.9)}
+body.theme-infernal{--thread-dot-active:rgba(240,248,255,0.9)}
 .chat-main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 
 /* Letters page — Envelope UI */
@@ -805,12 +824,22 @@ body:not(.theme-infernal) .mem-token-hint{color:#233e6c}
 /* ===== MEMORY OBSERVATORY ===== */
 /* --- Sky (Star Map) --- */
 .mem-sky{position:relative;width:100%;aspect-ratio:16/8;min-height:320px;border-radius:20px;overflow:hidden;border:1px solid var(--glass-border);margin-bottom:14px}
+#mem-sky-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+body:not(.theme-infernal) #mem-sky-canvas{display:none}
 body.theme-infernal .mem-sky{background:
-  radial-gradient(ellipse 50% 45% at 28% 32%,rgba(70,90,160,0.14),transparent 60%),
-  radial-gradient(ellipse 45% 40% at 76% 68%,rgba(65,85,150,0.11),transparent 58%),
-  radial-gradient(ellipse 30% 50% at 55% 50%,rgba(55,75,130,0.06),transparent 50%),
-  radial-gradient(ellipse 95% 85% at 50% 42%,#171d30 0%,#141a2c 40%,#111828 100%);
-  box-shadow:inset 0 0 60px rgba(14,18,30,0.5),0 10px 44px rgba(0,0,0,0.34)}
+  radial-gradient(ellipse 52% 46% at 26% 30%,rgba(74,98,150,0.16),transparent 60%),
+  radial-gradient(ellipse 46% 42% at 78% 64%,rgba(66,90,140,0.12),transparent 58%),
+  radial-gradient(ellipse 40% 34% at 70% 78%,rgba(108,64,82,0.10),transparent 62%),
+  radial-gradient(ellipse 30% 50% at 52% 48%,rgba(120,150,210,0.05),transparent 52%),
+  radial-gradient(ellipse 100% 92% at 50% 36%,#18202f 0%,#131a27 46%,#0e1320 100%);
+  box-shadow:inset 0 0 70px rgba(10,14,24,0.55),0 10px 44px rgba(0,0,0,0.36)}
+/* 大气雾化 + 边缘渐隐：让星图溶进背景图 */
+body.theme-infernal .mem-sky::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:
+    radial-gradient(ellipse 78% 82% at 50% 46%,transparent 56%,rgba(13,18,30,0.5) 100%),
+    radial-gradient(ellipse 130% 60% at 50% 102%,rgba(20,26,40,0.34),transparent 60%)}
+/* 画布接管氛围星，CSS 氛围星降为极淡静态底 */
+body.theme-infernal .mem-sky .sky-amb{z-index:0;opacity:0.30}
 body:not(.theme-infernal) .mem-sky{background:#edf2f8;
   border-color:rgba(170,200,235,0.4);
   box-shadow:inset 0 0 35px rgba(170,195,225,0.18),0 6px 24px rgba(80,120,180,0.08)}
@@ -1806,7 +1835,6 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
       <p class="splash-desc2">你可以在这里自定义你的个人身份，<br>使用个性化的昵称与多个AI好友在家园互动。</p>
       <p class="splash-note">所有数据保存在浏览器里，随时可以手动下载存档。</p>
       <div class="splash-buttons">
-        <button type="button" class="splash-action-btn" onclick="if(window.G)window.G.pendingTour=true;enterSite('game')">游戏引导</button>
         <button type="button" class="splash-action-btn" onclick="enterSite('about')">开始设置</button>
         <button type="button" class="splash-action-btn" onclick="enterSite('guide')">查看说明</button>
       </div>
@@ -2004,6 +2032,7 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
 
     <!-- Star Map (Sky) -->
     <div class="mem-sky" id="mem-sky">
+      <canvas id="mem-sky-canvas"></canvas>
       <div class="sky-amb"></div>
       <i class="sky-glint" style="left:14%;top:21%;transform:scale(1.05)"></i>
       <i class="sky-glint" style="left:8%;top:79%;transform:scale(0.8);animation-delay:1.4s"></i>
@@ -2665,8 +2694,7 @@ i would like the room to be enough.
       <p>在浏览器中打开 <strong>InternalBeyond.html</strong> 进入欢迎页。</p>
       <p class="infernal-only">欢迎页内放置了一块可关闭的玻璃画板。玻璃的一面在水面之下，落雨和时间一起消融在水中。另一面是冰雾笼罩下的玻璃视窗，栖息着无法离开的蝴蝶。你可以用画笔、橡皮擦和温度计等工具，同时影响两个世界。</p>
       <p class="internal-only">欢迎页内设计了一块可关闭的玻璃画板，可以使用右上角的功能按钮来自由探索其玩法。右下角的滑条可以调整画笔大小，以及玻璃上雾的浓度。浓度越高，指画笔的效果越清晰。</p>
-      <p>页面提供三个入口：</p>
-      <p><strong>「游戏引导」</strong>— 直接进入 Room 像素互动空间。Sui 会带你走一遍房间，逐一介绍 Room 模块的核心玩法。</p>
+      <p>页面提供两个入口：</p>
       <p><strong>「开始设置」</strong>— 前往 Profile 页面填写个人资料。</p>
       <p><strong>「查看说明」</strong>— 进入本页面。</p>
       <p>也可点击底部 <strong>「跳过，直接探索」</strong> 快速进入主页。</p>
@@ -3112,6 +3140,22 @@ i would like the room to be enough.
   </div>
 </div>
 
+<div class="group-dialog-overlay" id="thread-dialog-overlay">
+  <div class="group-dialog">
+    <h3>新建话题频道</h3>
+    <label>频道名称</label>
+    <input type="text" id="thread-name-input" placeholder="给这个话题起个名字…" maxlength="16">
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer">
+      <input type="checkbox" id="thread-memory-toggle"> <span style="font-size:0.8rem">启用记忆（可读取该好友可见的记忆）</span>
+    </label>
+    <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6">话题频道的聊天记录不会被 Letters、Blog 评论等模块读取。</div>
+    <div class="group-dialog-actions">
+      <button class="btn" onclick="closeThreadDialog()">取消</button>
+      <button class="btn btn-primary" onclick="confirmCreateThread()">创建</button>
+    </div>
+  </div>
+</div>
+
 <div id="chat-mini" onclick="openChatPanel()">
   <span class="mini-icon" style="opacity:0.7">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -3138,8 +3182,8 @@ i would like the room to be enough.
 </div>
 
 <script>
-const DB_NAME='InternalBeyondDB',DB_VER=8;let db;
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;['posts','categories','about','apiSettings','chatMessages','letters','apiConfigs','groups','blogComments','memories'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='categories'?'name':'id'})});/* v7: add friendId index on chatMessages for fast queries */try{const store=e.target.transaction.objectStore('chatMessages');if(!store.indexNames.contains('byFriend'))store.createIndex('byFriend','friendId',{unique:false})}catch(ex){}};req.onsuccess=()=>{db=req.result;resolve(db)};req.onerror=()=>reject(req.error)})}
+const DB_NAME='InternalBeyondDB',DB_VER=9;let db;
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;['posts','categories','about','music','apiSettings','chatMessages','letters','apiConfigs','groups','blogComments','memories','chatThreads'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='categories'?'name':'id'})});/* v7: add friendId index on chatMessages for fast queries */try{const store=e.target.transaction.objectStore('chatMessages');if(!store.indexNames.contains('byFriend'))store.createIndex('byFriend','friendId',{unique:false})}catch(ex){}};req.onsuccess=()=>{db=req.result;resolve(db)};req.onerror=()=>reject(req.error)})}
 function dbPut(s,d){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).put(d);t.oncomplete=()=>r();t.onerror=()=>j(t.error)})}
 function dbGetAll(s){return new Promise((r,j)=>{const t=db.transaction(s,'readonly');const q=t.objectStore(s).getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
 function dbGet(s,k){return new Promise((r,j)=>{const t=db.transaction(s,'readonly');const q=t.objectStore(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
@@ -3230,7 +3274,7 @@ function enterSite(dest){
   }
 
   if(dest){
-    /* Show "Now Loading..." for the 3 main buttons */
+    /* Show "Now Loading..." for the 2 main buttons */
     if(welcome){
       welcome.style.transition='opacity 0.5s ease-out';
       welcome.style.opacity='0';
@@ -3640,22 +3684,17 @@ async function deletePost(id){if(!confirm('确定删除这篇日志吗？'))retu
 async function exportPost(id){const p=await dbGet('posts',id);downloadJSON(p,'post_'+id+'.json');toast('日志已导出')}
 
 /* ABOUT */
-const defaultAbout={id:'main',name:'Sui',bio:'',avatar:'',fields:[{label:'',value:''}]};
+const defaultAbout={id:'main',name:'Sui',bio:'',avatar:''};
 let pendingAvatar=null;
 async function loadAboutDisplay(){
   let data=await dbGet('about','main');
-  if(!data){data=Object.assign({},defaultAbout,{fields:defaultAbout.fields?defaultAbout.fields.slice():[]});await dbPut('about',data)}
-  if(!data.fields)data.fields=[];
-  const fh=data.fields.filter(function(f){return f.label||f.value}).map(function(f){
-    return '<div class="about-field"><span class="about-field-label">'+esc(f.label)+'</span><span class="about-field-value">'+esc(f.value)+'</span></div>';
-  }).join('');
+  if(!data){data=Object.assign({},defaultAbout);await dbPut('about',data)}
   document.getElementById('about-display').innerHTML=
     '<div class="about-layout">'+
       '<div class="about-avatar-wrap">'+(data.avatar?'<img src="'+data.avatar+'" alt="avatar">':'<div class="about-avatar-placeholder">点击「设置资料」<br>上传头像</div>')+'</div>'+
       '<div class="about-info">'+
         '<h2>'+esc(data.name||'Sui')+'</h2>'+
         '<div class="about-bio">'+((!data.bio||data.bio==='在此写下你的个人简介…')?'<span style="opacity:0.5">还没有写个人简介呢——写一点吧，AI伙伴会根据这里的内容来了解你。</span>':esc(data.bio))+'</div>'+
-        (fh?'<div class="about-fields">'+fh+'</div>':'')+
         '<button class="about-edit-btn" onclick="openAboutEdit()">设置资料</button>'+
         '<button class="about-edit-btn" style="margin-left:8px" onclick="navTo(\'api\')">设置API密钥</button>'+
       '</div>'+
@@ -3670,18 +3709,8 @@ function handleAvatar(e){
     document.getElementById('avatar-status').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> 已选择';
   };r.readAsDataURL(f);
 }
-function addField(){
-  var c=document.getElementById('fields-container');
-  var d=document.createElement('div');d.className='field-row';
-  d.innerHTML='<input placeholder="字段名"><input placeholder="内容"><button class="del-field" onclick="this.parentElement.remove()">✕</button>';
-  c.appendChild(d);
-}
 async function openAboutEdit(){
   let data=await dbGet('about','main')||Object.assign({},defaultAbout);
-  if(!data.fields)data.fields=[{label:'',value:''}];
-  const fh=data.fields.map(function(f){
-    return '<div class="field-row"><input placeholder="字段名" value="'+esc(f.label)+'"><input placeholder="内容" value="'+esc(f.value)+'"><button class="del-field" onclick="this.parentElement.remove()">✕</button></div>';
-  }).join('');
   document.getElementById('about-editor').innerHTML=
     '<div class="about-edit">'+
       '<h3>设置资料</h3>'+
@@ -3691,9 +3720,6 @@ async function openAboutEdit(){
       '<input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">'+
       '<span class="about-upload-status" id="avatar-status">'+(data.avatar?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> 已设置':'○ 未设置')+'</span></div>'+
       '<label>个人简介</label><textarea id="about-bio">'+esc(data.bio||'')+'</textarea>'+
-      '<label style="margin-bottom:8px">自定义字段</label>'+
-      '<div id="fields-container">'+fh+'</div>'+
-      '<button class="about-edit-btn" style="margin-top:4px;margin-bottom:24px;font-size:0.78rem;padding:6px 20px" onclick="addField()">+ 添加字段</button>'+
       '<div class="about-edit-actions">'+
         '<button class="about-edit-btn" style="font-size:0.82rem;padding:8px 28px" onclick="loadAboutDisplay()">取消</button>'+
         '<button class="about-edit-btn" style="font-size:0.82rem;padding:8px 28px;background:rgba(80,128,176,0.15);border-color:rgba(80,128,176,0.35)" onclick="saveAbout()">保存</button>'+
@@ -3704,16 +3730,10 @@ async function openAboutEdit(){
 }
 async function saveAbout(){
   const old=await dbGet('about','main')||defaultAbout;
-  const fields=[];
-  document.querySelectorAll('#fields-container .field-row').forEach(function(row){
-    var ins=row.querySelectorAll('input');
-    fields.push({label:ins[0].value,value:ins[1].value});
-  });
   const data={id:'main',
     name:(document.getElementById('about-name').value||'').trim()||old.name||'Sui',
     bio:document.getElementById('about-bio').value,
-    avatar:pendingAvatar||old.avatar||'',
-    fields:fields};
+    avatar:pendingAvatar||old.avatar||''};
   await dbPut('about',data);
   pendingAvatar=null;
   _refreshCachedUserName();loadAboutDisplay();toast('个人资料已保存');
@@ -3741,9 +3761,9 @@ function initAudioContext(){if(audioCtx)return;audioCtx=new(window.AudioContext|
 function drawVisualizer(){const canvas=document.getElementById('visualizer-canvas'),ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1;canvas.width=canvas.offsetWidth*dpr;canvas.height=canvas.offsetHeight*dpr;ctx.scale(dpr,dpr);const W=canvas.offsetWidth,H=canvas.offsetHeight;(function draw(){requestAnimationFrame(draw);if(!analyser)return;const data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data);ctx.clearRect(0,0,W,H);const bars=48,bw=W/bars;for(let i=0;i<bars;i++){const v=data[Math.floor(i*data.length/bars)]/255,bh=v*H*0.85;const g=ctx.createLinearGradient(0,H,0,H-bh);g.addColorStop(0,'rgba(80,128,176,0.2)');g.addColorStop(1,'rgba(114,168,216,0.6)');ctx.fillStyle=g;ctx.fillRect(i*bw+1,H-bh,bw-2,bh)}})()}
 
 /* EXPORT/IMPORT */
-async function exportAll(){const data={posts:await dbGetAll('posts'),categories:await dbGetAll('categories'),about:await dbGetAll('about'),apiSettings:await dbGetAll('apiSettings'),apiConfigs:await dbGetAll('apiConfigs'),chatMessages:await dbGetAll('chatMessages'),letters:await dbGetAll('letters'),groups:await loadGroups(),blogComments:await dbGetAll('blogComments'),memories:await dbGetAll('memories'),exportDate:new Date().toISOString(),version:2};downloadJSON(data,'InternalBeyond_backup_'+new Date().toISOString().slice(0,10)+'.json');toast('数据已导出')}
+async function exportAll(){const data={posts:await dbGetAll('posts'),categories:await dbGetAll('categories'),about:await dbGetAll('about'),apiSettings:await dbGetAll('apiSettings'),apiConfigs:await dbGetAll('apiConfigs'),chatMessages:await dbGetAll('chatMessages'),letters:await dbGetAll('letters'),groups:await loadGroups(),blogComments:await dbGetAll('blogComments'),memories:await dbGetAll('memories'),chatThreads:await (async()=>{try{return await dbGetAll('chatThreads')}catch(e){return[]}})(),exportDate:new Date().toISOString(),version:2};downloadJSON(data,'InternalBeyond_backup_'+new Date().toISOString().slice(0,10)+'.json');toast('数据已导出')}
 function downloadJSON(data,filename){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(a.href),100)}
-async function importAll(e){const file=e.target.files[0];if(!file)return;try{const text=await file.text();const data=JSON.parse(text);if(data.posts)for(const p of data.posts)await dbPut('posts',p);if(data.categories)for(const c of data.categories)await dbPut('categories',c);if(data.about)for(const a of data.about)await dbPut('about',a);if(data.apiSettings)for(const s of data.apiSettings)await dbPut('apiSettings',s);if(data.apiConfigs)for(const s of data.apiConfigs)await dbPut('apiConfigs',s);if(data.chatMessages)for(const m of data.chatMessages)await dbPut('chatMessages',m);if(data.letters)for(const l of data.letters)await dbPut('letters',l);if(data.groups)for(const g of data.groups)await dbPut('groups',g);if(data.blogComments)for(const c of data.blogComments)await dbPut('blogComments',c);if(data.memories)for(const m of data.memories)await dbPut('memories',m);await migrateLockedPosts();toast('数据已导入');navTo(currentPage)}catch(err){toast('导入失败：文件格式错误')}e.target.value=''}
+async function importAll(e){const file=e.target.files[0];if(!file)return;try{const text=await file.text();const data=JSON.parse(text);if(data.posts)for(const p of data.posts)await dbPut('posts',p);if(data.categories)for(const c of data.categories)await dbPut('categories',c);if(data.about)for(const a of data.about)await dbPut('about',a);if(data.apiSettings)for(const s of data.apiSettings)await dbPut('apiSettings',s);if(data.apiConfigs)for(const s of data.apiConfigs)await dbPut('apiConfigs',s);if(data.chatMessages)for(const m of data.chatMessages)await dbPut('chatMessages',m);if(data.letters)for(const l of data.letters)await dbPut('letters',l);if(data.groups)for(const g of data.groups)await dbPut('groups',g);if(data.blogComments)for(const c of data.blogComments)await dbPut('blogComments',c);if(data.memories)for(const m of data.memories)await dbPut('memories',m);if(data.chatThreads)for(const t of data.chatThreads)await dbPut('chatThreads',t);await migrateLockedPosts();toast('数据已导入');navTo(currentPage)}catch(err){toast('导入失败：文件格式错误')}e.target.value=''}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 
@@ -3781,6 +3801,7 @@ function onProviderChange(){
 let apiConfigs=[];
 let editingApiId=null;
 let activeFriendId=null;
+let activeThreadId=null;
 
 async function loadApiConfigs(){
   apiConfigs=await dbGetAll('apiConfigs');
@@ -3889,6 +3910,8 @@ async function deleteApiConfig(id){
   /* Clear related messages */
   const msgs=await dbGetByIndex('chatMessages','byFriend',id);
   for(const m of msgs){await dbDelete('chatMessages',m.id)}
+  /* Clear related threads */
+  try{const threads=await dbGetAll('chatThreads');for(const t of threads){if(t.friendId===id)await dbDelete('chatThreads',t.id)}}catch(e){}
   renderApiList();
   toast('已删除');
   return true;
@@ -3912,7 +3935,31 @@ async function loadFriendsList(){
   await loadApiConfigs();
   const c=document.getElementById('friends-list');
   if(!apiConfigs.length){c.innerHTML='<div style="font-size:0.72rem;color:var(--text-muted);padding:8px">去 API 页面添加API</div>';return}
-  c.innerHTML=apiConfigs.map(a=>'<div class="friend-item'+(activeFriendId===a.id?' active':'')+'" onclick="selectFriend(\''+a.id+'\')"><span class="friend-dot"></span><span>'+esc(a.nickname||a.model)+'</span></div>').join('');
+  const allThreads=await (async()=>{try{return await dbGetAll('chatThreads')}catch(e){return[]}})();
+  let html='';
+  for(const a of apiConfigs){
+    const threads=allThreads.filter(t=>t.friendId===a.id).sort((x,y)=>x.created-y.created);
+    const isActive=activeFriendId===a.id&&!activeThreadId;
+    const isExpanded=activeFriendId===a.id;
+    const badge=threads.length?'<span class="friend-thread-badge">('+threads.length+')</span>':'';
+    html+='<div class="friend-item'+(isActive?' active':'')+'" onclick="selectFriend(\''+a.id+'\')">'
+      +'<span class="friend-dot"></span><span>'+esc(a.nickname||a.model)+'</span>'
+      +'<span class="friend-actions">'+badge
+      +'<span class="friend-add-thread" onclick="event.stopPropagation();createThread(\''+a.id+'\')" title="新建话题频道">+</span>'
+      +'</span></div>';
+    if(threads.length){
+      html+='<div class="friend-thread-list'+(isExpanded?' open':'')+'">';
+      threads.forEach(t=>{
+        const tActive=activeThreadId===t.id;
+        html+='<div class="thread-item'+(tActive?' active':'')+'" onclick="selectThread(\''+a.id+'\',\''+t.id+'\')">'
+          +'<span class="thread-dot"></span><span>'+esc(t.name)+'</span>'
+          +'<span class="del-btn" onclick="event.stopPropagation();deleteThread(\''+t.id+'\')" title="删除">✕</span>'
+          +'</div>';
+      });
+      html+='</div>';
+    }
+  }
+  c.innerHTML=html;
   /* Load and render groups */
   const groups=await loadGroups();
   const gc=document.getElementById('groups-list');
@@ -3929,13 +3976,16 @@ async function loadFriendsList(){
 
 async function selectFriend(id){
   activeFriendId=id;
+  activeThreadId=null;/* 回到主对话 */
   loadFriendsList();
   renderChatCalendar();
   /* Show memory generation button for 1v1 */
   const memBtn=document.getElementById('chat-gen-mem-btn');
   if(memBtn)memBtn.style.display='';
-  /* Load chat for this friend */
-  const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',id)).sort((a,b)=>(a.timestamp||a.created)-(b.timestamp||b.created));
+  const memSel=document.getElementById('chat-mem-member-select');
+  if(memSel)memSel.style.display='none';
+  /* Load chat for this friend — exclude thread messages */
+  const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',id)).filter(m=>!m.threadId).sort((a,b)=>(a.timestamp||a.created)-(b.timestamp||b.created));
   const container=document.getElementById('chat-full-messages');
   if(!friendMsgs.length){
     const cfg=apiConfigs.find(a=>a.id===id);
@@ -3952,6 +4002,67 @@ async function selectFriend(id){
   if(cfg){
     document.getElementById('chat-header-name').textContent=cfg.nickname||cfg.model;
     document.getElementById('chat-mini-title').textContent=cfg.nickname||cfg.model;
+  }
+}
+
+async function loadThreads(friendId){
+  try{const all=await dbGetAll('chatThreads');return all.filter(t=>t.friendId===friendId).sort((a,b)=>a.created-b.created)}catch(e){return[]}
+}
+var _threadCreatingFor=null;
+function createThread(friendId){
+  _threadCreatingFor=friendId;
+  document.getElementById('thread-name-input').value='';
+  document.getElementById('thread-memory-toggle').checked=false;
+  document.getElementById('thread-dialog-overlay').classList.add('show');
+}
+function closeThreadDialog(){document.getElementById('thread-dialog-overlay').classList.remove('show');_threadCreatingFor=null}
+async function confirmCreateThread(){
+  const name=document.getElementById('thread-name-input').value.trim();
+  if(!name){toast('请输入频道名称');return}
+  if(!_threadCreatingFor)return;
+  const thread={id:'thread_'+Date.now(),friendId:_threadCreatingFor,name:name,
+    memoryEnabled:!!document.getElementById('thread-memory-toggle').checked,created:Date.now()};
+  await dbPut('chatThreads',thread);
+  closeThreadDialog();
+  loadFriendsList();
+  toast('话题频道「'+name+'」已创建');
+}
+async function deleteThread(tid){
+  if(!confirm('确定删除该话题频道及其消息？'))return;
+  await dbDelete('chatThreads',tid);
+  const msgs=await dbGetAll('chatMessages');
+  for(const m of msgs){if(m.threadId===tid)await dbDelete('chatMessages',m.id)}
+  if(activeThreadId===tid){activeThreadId=null;if(activeFriendId)selectFriend(activeFriendId)}
+  loadFriendsList();toast('话题频道已删除');
+}
+async function selectThread(friendId,threadId){
+  activeFriendId=friendId;
+  activeThreadId=threadId;
+  loadFriendsList();
+  renderChatCalendar();
+  const memBtn=document.getElementById('chat-gen-mem-btn');
+  if(memBtn)memBtn.style.display='';
+  const memSel=document.getElementById('chat-mem-member-select');
+  if(memSel)memSel.style.display='none';
+  const allMsgs=(await dbGetByIndex('chatMessages','byFriend',friendId)).filter(m=>m.threadId===threadId);
+  allMsgs.sort((a,b)=>(a.timestamp||a.created)-(b.timestamp||b.created));
+  const container=document.getElementById('chat-full-messages');
+  const threads=await loadThreads(friendId);
+  const thread=threads.find(t=>t.id===threadId);
+  const threadName=thread?thread.name:'话题';
+  const cfg=apiConfigs.find(a=>a.id===friendId);
+  if(!allMsgs.length){
+    container.innerHTML='<div class="chat-msg system">'+esc(threadName)+'</div>';
+    _chatCache=[];_chatLoaded=0;
+  }else{
+    _chatCache=allMsgs;
+    _chatLoaded=CHAT_BATCH_FULL;
+    _chatBatchSize=CHAT_BATCH_FULL;
+    _renderBatch(container,allMsgs,CHAT_BATCH_FULL,true);
+  }
+  if(cfg){
+    document.getElementById('chat-header-name').textContent=(cfg.nickname||cfg.model)+' · '+threadName;
+    document.getElementById('chat-mini-title').textContent=(cfg.nickname||cfg.model)+' · '+threadName;
   }
 }
 
@@ -4020,7 +4131,11 @@ async function deleteGroup(gid){
 }
 
 function searchChat(q){
-  if(!q){if(activeFriendId)selectFriend(activeFriendId);return}
+  if(!q){
+    if(activeThreadId&&activeFriendId)selectThread(activeFriendId,activeThreadId);
+    else if(activeFriendId)selectFriend(activeFriendId);
+    return;
+  }
   if(!activeFriendId){toast('请先选择一个聊天对象');return}
   /* Search only within the current conversation */
   dbGetByIndex('chatMessages','byFriend',activeFriendId).then(msgs=>{
@@ -4330,7 +4445,7 @@ async function requestLetterFromSelected(){
     const recentLetters=letters.sort((a,b)=>b.created-a.created).slice(0,2);
 
     /* Gather recent chat history with this AI */
-    const chatWithAi=(await dbGetByIndex('chatMessages','byFriend',cfg.id)).sort((a,b)=>(a.timestamp||a.created)-(b.timestamp||b.created)).slice(-(lim.chatLimit||DEFAULT_READ_CHAT));
+    const chatWithAi=(await dbGetByIndex('chatMessages','byFriend',cfg.id)).filter(m=>!m.threadId).sort((a,b)=>(a.timestamp||a.created)-(b.timestamp||b.created)).slice(-(lim.chatLimit||DEFAULT_READ_CHAT));
 
     let context='';
     if(cfg.relationship)context+='你和对方的关系是：'+cfg.relationship+'。\n';
@@ -4873,6 +4988,7 @@ async function sendChatMessage(){
   input.value='';
 
   const userMsg={id:'msg_'+Date.now(),role:'user',content:text,friendId:activeFriendId,timestamp:Date.now()};
+  if(activeThreadId)userMsg.threadId=activeThreadId;
   await dbPut('chatMessages',userMsg);
   appendChatBubble('user',text,undefined,undefined,userMsg.id);
 
@@ -4884,7 +5000,7 @@ async function sendChatMessage(){
 
   try{
     const lim=await getReadingLimits();
-    const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',activeFriendId)).sort((a,b)=>a.timestamp-b.timestamp);
+    const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',activeFriendId)).filter(m=>activeThreadId?m.threadId===activeThreadId:!m.threadId).sort((a,b)=>a.timestamp-b.timestamp);
     const history=friendMsgs.slice(-(lim.chatLimit||DEFAULT_READ_CHAT));
     /* Build messages for API — auto-inject website context.
        开启思考链时，把 assistant 历史消息重建出 <thinking> 标签，让模型看到自己之前的思路、延续格式。
@@ -4920,6 +5036,7 @@ async function sendChatMessage(){
     if(!thinkingText&&parsed.thinking) thinkingText=parsed.thinking;
     var replyText=parsed.reply;
     const aiMsg={id:'msg_'+(Date.now()+1),role:'assistant',content:replyText,thinking:thinkingText||undefined,friendId:activeFriendId,timestamp:Date.now()};
+    if(activeThreadId)aiMsg.threadId=activeThreadId;
     await dbPut('chatMessages',aiMsg);
     appendChatBubble('ai',replyText,undefined,thinkingText||undefined,aiMsg.id);
   }catch(err){
@@ -6103,7 +6220,7 @@ async function generateMemoryFromChat(){
   const cfg=apiConfigs.find(a=>a.id===activeFriendId);
   if(!cfg||!cfg.apiKey||!cfg.endpoint){toast('请先配置 API');return}
   const lim=await getReadingLimits();
-  const msgs=(await dbGetByIndex('chatMessages','byFriend',activeFriendId)).sort((a,b)=>a.timestamp-b.timestamp);
+  const msgs=(await dbGetByIndex('chatMessages','byFriend',activeFriendId)).filter(m=>activeThreadId?m.threadId===activeThreadId:!m.threadId).sort((a,b)=>a.timestamp-b.timestamp);
   const recent=msgs.slice(-(lim.chatLimit||DEFAULT_READ_CHAT));
   if(recent.length<2){toast('聊天记录太少，无法生成记忆');return}
   const about=await dbGet('about','main');
@@ -6273,7 +6390,19 @@ async function renderChatPanelFriends(){
   const c=document.getElementById('chat-panel-friends');
   if(!c)return;
   if(!apiConfigs.length){c.innerHTML='<div class="cpf-item" style="opacity:0.5;cursor:default;font-size:0.65rem">去API页面添加</div>';return}
-  let html=apiConfigs.map(a=>'<div class="cpf-item'+(activeFriendId===a.id?' active':'')+'" onclick="selectPanelFriend(\''+a.id+'\')">'+esc(a.nickname||a.model||'AI')+'</div>').join('');
+  const allThreads=await (async()=>{try{return await dbGetAll('chatThreads')}catch(e){return[]}})();
+  let html='';
+  apiConfigs.forEach(a=>{
+    const isMainActive=activeFriendId===a.id&&!activeThreadId;
+    html+='<div class="cpf-item'+(isMainActive?' active':'')+'" onclick="selectPanelFriend(\''+a.id+'\')">'+esc(a.nickname||a.model||'AI')+'</div>';
+    const threads=allThreads.filter(t=>t.friendId===a.id);
+    if(threads.length&&activeFriendId===a.id){
+      threads.forEach(t=>{
+        const tActive=activeThreadId===t.id;
+        html+='<div class="cpf-item'+(tActive?' active':'')+'" onclick="selectPanelThread(\''+a.id+'\',\''+t.id+'\')" style="padding:3px 10px"><span style="margin-right:5px;font-size:0.55rem;vertical-align:1px;color:'+(tActive?'var(--thread-dot-active,#72a8d8)':'var(--text-muted)')+'">'+(tActive?'●':'○')+'</span>'+esc(t.name)+'</div>';
+      });
+    }
+  });
   const groups=await loadGroups();
   if(groups.length){
     html+=groups.map(g=>'<div class="cpf-item'+(activeFriendId===g.id?' active':'')+'" onclick="selectPanelGroup(\''+g.id+'\')" style="border-color:rgba(114,168,216,0.4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px;opacity:0.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+esc(g.name)+'</div>').join('');
@@ -6282,6 +6411,7 @@ async function renderChatPanelFriends(){
 }
 async function selectPanelGroup(gid){
   activeFriendId=gid;
+  activeThreadId=null;
   renderChatPanelFriends();
   const groups=await loadGroups();
   const group=groups.find(g=>g.id===gid);
@@ -6303,17 +6433,34 @@ async function selectPanelGroup(gid){
 }
 async function selectPanelFriend(id){
   activeFriendId=id;
+  activeThreadId=null;
   renderChatPanelFriends();
   const cfg=apiConfigs.find(a=>a.id===id);
   if(cfg){
     document.getElementById('chat-header-name').textContent=cfg.nickname||cfg.model;
     document.getElementById('chat-mini-title').textContent=cfg.nickname||cfg.model;
   }
-  /* Load messages for this friend in the mini panel */
+  /* Load messages for this friend in the mini panel — exclude threads */
   const container=document.getElementById('chat-messages');
-  const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',id)).sort((a,b)=>a.timestamp-b.timestamp);
+  const friendMsgs=(await dbGetByIndex('chatMessages','byFriend',id)).filter(m=>!m.threadId).sort((a,b)=>a.timestamp-b.timestamp);
   if(!friendMsgs.length){container.innerHTML='<div class="chat-msg system">发送消息开始对话</div>'}
   else{container.innerHTML=friendMsgs.map(m=>'<div class="chat-msg '+(m.role==='user'?'user':'ai')+'">'+esc(m.content)+'</div>').join('')}
+  container.scrollTop=container.scrollHeight;
+}
+async function selectPanelThread(friendId,threadId){
+  activeFriendId=friendId;
+  activeThreadId=threadId;
+  renderChatPanelFriends();
+  const cfg=apiConfigs.find(a=>a.id===friendId);
+  const allThreads=await (async()=>{try{return await dbGetAll('chatThreads')}catch(e){return[]}})();
+  const thread=allThreads.find(t=>t.id===threadId);
+  const label=(cfg?(cfg.nickname||cfg.model):'AI')+' · '+(thread?thread.name:'话题');
+  document.getElementById('chat-header-name').textContent=label;
+  document.getElementById('chat-mini-title').textContent=label;
+  const container=document.getElementById('chat-messages');
+  const msgs=(await dbGetByIndex('chatMessages','byFriend',friendId)).filter(m=>m.threadId===threadId).sort((a,b)=>a.timestamp-b.timestamp);
+  if(!msgs.length){container.innerHTML='<div class="chat-msg system">'+(thread?esc(thread.name):'话题')+'</div>'}
+  else{container.innerHTML=msgs.map(m=>'<div class="chat-msg '+(m.role==='user'?'user':'ai')+'">'+esc(m.content)+'</div>').join('')}
   container.scrollTop=container.scrollHeight;
 }
 
@@ -6499,7 +6646,7 @@ window.ibModeToggle=function(){
    - 指雾笔：擦开凝雾层
    - 窗内背景按文件名约定加载：bg-canvas.jpg / bg-canvas.png，缺失静默
    - Sui 签名右侧的调色盘图标开关，进入时默认打开
-   - 点击 游戏引导/开始设置/查看说明/跳过 时：画窗 0.32s 先退场
+   - 点击 开始设置/查看说明/跳过 时：画窗 0.32s 先退场
    ============================================================ */
 (function(){
 'use strict';
@@ -7159,6 +7306,72 @@ if(!REDUCED)requestAnimationFrame(loop);
     }
   });
   obs.observe(sp,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<script>
+/* ===== MEMORY 星图 · 画布星场（三层视差 / 闪烁；无流星） ===== */
+(function(){
+  var canvas=document.getElementById('mem-sky-canvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d'), W=0,H=0,DPR=1, layers=[], raf=0, vis=false, built=false;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* 去饱和的真实恒星色谱（向银色收敛，贴合背景图） */
+  var PAL=[['230,236,246',0.36],['200,214,236',0.24],['176,200,230',0.16],
+           ['236,230,220',0.12],['217,193,154',0.08],['199,154,150',0.04]];
+  function pick(){var r=Math.random(),a=0,i;for(i=0;i<PAL.length;i++){a+=PAL[i][1];if(r<=a)return PAL[i][0];}return PAL[0][0];}
+  function build(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    var b=canvas.getBoundingClientRect(); W=b.width; H=b.height;
+    if(W<2||H<2){ built=false; return; }
+    canvas.width=W*DPR; canvas.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    var defs=[{n:Math.round(W*H/2600), r:[0.3,0.9], a:[0.22,0.55], drift:0.05, tw:0.4},
+              {n:Math.round(W*H/5400), r:[0.6,1.4], a:[0.40,0.82], drift:0.12, tw:0.7},
+              {n:Math.round(W*H/12500),r:[1.0,2.0], a:[0.60,1.00], drift:0.22, tw:1.0}];
+    layers=defs.map(function(d){
+      var arr=[],k; for(k=0;k<d.n;k++){arr.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:d.r[0]+Math.random()*(d.r[1]-d.r[0]),
+        a:d.a[0]+Math.random()*(d.a[1]-d.a[0]),
+        c:pick(), tw:Math.random()<d.tw, ph:Math.random()*6.283, sp:0.4+Math.random()*0.9
+      });}
+      return {drift:d.drift, stars:arr};
+    });
+    built=true;
+  }
+  function paint(now, moving){
+    if(!built) return;
+    var t=now/1000, li, si, L, ox, s, x, a;
+    ctx.clearRect(0,0,W,H);
+    for(li=0; li<layers.length; li++){
+      L=layers[li]; ox = moving ? ((t*L.drift*8)%W) : 0;
+      for(si=0; si<L.stars.length; si++){
+        s=L.stars[si]; x=s.x-ox; if(x<0)x+=W;
+        a=s.a; if(moving && s.tw) a*=0.55+0.45*Math.sin(t*s.sp+s.ph);
+        ctx.beginPath(); ctx.fillStyle='rgba('+s.c+','+a.toFixed(3)+')';
+        ctx.arc(x,s.y,s.r,0,6.283); ctx.fill();
+        if(s.r>1.4){ ctx.beginPath(); ctx.fillStyle='rgba('+s.c+','+(a*0.12).toFixed(3)+')';
+          ctx.arc(x,s.y,s.r*3,0,6.283); ctx.fill(); }
+      }
+    }
+  }
+  function loop(now){ paint(now,true); raf=requestAnimationFrame(loop); }
+  function play(){
+    if(!built || !vis) return;
+    if(reduce){ paint(performance.now(),false); return; }
+    if(!raf) raf=requestAnimationFrame(loop);
+  }
+  function pause(){ if(raf){ cancelAnimationFrame(raf); raf=0; } }
+  if('ResizeObserver' in window){
+    new ResizeObserver(function(){ build(); if(vis) play(); else if(built&&reduce) paint(performance.now(),false); }).observe(canvas);
+  } else {
+    window.addEventListener('resize', function(){ build(); if(vis) play(); });
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      vis=es[0].isIntersecting;
+      if(vis){ if(!built) build(); play(); } else pause();
+    },{threshold:0}).observe(canvas);
+  } else { vis=true; }
+  build(); if(built){ vis=true; play(); }
 })();
 </script>
 </body>
