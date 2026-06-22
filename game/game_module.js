@@ -169,10 +169,10 @@ const TOUR_STEPS = [
   {id:'wardrobe',face:'up',    pages:[
     "这里是我的衣柜，在这里可以给我自由换装。\n请注意：更换服装后，我的立绘、模型与角色动画也会同步更换。"]},
   {id:'bed',     face:'up',    pages:[
-    "这里是我的床。\n……到这里，你应该已经能够熟悉掌握整个操作流程了吧。\n你想在白天休息还是晚上休息都可以。",
-    "这些就是这个房间的所有功能介绍。\n如果你想要切换目前房间的昼夜模式，点击屏幕右上角的水滴按钮就可以了。",
-    "请注意，在夜间模式下，网站的主页风格也会切换到暗色模式。\n暗色模式下，不是只有房间会发生变化。主页背景图也会随之改变。\n暗色模式下的背景图可能会有一些微恐元素。",
-    "如果想听歌，你可以使用左下角的音乐播放器添加本地音乐来在这个房间里播放，但歌单不会存档。\n祝你游戏愉快。"]}
+    "这里是我的床。到这里，房间的所有互动功能就介绍完了。\n你想白天睡觉还是晚上睡觉都可以。",
+    "Room浮窗标题栏里有一个Mini按钮。\n按下后，游戏浮窗会变成一个小型视窗。你可以在浏览网站其他页面时，让我在一旁安静地陪着你。",
+    "茶歇进行时也可以进入小窗，其他互动需要退出小窗后才能使用。\n小窗的标题栏可以拖动位置，按✕退出，或者回到Room页面会自动恢复全屏。",
+    "如果你想切换房间的昼夜模式，可以点击屏幕右上角的水滴按钮。\n如果想听歌，你可以使用左下角的音乐播放器添加本地音乐来在这个房间里播放，但歌单不会存档。\n祝你游戏愉快。"]}
 ];
 
 /* ============================================================
@@ -196,6 +196,13 @@ const CSS = `
 body.theme-infernal #game-mini{color:#ffffff}
 body:not(.theme-infernal) #game-mini{background:rgba(255,255,255,0.28);border-color:rgba(180,215,245,0.4);color:#2b487a}
 body:not(.theme-infernal) #game-mini:hover{background:rgba(255,255,255,0.45);color:#152c58}
+
+/* ── PET WINDOW (350×350 viewport + panel header) ────── */
+#game-pet-window{position:fixed;z-index:91;width:350px;border-radius:12px;overflow:hidden;display:none;
+  background:rgba(10,15,30,0.97);border:1px solid var(--glass-border);
+  box-shadow:0 6px 32px rgba(0,0,0,0.5);backdrop-filter:blur(6px);flex-direction:column}
+#game-pet-window.show{display:flex}
+#game-pet-viewport-wrap{position:relative;width:350px;height:350px;overflow:hidden;flex-shrink:0}
 
 /* ── GAME PANEL (floating) ───────────────────────────── */
 #game-panel{position:fixed;z-index:92;border-radius:16px;overflow:hidden;display:none;
@@ -823,6 +830,7 @@ function injectHTML(){
   panel.innerHTML=`<div class="game-panel-header" id="game-panel-header">
     <span class="game-panel-title">Room</span>
     <div style="display:flex;align-items:center;gap:10px">
+      <button class="game-panel-close" id="game-pet-enter" title="小窗" style="font-size:0.72rem;opacity:0.7;font-style:normal;letter-spacing:0.08em">Mini</button>
       <div class="game-panel-zoom">
         <button id="game-zoom-out" title="缩小">−</button>
         <button id="game-zoom-in" title="放大">+</button>
@@ -843,6 +851,31 @@ function injectHTML(){
     <button class="game-sidebar-btn-reset" data-action="reset">Reset</button>
   </div></div>`;
   document.body.appendChild(panel);
+
+  /* Pet window (320×320 viewport + Room-style header) */
+  const petWin=document.createElement('div');
+  petWin.id='game-pet-window';
+  petWin.innerHTML=`<div class="game-panel-header" id="game-pet-header"><span class="game-panel-title">Sui</span><div style="display:flex;align-items:center;gap:8px"><button class="game-panel-close" id="pet-sleep-btn" title="Sleep" style="font-size:0.78rem;font-style:normal;letter-spacing:0.06em">Sleep</button><button class="game-panel-close" id="pet-exit-btn" title="恢复">✕</button></div></div><div id="game-pet-viewport-wrap"></div>`;
+  document.body.appendChild(petWin);
+  /* Drag ONLY via the header bar (not the game viewport) */
+  const petHeader=petWin.querySelector('#game-pet-header');
+  let petDrag=false,petOx=0,petOy=0;
+  petHeader.addEventListener('mousedown',e=>{if(e.target.closest('button'))return;petDrag=true;petOx=e.clientX-petWin.offsetLeft;petOy=e.clientY-petWin.offsetTop;e.preventDefault()});
+  document.addEventListener('mousemove',e=>{if(!petDrag)return;petWin.style.left=(e.clientX-petOx)+'px';petWin.style.top=(e.clientY-petOy)+'px';petWin.style.right='auto';petWin.style.bottom='auto'});
+  document.addEventListener('mouseup',()=>{petDrag=false});
+  petHeader.addEventListener('touchstart',e=>{if(e.target.closest('button'))return;petDrag=true;var t=e.touches[0];petOx=t.clientX-petWin.offsetLeft;petOy=t.clientY-petWin.offsetTop},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!petDrag)return;var t=e.touches[0];petWin.style.left=(t.clientX-petOx)+'px';petWin.style.top=(t.clientY-petOy)+'px';petWin.style.right='auto';petWin.style.bottom='auto'},{passive:true});
+  document.addEventListener('touchend',()=>{petDrag=false});
+  /* Keep pet window visible on browser resize / un-maximize */
+  window.addEventListener('resize',function(){
+    if(!G.petMode)return;
+    var pw=document.getElementById('game-pet-window');
+    if(!pw||!pw.classList.contains('show'))return;
+    var r=pw.getBoundingClientRect();
+    if(r.right<40||r.left>window.innerWidth-40||r.bottom<40||r.top>window.innerHeight-40){
+      pw.style.left='auto';pw.style.top='auto';pw.style.right='20px';pw.style.bottom='20px';
+    }
+  });
 }
 
 /* ============================================================
@@ -897,6 +930,10 @@ let G = {
   _aiPortraitImg: null,    // custom DIY portrait for the current Story AI (or null)
   _deskSprTimer: null,     // desk sprite 2-frame animation timer
   _deskTypwTimer: null,    // desk sprite typewriter animation timer
+  petMode: false,          // QQ-pet mini window mode
+  petScale: 0.5,           // pet window zoom scale
+  petCamX: 0,              // pet camera offset X (game coords)
+  petCamY: 0,              // pet camera offset Y (game coords)
   /* ── Story 常驻视窗（storyWin）内部状态 ── */
   swEl: null,              // 视窗根DOM节点（null = 未开启）
   swMood: 'calm',          // 当前情绪：calm / joy / tense / sad / shock
@@ -1133,6 +1170,7 @@ function createViewport(container){
 /* ── SCALING ─────────────────────────────────────────── */
 function updateScale(){
   if(!G.viewport) return;
+  if(G.petMode) return; /* pet mode handles its own scaling */
   const sidebarW = G.mode==='float'
     ? (document.getElementById('game-sidebar')?.offsetWidth||0)
     : (document.getElementById('game-sidebar-page')?.offsetWidth||0);
@@ -1327,7 +1365,7 @@ function updateMarkers(){
   if(!G.viewport) return;
   const ind=G.viewport.querySelector('#game-indicators');
   if(!ind) return;
-  const show = G.state==='idle' && !G.tourActive && !G.dialogueActive &&
+  const show = !G.petMode && G.state==='idle' && !G.tourActive && !G.dialogueActive &&
     !G.tarotOpen && !G.wardrobeOpen && !G.teaOpen && !G.teaChatActive && !G.aiGameActive;
   ind.classList.toggle('ix-off', !show);
 }
@@ -1364,7 +1402,7 @@ function onViewportClick(e){
       G.charX=BED_STAND_X; G.charY=BED_STAND_Y;
       G.state='idle'; G.facing='down'; G.isFirstOpen=false;
       updateCharPosition(); updateIdleSprite();
-      toggleSidebar(true);
+      if(!G.petMode) toggleSidebar(true);
       saveState();
     }, 800);
     return;
@@ -1384,21 +1422,31 @@ function onViewportClick(e){
       G.charX=BED_STAND_X; G.charY=BED_STAND_Y;
       G.state='idle'; G.facing='down';
       updateCharPosition(); updateIdleSprite();
-      toggleSidebar(true);
+      if(!G.petMode) toggleSidebar(true);
       saveState();
     }, 800);
     return;
   }
   if(G.state==='waking') return;
   const rect=G.viewport.getBoundingClientRect();
-  const mx=(e.clientX-rect.left)/G.scale;
-  const my=(e.clientY-rect.top)/G.scale;
+  var mx=(e.clientX-rect.left)/G.scale;
+  var my=(e.clientY-rect.top)/G.scale;
+  /* Pet mode: use the wrap container rect (viewport rect is shifted by the translate transform) */
+  if(G.petMode){
+    var wrapEl=document.getElementById('game-pet-viewport-wrap');
+    if(wrapEl){
+      var wr=wrapEl.getBoundingClientRect();
+      mx=(e.clientX-wr.left)/G.petScale+G.petCamX;
+      my=(e.clientY-wr.top)/G.petScale+G.petCamY;
+    }
+  }
   startWalkTo(mx,my);
 }
 
 /* ── HINT CLICK → WALK TO OBJECT & INTERACT (RPG Maker) ── */
 function onHintClick(id, e){
   if(e) e.stopPropagation();
+  if(G.petMode) return; /* locked in pet mode */
   if(G.aiGameActive||G.teaChatActive||G.teaOpen) return;
   if(G.tourActive) return; /* locked during the guided tour */
   if(G.dialogueActive||G.tarotOpen||G.wardrobeOpen||G.state==='interacting') return;
@@ -1441,6 +1489,9 @@ function resetGame(){
   G._storyExitWarning=false;
   G._lastStoryState=null;
   G._aiCustomScript=null;
+  /* Clean up desk reading sprite + story window (prevents duplicate character) */
+  hideDeskSprite();
+  closeStoryWindow();
   G.dialogueActive=false;
   G.tarotOpen=false;
   G.wardrobeOpen=false;
@@ -1450,12 +1501,11 @@ function resetGame(){
   G.onArrive=null;
   if(G._interactTimeout){clearTimeout(G._interactTimeout);G._interactTimeout=null}
   disableSidebarButtons(false);
-  if(G.state==='sleeping'||G.state==='lying'){
-    if(G.viewport){
-      showZzz(false);
-      G.viewport.querySelector('#game-char-lie').style.display='none';
-      G.viewport.querySelector('#game-char').style.display='block';
-    }
+  /* Always clean up bed/lie/zzz state (catches sleeping, lying, AND waking mid-animation) */
+  showZzz(false);
+  if(G.viewport){
+    const lieEl=G.viewport.querySelector('#game-char-lie');
+    if(lieEl) lieEl.style.display='none';
   }
   /* Always reset position to window center */
   G.charX=650; G.charY=500;
@@ -3332,6 +3382,7 @@ function gameLoop(time){
   }
 
   updateMarkers();
+  if(G.petMode) updatePetCamera();
   G.animFrame=requestAnimationFrame(gameLoop);
 }
 
@@ -3570,6 +3621,143 @@ function closeGamePanel(){
   pauseGame();
 }
 
+/* ── PET MODE (350×350 QQ-pet window) ─────────────────── */
+const PET_SIZE=350;
+
+async function enterPetMode(){
+  /* Block entry during interactive states that would break in mini view (Tea is allowed) */
+  if(G.dialogueActive||G.aiGameActive||G.tarotOpen||G.wardrobeOpen||G.tourActive||suiActive) return;
+  /* Close any open panel first */
+  document.getElementById('game-panel').classList.remove('show');
+  document.getElementById('game-mini').style.display='none';
+  G.mode='pet';
+  G.petMode=true;
+
+  const petWin=document.getElementById('game-pet-window');
+  const wrap=document.getElementById('game-pet-viewport-wrap');
+
+  if(!G.initialized){
+    wrap.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:'+PET_SIZE+'px;color:var(--silver);font-family:Cormorant Garamond,serif;font-style:italic;font-size:0.85rem">Loading...</div>';
+    try{ await initGame(wrap); }catch(e){ console.error('[SuiGame] Pet init failed:',e); return; }
+  }else if(G.viewport && G.viewport.parentElement!==wrap){
+    wrap.appendChild(G.viewport);
+  }
+
+  /* 1:1 scale — native resolution, no scaling blur */
+  G.petScale = 1.0;
+  G.viewport.style.transformOrigin='top left';
+
+  /* Position the pet window */
+  petWin.style.right='20px';
+  petWin.style.bottom='20px';
+  petWin.style.left='auto';
+  petWin.style.top='auto';
+  petWin.classList.add('show');
+
+  /* Hide interaction markers in pet mode */
+  var ind=G.viewport.querySelector('#game-indicators');
+  if(ind) ind.style.display='none';
+
+  /* Wire pet buttons */
+  document.getElementById('pet-sleep-btn').onclick=function(){
+    if(G.state==='sleeping'||G.state==='lying') return;
+    if(G.teaChatActive||G.teaOpen||G.teaAnimActive) return; /* don't interrupt tea */
+    /* Direct sleep: walk to bed, then sleep without dialogue */
+    petSleep();
+  };
+  document.getElementById('pet-exit-btn').onclick=function(){ exitPetMode(); };
+
+  updatePetCamera();
+  if(!G.running) startLoop();
+}
+
+function exitPetMode(){
+  G.petMode=false;
+  G.mode='float';
+  document.getElementById('game-pet-window').classList.remove('show');
+  document.getElementById('game-mini').style.display='block';
+
+  /* Restore viewport transform (remove pet camera offset) */
+  if(G.viewport){
+    G.viewport.style.transform='scale('+(G.scale||0.5)+')';
+    G.viewport.style.transformOrigin='top left';
+  }
+
+  /* Restore interaction markers */
+  var ind=G.viewport?G.viewport.querySelector('#game-indicators'):null;
+  if(ind) ind.style.display='';
+
+  saveState();
+  pauseGame();
+}
+
+function petSleep(){
+  if(!G.viewport) return;
+  /* If already sleeping/lying, do nothing */
+  if(G.state==='sleeping'||G.state==='lying') return;
+  /* Walk to bed, then sleep directly (no dialogue) */
+  startWalkTo(BED_SLEEP_WALK_X, BED_SLEEP_WALK_Y);
+  G.onArrive=function(){
+    G.facing='up';
+    /* Skip dialogue — go straight to sleep animation */
+    setTimeout(function(){
+      if(!G.viewport) return;
+      G.viewport.querySelector('#game-char').style.display='none';
+      G.viewport.querySelector('#game-char-lie').style.display='block';
+      G.state='lying'; G.lieMode='sleeping'; G.lieFrame=1;
+      updateLieSprite();
+      showZzz(true);
+      saveState();
+    }, 300);
+  };
+}
+
+function updatePetCamera(){
+  if(!G.viewport||!G.petMode) return;
+  /* Center camera on character (or bed if sleeping/lying) */
+  var cx,cy;
+  if(G.state==='sleeping'||G.state==='lying'){
+    cx=BED_LIE_X+LIE_FW/2;
+    cy=BED_LIE_Y+LIE_FH/2;
+  }else{
+    cx=G.charX;
+    cy=G.charY;
+  }
+  /* Aesthetic offset: during restful states, pull camera toward bottom-right
+     so Sui sits upper-left of frame with more room atmosphere visible.
+     ┌─────────────────────────────────────────────────────────┐
+     │  HOW TO ADJUST:  search "petCamOffset" in this file.   │
+     │  cx += N  →  bigger N = camera moves RIGHT (Sui LEFT)  │
+     │  cy += N  →  bigger N = camera moves DOWN  (Sui UP)    │
+     │  Values are in game-pixels. Safe range: 0 – 120.       │
+     └─────────────────────────────────────────────────────────┘ */
+  /* petCamOffset — sleep */
+  if(G.state==='sleeping'||G.state==='lying'){ cx+=5; cy+=45; }
+  /* petCamOffset — tea */
+  else if(G.teaChatActive||G.teaAnimActive){ cx+=75; cy+=45; }
+  /* How many game-pixels fit in the pet window at current scale */
+  var viewW=PET_SIZE/G.petScale;
+  var viewH=PET_SIZE/G.petScale;
+  var halfW=viewW/2;
+  var halfH=viewH/2;
+  /* Clamp so we don't show outside the game world, then ROUND to prevent sub-pixel blur on pixel art */
+  var camX=Math.round(Math.max(0,Math.min(GAME_W-viewW, cx-halfW)));
+  var camY=Math.round(Math.max(0,Math.min(GAME_H-viewH, cy-halfH)));
+  G.petCamX=camX;
+  G.petCamY=camY;
+  G.viewport.style.transform='scale('+G.petScale+') translate('+(-camX)+'px,'+(-camY)+'px)';
+  /* Grey out Sleep button while tea is active (runs each frame but only writes DOM on state change) */
+  var psb=document.getElementById('pet-sleep-btn');
+  if(psb){
+    var tLock=!!(G.teaChatActive||G.teaOpen||G.teaAnimActive);
+    if(psb._tLock!==tLock){
+      psb._tLock=tLock;
+      psb.style.opacity=tLock?'0.25':'';
+      psb.style.pointerEvents=tLock?'none':'';
+    }
+  }
+}
+
 function pauseGame(){
   G.running=false;
   if(G.animFrame){cancelAnimationFrame(G.animFrame);G.animFrame=null}
@@ -3714,6 +3902,7 @@ function setupDrag(){
   },{passive:true});
   document.addEventListener('touchend',()=>{dragging=false});
   document.getElementById('game-panel-close').addEventListener('click',closeGamePanel);
+  document.getElementById('game-pet-enter').addEventListener('click',enterPetMode);
   /* Zoom controls */
   document.getElementById('game-zoom-in').addEventListener('click',()=>{
     G.userScale=Math.min((G.userScale||1)+0.1, 1.2);updateScale()});
@@ -3727,6 +3916,13 @@ function hookNavigation(){
   window.navTo=function(page){
     if(page==='game'){
       document.getElementById('game-mini').style.display='none';
+      /* Exit pet mode if active */
+      if(G.petMode){
+        G.petMode=false;
+        document.getElementById('game-pet-window').classList.remove('show');
+        var ind2=G.viewport?G.viewport.querySelector('#game-indicators'):null;
+        if(ind2) ind2.style.display='';
+      }
       /* Close floating panel if open */
       document.getElementById('game-panel').classList.remove('show');
       /* Refresh API configs from storage so the Tea / Story / Tarot modules
@@ -3738,8 +3934,13 @@ function hookNavigation(){
       /* Then initialize game in the full page container */
       openGamePage();
     }else{
-      if(G.running){saveState();pauseGame()}
-      document.getElementById('game-mini').style.display='block';
+      if(G.petMode){
+        /* Keep pet window visible while on other pages — just save state */
+        saveState();
+      }else{
+        if(G.running){saveState();pauseGame()}
+        document.getElementById('game-mini').style.display='block';
+      }
       origNavTo(page);
     }
   };
@@ -3771,6 +3972,14 @@ function disableSidebarButtons(disable){
   document.querySelectorAll('.ix-marker').forEach(m=>{
     m.style.display = disable ? 'none' : '';
   });
+  /* Disable Mini button unless we're in a tea state (tea is allowed in mini mode) */
+  var miniBtn=document.getElementById('game-pet-enter');
+  if(miniBtn){
+    var teaException=G.teaChatActive||G.teaOpen||G.teaAnimActive;
+    var blocked=disable&&!teaException;
+    miniBtn.style.pointerEvents=blocked?'none':'';
+    miniBtn.style.opacity=blocked?'0.25':'0.7';
+  }
 }
 function setupSidebar(){
   document.querySelectorAll('.game-sidebar-btn, .game-sidebar-btn-reset').forEach(btn=>{
