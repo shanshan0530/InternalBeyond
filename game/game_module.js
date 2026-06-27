@@ -4709,7 +4709,6 @@ async function openTeaChat(){
     const about=await dbGet('about','main');
     if(about&&about.name){userName=about.name;profileContext+='对方的名字是'+about.name+'。\n'}
     if(about&&about.bio) profileContext+='关于对方：'+about.bio+'\n';
-    if(about&&about.fields) about.fields.forEach(f=>{if(f.label&&f.value)profileContext+=f.label+'：'+f.value+'\n'});
     const postsLimit=(typeof getReadingLimits==='function')?(await getReadingLimits()).postsLimit:3;
     const posts=await dbGetAll('posts');
     const recentPosts=posts.filter(p=>p.locked!==true&&p.category!=='🔒 密码日记本').sort((a,b)=>b.created-a.created).slice(0,postsLimit);
