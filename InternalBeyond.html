@@ -605,6 +605,8 @@ body:not(.theme-infernal) #chat-panel .chat-attach-btn{background:rgba(120,175,2
 body:not(.theme-infernal) #chat-panel .chat-attach-popup{background:rgba(255,255,255,0.92);border-color:rgba(150,185,240,0.45)}
 body:not(.theme-infernal) .page.active .chat-input{background:rgba(245,250,255,0.55);border-color:rgba(170,210,245,0.4);color:#0a1e42}
 body:not(.theme-infernal) .page.active .chat-input::placeholder{color:#5a7aac}
+body:not(.theme-infernal) .page.active .chat-preview-file,body:not(.theme-infernal) #chat-panel .chat-preview-file{color:#1a3a6c}
+body:not(.theme-infernal) .page.active .chat-preview-file svg,body:not(.theme-infernal) #chat-panel .chat-preview-file svg{opacity:0.8;color:#2a6cb8}
 
 .mem-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
 #mem-list{padding-right:6px;scroll-behavior:smooth}
@@ -1380,6 +1382,27 @@ body:not(.theme-infernal) .chat-load-more:hover{background:rgba(210,230,255,0.92
 .chat-preview-item{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--glass-border);background:rgba(175,195,228,0.06)}
 .chat-preview-item img{display:block;height:56px;max-width:80px;object-fit:cover}
 .chat-preview-item .chat-preview-x{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.chat-preview-file{display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:0.78rem;color:var(--silver);max-width:200px;overflow:hidden;white-space:nowrap}
+.chat-preview-file svg{flex-shrink:0;width:14px;height:14px;opacity:0.6}
+.chat-preview-file span{overflow:hidden;text-overflow:ellipsis}
+.chat-file-card{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-top:6px;border-radius:10px;background:rgba(175,195,228,0.08);border:1px solid rgba(175,195,228,0.18);cursor:default;max-width:320px;transition:background 0.2s}
+.chat-file-card:hover{background:rgba(175,195,228,0.14)}
+.chat-file-card svg{flex-shrink:0;width:28px;height:28px;color:var(--accent-light);opacity:0.75}
+.chat-file-card-info{min-width:0;flex:1}
+.chat-file-card-name{font-size:0.84rem;font-weight:400;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-file-card-meta{font-size:0.68rem;color:var(--text-muted);margin-top:2px}
+body:not(.theme-infernal) .chat-file-card{background:rgba(100,155,210,0.08);border-color:rgba(100,155,210,0.22)}
+body:not(.theme-infernal) .chat-file-card:hover{background:rgba(100,155,210,0.14)}
+body:not(.theme-infernal) .chat-file-card svg{color:#2a6cb8}
+body:not(.theme-infernal) .chat-file-card-name{color:#0a1e42}
+body:not(.theme-infernal) .chat-file-card-meta{color:#3a5a8c}
+.chat-file-download{cursor:pointer}
+.chat-file-download:hover{background:rgba(80,170,120,0.12);border-color:rgba(80,170,120,0.3)}
+.chat-file-dl-btn{background:rgba(80,170,120,0.18);border:1px solid rgba(80,170,120,0.3);color:var(--light);border-radius:8px;padding:4px 12px;font-size:0.72rem;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'Noto Sans SC',sans-serif;transition:all 0.2s}
+.chat-file-dl-btn:hover{background:rgba(80,170,120,0.35);color:#fff}
+body:not(.theme-infernal) .chat-file-download:hover{background:rgba(40,140,90,0.1);border-color:rgba(40,140,90,0.3)}
+body:not(.theme-infernal) .chat-file-dl-btn{background:rgba(40,140,90,0.12);border-color:rgba(40,140,90,0.25);color:#1a5a3a}
+body:not(.theme-infernal) .chat-file-dl-btn:hover{background:rgba(40,140,90,0.25);color:#0a3a2a}
 .chat-bubble-img{max-width:260px;max-height:220px;border-radius:10px;margin-top:6px;cursor:pointer;display:block;border:1px solid rgba(175,195,228,0.15)}
 .chat-bubble-img-full{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
 .chat-bubble-img-full img{max-width:92vw;max-height:92vh;border-radius:6px}
@@ -3111,7 +3134,9 @@ i would like the room to be enough.
         <div class="guide-sub">
           <p><strong>浮动面板</strong>：屏幕右下角始终显示一个可点击的聊天迷你图标。点击展开聊天面板——面板支持拖拽移动，可在任意页面上使用。面板顶部显示当前对话好友名称，左侧可切换好友列表。</p>
           <p><strong>全屏模式</strong>：通过导航栏点击 Chat 进入。左侧为好友列表和群聊，右侧为对话区。消息以复古风格呈现（头像 + 昵称 + 时间 + 气泡）。顶部搜索栏可在当前对话中检索历史消息。</p>
-          <p><strong>发送消息</strong>：在输入框中输入内容，按 Enter 或点击发送按钮即可。AI 将实时流式回复。点击输入框左侧 <strong>+</strong> 按钮可附加图片或上传文本文件（.txt / .md / .js / .json 等），文件内容会作为消息发送给 AI。</p>
+          <p><strong>发送消息</strong>：在输入框中输入内容，按 Enter 或点击发送按钮即可。AI 将实时流式回复。</p>
+          <p><strong>附件</strong>：点击输入框左侧 <strong>+</strong> 按钮可附加图片或文本文件（.txt / .md / .js / .json 等，上限 512KB）。文件以卡片形式显示在消息中，内容自动发送给 AI。可同时附加多个文件和图片，发送前均可在预览栏中单独移除。</p>
+          <p><strong>文件处理</strong>：上传文件后可以要求 AI 编辑、修改或重写文件内容。AI 处理完成后会在回复中生成可下载的文件卡片，点击即可下载到本地。</p>
           <p><strong>生成记忆</strong>：点击顶部工具栏的 <strong>Memory</strong> 按钮，AI 会读取你的人设背景和近期对话，总结生成一条记忆到 Memory。群聊中可通过左侧下拉菜单选择由哪位成员来写记忆。</p>
           <p><strong>思考链</strong>：每个 API 在创建时可勾选「启用思考链」（默认开启，创建后不可更改）。开启后 AI 会在每次回复前展示内部思考过程，思考内容以可折叠的灰色文字显示在消息气泡上方。创建群聊时亦可选择是否启用。</p>
           <p><strong>好友与群组</strong>：好友列表由 API 配置页面中添加的 AI 自动生成——每个 API 配置即为一位好友。群组功能支持将多个 AI 好友组合在一起进行多人对话。创建群聊时的勾选顺序即为群内发言顺序。</p>
@@ -5309,8 +5334,9 @@ function _buildMsgEl(m,isFullscreen){
     div.appendChild(head);
     const txt=document.createElement('div');
     txt.className='r-text';
-    txt.textContent=m.content;
+    if(!isUser){_renderAiContent(txt,div,m.content)}else{txt.textContent=m.content}
     div.appendChild(txt);
+    if(m.files&&m.files.length)m.files.forEach(function(f){div.appendChild(_buildFileCard(f))});
     if(m.images&&m.images.length)m.images.forEach(function(img){var el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
     if(m.id){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(m.id,div,frag)};div.appendChild(db)}
   }else{
@@ -5335,10 +5361,17 @@ function _buildMsgEl(m,isFullscreen){
       label.style.cssText='font-size:0.68rem;opacity:0.7;display:block;margin-bottom:2px';
       label.textContent=m.senderName;
       div.appendChild(label);
-      div.appendChild(document.createTextNode(m.content));
+      var _hfp=_parseFileBlocks(m.content);
+      div.appendChild(document.createTextNode(_hfp.cleanText));
+      _hfp.files.forEach(function(f){div.appendChild(_buildDownloadCard(f.name,f.content))});
+    }else if(!isUser){
+      var _hfp2=_parseFileBlocks(m.content);
+      div.textContent=_hfp2.cleanText;
+      _hfp2.files.forEach(function(f){div.appendChild(_buildDownloadCard(f.name,f.content))});
     }else{
       div.textContent=m.content;
     }
+    if(m.files&&m.files.length)m.files.forEach(function(f){div.appendChild(_buildFileCard(f))});
     if(m.images&&m.images.length)m.images.forEach(function(img){var el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.style.maxWidth='180px';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
     if(m.id){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(m.id,div,frag)};div.appendChild(db)}
   }
@@ -5431,14 +5464,29 @@ async function loadChatMessages(){
 
 /* ── IMAGE ATTACHMENT SYSTEM ────────────────────────── */
 let _pendingImages=[];
+let _pendingFiles=[];
 const IMG_MAX_PX=2048,IMG_QUALITY=0.92,IMG_MAX_COUNT=3,IMG_MAX_BYTES=5*1024*1024;
 
+var _attachCloseHandler=null;
 function toggleAttachPopup(btn){
   const popup=btn.querySelector('.chat-attach-popup');
   if(!popup)return;
   const wasOpen=popup.classList.contains('show');
   document.querySelectorAll('.chat-attach-popup.show').forEach(p=>p.classList.remove('show'));
-  if(!wasOpen){popup.classList.add('show');setTimeout(()=>{document.addEventListener('click',function _h(){popup.classList.remove('show');document.removeEventListener('click',_h)})},10)}
+  if(_attachCloseHandler){document.removeEventListener('pointerdown',_attachCloseHandler);_attachCloseHandler=null}
+  if(!wasOpen){
+    popup.classList.add('show');
+    requestAnimationFrame(()=>{
+      _attachCloseHandler=function(e){
+        if(!popup.contains(e.target)&&!btn.contains(e.target)){
+          popup.classList.remove('show');
+          document.removeEventListener('pointerdown',_attachCloseHandler);
+          _attachCloseHandler=null;
+        }
+      };
+      document.addEventListener('pointerdown',_attachCloseHandler);
+    });
+  }
 }
 
 function pickImage(panel){
@@ -5480,21 +5528,69 @@ function compressImage(file){
   })
 }
 
-function renderImagePreviews(){
+function renderImagePreviews(){renderAttachPreviews()}
+function renderAttachPreviews(){
   ['chat-full-preview','chat-mini-preview'].forEach(id=>{
     const bar=document.getElementById(id);if(!bar)return;
     bar.innerHTML='';
-    if(_pendingImages.length===0){bar.classList.remove('has-items');return}
+    if(_pendingImages.length===0&&_pendingFiles.length===0){bar.classList.remove('has-items');return}
     bar.classList.add('has-items');
     _pendingImages.forEach((img,i)=>{
       const item=document.createElement('div');item.className='chat-preview-item';
       item.innerHTML='<img src="'+img.dataUrl+'" alt="preview"><div class="chat-preview-x" onclick="removeImagePreview('+i+')">✕</div>';
       bar.appendChild(item)
+    });
+    _pendingFiles.forEach((f,i)=>{
+      const item=document.createElement('div');item.className='chat-preview-item';
+      item.innerHTML='<div class="chat-preview-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>'+esc(f.name)+'</span></div><div class="chat-preview-x" onclick="removeFilePreview('+i+')">✕</div>';
+      bar.appendChild(item)
     })
   })
 }
+function removeFilePreview(idx){_pendingFiles.splice(idx,1);renderAttachPreviews()}
+function _fmtFileSize(bytes){if(bytes<1024)return bytes+' B';if(bytes<1048576)return(bytes/1024).toFixed(1)+' KB';return(bytes/1048576).toFixed(1)+' MB'}
+function _buildFileCard(f){
+  var card=document.createElement('div');card.className='chat-file-card';
+  card.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+    +'<div class="chat-file-card-info"><div class="chat-file-card-name">'+esc(f.name)+'</div>'
+    +'<div class="chat-file-card-meta">'+(f.ext?('.'+f.ext.toUpperCase()+' · '):'')+_fmtFileSize(f.size||0)+'</div></div>';
+  return card;
+}
 
-function removeImagePreview(idx){_pendingImages.splice(idx,1);renderImagePreviews()}
+/* ── FILE DOWNLOAD SYSTEM (AI → User) ───────────────── */
+function _parseFileBlocks(text){
+  var re=/```file:([^\n]+)\n([\s\S]*?)```/g;
+  var files=[];
+  var clean=text.replace(re,function(_m,name,content){
+    files.push({name:name.trim(),content:content.replace(/\n$/,'')});
+    return '';
+  });
+  return {cleanText:clean.replace(/\n{3,}/g,'\n\n').trim(),files:files};
+}
+function _downloadTextFile(name,content){
+  var blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},200);
+}
+function _buildDownloadCard(name,content){
+  var ext=name.split('.').pop()||'';
+  var card=document.createElement('div');card.className='chat-file-card chat-file-download';
+  card.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="7" y1="15" x2="12" y2="19"/><line x1="17" y1="15" x2="12" y2="19"/><line x1="12" y1="11" x2="12" y2="19"/></svg>'
+    +'<div class="chat-file-card-info"><div class="chat-file-card-name">'+esc(name)+'</div>'
+    +'<div class="chat-file-card-meta">'+(ext?('.'+ext.toUpperCase()+' · '):'')+_fmtFileSize(new Blob([content]).size)+'</div></div>'
+    +'<button class="chat-file-dl-btn">下载</button>';
+  card.querySelector('.chat-file-dl-btn').onclick=function(ev){ev.stopPropagation();_downloadTextFile(name,content)};
+  card.onclick=function(){_downloadTextFile(name,content)};
+  return card;
+}
+/* Render AI text: set clean text in the element and append download cards for any file blocks */
+function _renderAiContent(textEl,container,text){
+  var parsed=_parseFileBlocks(text);
+  textEl.textContent=parsed.cleanText;
+  parsed.files.forEach(function(f){container.appendChild(_buildDownloadCard(f.name,f.content))});
+}
 
 function getTextContent(msg){
   if(!msg||!msg.content)return '';
@@ -5603,7 +5699,7 @@ async function sendChatMessage(){
   const fullInput=document.getElementById('chat-full-input');
   const input=currentPage==='chat'?fullInput:miniInput;
   const text=input.value.trim();
-  if(!text&&!_pendingImages.length)return;
+  if(!text&&!_pendingImages.length&&!_pendingFiles.length)return;
 
   const isGroup=_targetFriend&&_targetFriend.startsWith('group_');
 
@@ -5620,12 +5716,14 @@ async function sendChatMessage(){
 
     const sendBtn=document.getElementById('chat-send-btn');
     input.value='';
-    const sentImages=_pendingImages.slice();_pendingImages=[];renderImagePreviews();
+    const sentImages=_pendingImages.slice();_pendingImages=[];
+    const sentFiles=_pendingFiles.slice();_pendingFiles=[];renderAttachPreviews();
 
     const userMsg={id:'msg_'+Date.now()+'_u',role:'user',content:text,friendId:_targetFriend,timestamp:Date.now()};
     if(sentImages.length)userMsg.images=sentImages.map(img=>({dataUrl:img.dataUrl,base64:img.base64,mime:img.mime,name:img.name}));
+    if(sentFiles.length)userMsg.files=sentFiles.map(f=>({name:f.name,ext:f.ext,size:f.size,text:f.text}));
     await dbPut('chatMessages',userMsg);
-    appendChatBubble('user',text,undefined,undefined,userMsg.id,sentImages);
+    appendChatBubble('user',text,undefined,undefined,userMsg.id,sentImages,sentFiles);
 
     const msgContainer=currentPage==='chat'?document.getElementById('chat-full-messages'):document.getElementById('chat-messages');
     const glim=await getReadingLimits();
@@ -5675,7 +5773,7 @@ async function sendChatMessage(){
         const _ownThinkIdx=[];_combined.forEach((mm,ii)=>{if((mm.senderName||'')===selfName&&mm.thinking)_ownThinkIdx.push(ii)});
         const _keepThink=new Set(_ownThinkIdx.slice(-KEEP_THINKING_TURNS));
         const mapped=_combined.map((m,i)=>{
-          if(m.role==='user')return {role:'user',content:'['+userLabel+'] '+m.content};
+          if(m.role==='user'){var uc='['+userLabel+'] '+m.content;if(m.files&&m.files.length)m.files.forEach(function(f){uc+='\n\n[文件上传: '+f.name+']\n'+f.text});return {role:'user',content:uc}}
           if((m.senderName||'')===selfName){
             let c=sanitizeGroupReply(m.content,selfName,allNames);
             /* 与 1对1 一致：本成员每条历史回复都以 <thinking> 开头，
@@ -5742,6 +5840,11 @@ async function sendChatMessage(){
             }
           }
         }
+        /* Group file processing instructions */
+        if(sentFiles.length){
+          const gSysIdx=messages.findIndex(m=>m.role==='system');
+          if(gSysIdx>=0)messages[gSysIdx].content+='\n\n【文件处理能力】用户上传了'+sentFiles.length+'个文件。你可以阅读、分析、编辑文件内容。当用户要求你修改或创建文件时，请使用以下格式输出文件，系统会自动为用户生成可下载的文件：\n```file:文件名.扩展名\n修改后的完整文件内容\n```\n注意：请在代码块外用自然语言说明你做了哪些修改。';
+        }
         let rawReply,groupThinking='';
         if(_gStreamOk){
           /* 群聊流式 */
@@ -5792,9 +5895,10 @@ async function sendChatMessage(){
             const allBubbles=msgContainer.querySelectorAll('.chat-msg.ai');
             const lastBubble=allBubbles[allBubbles.length-1];
             if(lastBubble){
+              var _gfp=_parseFileBlocks(reply);
               const rText=lastBubble.querySelector('.r-text');
-              if(rText)rText.textContent=reply;
-              else{lastBubble.childNodes.forEach(n=>{if(n.nodeType===3)n.textContent=''});lastBubble.appendChild(document.createTextNode(reply))}
+              if(rText){rText.textContent=_gfp.cleanText;_gfp.files.forEach(function(f){lastBubble.insertBefore(_buildDownloadCard(f.name,f.content),rText.nextSibling)})}
+              else{lastBubble.childNodes.forEach(n=>{if(n.nodeType===3)n.textContent=''});lastBubble.appendChild(document.createTextNode(_gfp.cleanText));_gfp.files.forEach(function(f){lastBubble.appendChild(_buildDownloadCard(f.name,f.content))})}
               lastBubble.dataset.msgId=aiMsg.id;const db=document.createElement('button');db.className='chat-msg-del';db.textContent='\u2715';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(aiMsg.id,lastBubble)};lastBubble.appendChild(db)
             }
           }
@@ -5838,13 +5942,15 @@ async function sendChatMessage(){
   const sendBtn=document.getElementById('chat-send-btn');
   if(sendBtn)sendBtn.disabled=true;
   input.value='';
-  const sentImages=_pendingImages.slice();_pendingImages=[];renderImagePreviews();
+  const sentImages=_pendingImages.slice();_pendingImages=[];
+  const sentFiles=_pendingFiles.slice();_pendingFiles=[];renderAttachPreviews();
 
   const userMsg={id:'msg_'+Date.now(),role:'user',content:text,friendId:_targetFriend,timestamp:Date.now()};
   if(sentImages.length)userMsg.images=sentImages.map(img=>({dataUrl:img.dataUrl,base64:img.base64,mime:img.mime,name:img.name}));
+  if(sentFiles.length)userMsg.files=sentFiles.map(f=>({name:f.name,ext:f.ext,size:f.size,text:f.text}));
   if(_targetThread)userMsg.threadId=_targetThread;
   await dbPut('chatMessages',userMsg);
-  appendChatBubble('user',text,undefined,undefined,userMsg.id,sentImages);
+  appendChatBubble('user',text,undefined,undefined,userMsg.id,sentImages,sentFiles);
 
   const _streamingOk=cfg.streaming!==undefined?!!cfg.streaming:!!(PROVIDERS[cfg.provider]&&PROVIDERS[cfg.provider].streaming);
 
@@ -5880,7 +5986,9 @@ async function sendChatMessage(){
         const tk=_keepThink.has(i)?m.thinking:'[此前的思考过程已省略]';
         return {role:'assistant',content:'<thinking>'+tk+'</thinking>\n\n'+m.content};
       }
-      return {role:m.role==='assistant'?'assistant':'user',content:m.content};
+      var mc=m.content||'';
+      if(m.files&&m.files.length)m.files.forEach(function(f){mc+='\n\n[文件上传: '+f.name+']\n'+f.text});
+      return {role:m.role==='assistant'?'assistant':'user',content:mc};
     });
     let sysContent=cfg.systemPrompt||'';
     if(cfg.nickname)sysContent=(sysContent?sysContent+'\n':'')+'你的身份/昵称是「'+cfg.nickname+'」。';
@@ -5924,6 +6032,11 @@ async function sendChatMessage(){
         }
         toast('当前API（'+cfg.provider+'）不支持图片识别，图片未发送');
       }
+    }
+    /* File processing instructions */
+    if(sentFiles.length){
+      const sysIdx=messages.findIndex(m=>m.role==='system');
+      if(sysIdx>=0)messages[sysIdx].content+='\n\n【文件处理能力】用户上传了'+sentFiles.length+'个文件。你可以阅读、分析、编辑文件内容。当用户要求你修改或创建文件时，请使用以下格式输出文件，系统会自动为用户生成可下载的文件：\n```file:文件名.扩展名\n修改后的完整文件内容\n```\n注意：请在代码块外用自然语言说明你做了哪些修改。';
     }
 
     if(_streamingOk){
@@ -5991,10 +6104,12 @@ async function sendChatMessage(){
       var parsed=_parseThinking(rawReply);
       if(!thinkingText&&parsed.thinking) thinkingText=parsed.thinking;
       var replyText=parsed.reply;
-      /* 更新气泡为干净的正文 */
+      /* 更新气泡为干净的正文 + 文件下载卡 */
+      var _fp=_parseFileBlocks(replyText);
       streamRefs.forEach(ref=>{
-        if(ref.isTextNode){ref.div.childNodes.forEach(n=>{if(n.nodeType===3)n.textContent=''});ref.div.appendChild(document.createTextNode(replyText))}
-        else if(ref.txt){ref.txt.textContent=replyText}
+        if(ref.isTextNode){ref.div.childNodes.forEach(n=>{if(n.nodeType===3)n.textContent=''});ref.div.appendChild(document.createTextNode(_fp.cleanText))}
+        else if(ref.txt){ref.txt.textContent=_fp.cleanText}
+        _fp.files.forEach(function(f){ref.div.appendChild(_buildDownloadCard(f.name,f.content))});
       });
       /* 如果没有实时面板但有思考内容（fallback），补建折叠面板 */
       if(thinkingText&&!_liveThinkEls.length){
@@ -6063,9 +6178,10 @@ async function sendChatMessage(){
   updateChatStorageInfo();
 }
 
-function appendChatBubble(role,text,senderName,thinkingText,msgId,images){
+function appendChatBubble(role,text,senderName,thinkingText,msgId,images,files){
   const isUser=role==='user';
   const imgs=images||[];
+  const fls=files||[];
   const miniPanel=document.getElementById('chat-panel');
   const miniVisible=miniPanel&&miniPanel.classList.contains('show');
   const containers=[
@@ -6102,8 +6218,9 @@ function appendChatBubble(role,text,senderName,thinkingText,msgId,images){
       div.appendChild(head);
       const txt=document.createElement('div');
       txt.className='r-text';
-      txt.textContent=text;
+      if(!isUser){_renderAiContent(txt,div,text)}else{txt.textContent=text}
       div.appendChild(txt);
+      fls.forEach(function(f){div.appendChild(_buildFileCard(f))});
       imgs.forEach(img=>{const el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
       if(msgId){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(msgId,div)};div.appendChild(db)}
     }else{
@@ -6112,10 +6229,17 @@ function appendChatBubble(role,text,senderName,thinkingText,msgId,images){
         label.style.cssText='font-size:0.68rem;opacity:0.7;display:block;margin-bottom:2px';
         label.textContent=senderName;
         div.appendChild(label);
-        div.appendChild(document.createTextNode(text));
+        var _fpM=_parseFileBlocks(text);
+        div.appendChild(document.createTextNode(_fpM.cleanText));
+        _fpM.files.forEach(function(f){div.appendChild(_buildDownloadCard(f.name,f.content))});
+      }else if(!isUser){
+        var _fpM2=_parseFileBlocks(text);
+        div.textContent=_fpM2.cleanText;
+        _fpM2.files.forEach(function(f){div.appendChild(_buildDownloadCard(f.name,f.content))});
       }else{
         div.textContent=text;
       }
+      fls.forEach(function(f){div.appendChild(_buildFileCard(f))});
       imgs.forEach(img=>{const el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.style.maxWidth='180px';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
       if(msgId){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(msgId,div)};div.appendChild(db)}
     }
@@ -6747,10 +6871,13 @@ function pickFile(panel){
   inp.onchange=async function(){
     const file=inp.files[0];if(!file)return;
     if(file.size>512*1024){toast('文件过大（上限 512KB）');return}
+    if(_pendingFiles.length>=3){toast('最多附加 3 个文件');return}
     try{
       const text=await file.text();
-      const chatInput=document.getElementById(panel==='full'?'chat-full-input':'chat-input');
-      if(chatInput){chatInput.value='[文件上传: '+file.name+']\n\n'+text;autoResizeInput(chatInput);chatInput.focus()}
+      const ext=file.name.split('.').pop()||'';
+      _pendingFiles.push({name:file.name,text:text,size:file.size,ext:ext});
+      renderAttachPreviews();
+      toast('已添加文件: '+file.name);
     }catch(e){toast('文件读取失败')}
   };inp.click();
 }
