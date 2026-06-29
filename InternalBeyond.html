@@ -1522,19 +1522,45 @@ body:not(.theme-infernal) .read-fontsize-btn:hover{color:#0a1e42}
 #blog-read-view.fontsize-l .post-view{max-width:1140px}
 
 /* BLOG EDITOR (in-page) */
-.blog-edit-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px}
-.blog-edit-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.4rem;color:var(--silver);margin:0;font-style:italic}
-.blog-edit-form{animation:fadePageIn 0.4s var(--transition)}
-.blog-edit-form input,.blog-edit-form select,.blog-edit-form textarea{width:100%;padding:11px 16px;border-radius:12px;border:1px solid var(--glass-border);background:rgba(175,195,228,0.06);color:var(--text-primary);font-family:'Noto Sans SC',sans-serif;font-size:0.9rem;margin-bottom:12px;outline:none;transition:border-color 0.3s}
-.blog-edit-form input:focus,.blog-edit-form textarea:focus{border-color:var(--accent-light)}
-.blog-edit-form select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%238895b4' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
-.blog-edit-form select option{background:var(--bg-deep);color:var(--text-primary)}
-.blog-edit-form textarea{min-height:52vh;resize:vertical;line-height:1.85}
-body:not(.theme-infernal) .page.active .blog-edit-title{color:#152c58}
-body:not(.theme-infernal) .page.active .blog-edit-form input,body:not(.theme-infernal) .page.active .blog-edit-form select,body:not(.theme-infernal) .page.active .blog-edit-form textarea{background:rgba(248,252,255,0.7);border-color:rgba(170,210,245,0.4);color:#1a3262}
-body:not(.theme-infernal) .page.active .blog-edit-form input:focus,body:not(.theme-infernal) .page.active .blog-edit-form textarea:focus{border-color:rgba(100,160,230,0.6)}
-body:not(.theme-infernal) .page.active .blog-edit-form select option{background:#eaf2fa;color:#1a3262}
-body:not(.theme-infernal) .page.active .blog-edit-form input::placeholder,body:not(.theme-infernal) .page.active .blog-edit-form textarea::placeholder{color:#3f5e8c}
+.rift-editor{display:flex;gap:0;border-radius:16px;overflow:hidden;border:1px solid rgba(165,188,230,0.14);min-height:86vh;max-height:calc(100vh - 60px);animation:fadePageIn 0.4s var(--transition);width:85vw;max-width:1400px;margin-left:50%;transform:translateX(-50%);margin-top:2px;box-shadow:0 8px 40px rgba(0,0,0,0.15),inset 0 1px 0 rgba(165,188,230,0.06)}
+.rift-sidebar{width:260px;min-width:260px;background:rgba(18,28,50,0.3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid rgba(100,140,200,0.1);padding:32px 24px;display:flex;flex-direction:column}
+.rift-status{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:1.45rem;color:var(--silver);margin:0 0 8px 0;letter-spacing:0.04em;line-height:1.4}
+.rift-accent-line{width:32px;height:1px;background:linear-gradient(90deg,var(--accent-light),transparent);margin-bottom:24px;opacity:0.5}
+.rift-date{font-size:1.25rem;color:var(--silver);margin-bottom:28px;opacity:0.8;font-family:'Cormorant Garamond',serif;letter-spacing:0.06em}
+.rift-label{font-size:0.88rem;color:rgba(255,255,255,0.6);margin-bottom:10px;opacity:0.85;text-transform:uppercase;letter-spacing:0.1em;text-shadow:0 2px 5px rgba(0,0,0,0.35)}
+.rift-select{background:rgba(175,195,228,0.08);border:1px solid rgba(165,188,230,0.25);border-radius:8px;padding:8px 12px;color:var(--text-primary);font-size:0.95rem;font-family:'Noto Sans SC',sans-serif;cursor:pointer;outline:none;margin-bottom:40px;width:100%;-webkit-appearance:none;appearance:none}
+.rift-select option{background:var(--bg-deep);color:var(--text-primary)}
+.rift-stats{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;margin-top:6px}
+.rift-stat-row{display:flex;justify-content:space-between;align-items:baseline}
+.rift-stat-label{font-size:0.9rem;color:rgba(255,255,255,0.5);opacity:1;letter-spacing:0.04em;text-shadow:0 2px 5px rgba(0,0,0,0.3)}
+.rift-stat-value{font-size:1.08rem;color:rgba(255,255,255,0.65);font-family:'Cormorant Garamond',serif;font-weight:300;text-shadow:0 2px 4px rgba(0,0,0,0.3)}
+.rift-writing{flex:1;background:rgba(15,22,42,0.2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:44px 56px 48px;display:flex;flex-direction:column;overflow:hidden}
+.rift-title-input{background:transparent;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2.4rem;color:var(--white);width:100%;margin-bottom:8px;line-height:1.3;padding:0}
+.rift-subtitle-input{background:transparent;border:none;outline:none;font-family:'Noto Serif SC','Noto Sans SC',sans-serif;font-weight:400;font-size:1.05rem;color:var(--silver);width:100%;margin-bottom:26px;opacity:0.7;padding:0}
+.rift-separator{height:1px;background:linear-gradient(90deg,rgba(114,168,216,0.18),transparent 60%);margin-bottom:28px}
+.rift-content{flex:1;min-height:30vh;width:100%;background:transparent;border:none;outline:none;resize:none;font-family:'Noto Sans SC',sans-serif;font-weight:300;font-size:1rem;line-height:2.1;color:var(--light);caret-color:var(--accent-light);padding:0}
+.rift-content::-webkit-scrollbar{width:4px}
+.rift-content::-webkit-scrollbar-track{background:transparent}
+.rift-content::-webkit-scrollbar-thumb{background:rgba(114,168,216,0.15);border-radius:4px}
+.rift-content::-webkit-scrollbar-thumb:hover{background:rgba(114,168,216,0.3)}
+.rift-title-input::placeholder,.rift-subtitle-input::placeholder{color:var(--text-muted,#7e90b2);opacity:0.4}
+.rift-content::placeholder{color:var(--text-muted,#7e90b2);opacity:0.4}
+body:not(.theme-infernal) .page.active .rift-editor{border-color:rgba(180,210,245,0.4);box-shadow:0 4px 28px rgba(40,80,130,0.08),inset 0 1px 0 rgba(255,255,255,0.35)}
+body:not(.theme-infernal) .page.active .rift-status{color:#223d6e;text-shadow:0 2px 5px rgba(255,255,255,0.65)}
+body:not(.theme-infernal) .page.active .rift-sidebar{background:rgba(215,226,240,0.42);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-right-color:rgba(165,198,235,0.22)}
+body:not(.theme-infernal) .page.active .rift-writing{background:rgba(248,252,255,0.42);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+body:not(.theme-infernal) .page.active .rift-title-input{color:#1a3262}
+body:not(.theme-infernal) .page.active .rift-subtitle-input{color:#3f5e8c}
+body:not(.theme-infernal) .page.active .rift-content{color:#1a3262}
+body:not(.theme-infernal) .page.active .rift-label{color:#7e90b2;text-shadow:0 2px 5px rgba(255,255,255,0.55)}
+body:not(.theme-infernal) .page.active .rift-date{color:#3f5e8c;opacity:1;text-shadow:0 2px 4px rgba(255,255,255,0.55)}
+body:not(.theme-infernal) .page.active .rift-stat-label{color:#6b7d96;text-shadow:0 2px 4px rgba(255,255,255,0.5)}
+body:not(.theme-infernal) .page.active .rift-stat-value{color:#3f5e8c;text-shadow:0 2px 4px rgba(255,255,255,0.45)}
+body:not(.theme-infernal) .page.active .rift-sidebar .btn{color:#1e3565}
+body:not(.theme-infernal) .page.active .rift-select{background:rgba(248,252,255,0.6);border-color:rgba(170,210,245,0.4);color:#1e3565}
+body:not(.theme-infernal) .page.active .rift-select option{background:#eaf2fa;color:#1a3262}
+body:not(.theme-infernal) .page.active .rift-title-input::placeholder,body:not(.theme-infernal) .page.active .rift-subtitle-input::placeholder{color:#3f5e8c}
+body:not(.theme-infernal) .page.active .rift-content::placeholder{color:#3f5e8c}
 
 /* BLOG COMMENTS */
 .blog-comments-section{margin-top:36px;padding-top:24px;border-top:1px solid rgba(175,195,228,0.12)}
@@ -2215,16 +2241,29 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
       <div class="post-view" id="post-view-content"></div>
     </div>
     <div id="blog-edit-view" style="display:none">
-      <div class="blog-edit-topbar">
-        <button class="btn" onclick="exitEditor()">← 返回</button>
-        <h3 class="blog-edit-title" id="blog-edit-heading">writing...</h3>
-        <button class="btn btn-primary" onclick="savePost()">保存并返回</button>
-      </div>
-      <div class="blog-edit-form">
-        <input id="ed-title" placeholder="标题（选填）">
-        <input id="ed-subtitle" placeholder="副标题（选填）">
-        <select id="ed-cat"></select>
-        <textarea id="ed-content" placeholder="在这里写下你的内容…"></textarea>
+      <div class="rift-editor">
+        <div class="rift-sidebar">
+          <button class="btn" onclick="exitEditor()" style="margin-bottom:24px;font-size:0.92rem;padding:8px 18px;align-self:flex-start">← 返回</button>
+          <h3 class="rift-status" id="blog-edit-heading">writing...</h3>
+          <div class="rift-accent-line"></div>
+          <div class="rift-date" id="rift-date"></div>
+          <label class="rift-label">分类</label>
+          <select id="ed-cat" class="rift-select"></select>
+          <label class="rift-label">Stats</label>
+          <div class="rift-stats">
+            <div class="rift-stat-row"><span class="rift-stat-label">Chars</span><span class="rift-stat-value" id="rift-chars">0</span></div>
+            <div class="rift-stat-row"><span class="rift-stat-label">Lines</span><span class="rift-stat-value" id="rift-lines">0</span></div>
+            <div class="rift-stat-row"><span class="rift-stat-label">Size</span><span class="rift-stat-value" id="rift-size">0.0 KB</span></div>
+          </div>
+          <div style="flex:1;min-height:40px"></div>
+          <button class="btn" onclick="savePost()" style="font-size:0.92rem;padding:8px 18px;align-self:flex-start">保存并返回</button>
+        </div>
+        <div class="rift-writing">
+          <input id="ed-title" class="rift-title-input" placeholder="Title">
+          <input id="ed-subtitle" class="rift-subtitle-input" placeholder="Subtitle">
+          <div class="rift-separator"></div>
+          <textarea id="ed-content" class="rift-content" placeholder="在这里写下你的内容…"></textarea>
+        </div>
       </div>
     </div>
   </div>
@@ -3152,9 +3191,9 @@ i would like the room to be enough.
         <div class="guide-sub">
           <p><strong>写日志</strong>：点击 <strong>「+ 写日志」</strong>，填写标题、副标题（选填）、选择分类、撰写正文，保存即可。</p>
           <p><strong>阅读与操作</strong>：点击日志卡片进入阅读视图，底部提供编辑、删除、导出功能。</p>
-          <p><strong>AI 评论</strong>：阅读视图底部 Comments 区域，选择AI后点击 <strong>「请求留言」</strong>，AI 阅读全文后生成评论。点击 <strong>「生成记忆」</strong>，AI 会根据日志内容自动生成一条记忆到 Memory。</p>
+          <p><strong>AI 评论</strong>：阅读视图底部 Comments 区域，选择AI后点击 <strong>「写下留言」</strong>，AI 阅读全文后生成评论。点击 <strong>「生成记忆」</strong>，AI 会根据日志内容自动生成一条记忆到 Memory。</p>
           <p><strong>分类管理</strong>：顶部标签栏可筛选分类，点击 <strong>「+ 分类」</strong> 新建，长按标签可删除。</p>
-          <p><strong>密码日记本</strong>：受密码保护的独立分类。Tea 茶歇对话和 Story 存档默认保存至此。首次使用需设置 6 位数字密码（默认 260323）和密保问题。加锁日记对所有 API 不可见——Letters 和 Blog 评论读取时自动跳过。在密码日记本中阅读日志时，同样可以请求留言或生成记忆。</p>
+          <p><strong>密码日记本</strong>：受密码保护的独立分类。Tea 茶歇对话和 Story 存档默认保存至此。首次使用需设置 6 位数字密码（默认 260323）和密保问题。加锁日记对所有 API 不可见——Letters 和 Blog 评论读取时自动跳过。在密码日记本中阅读日志时，同样可以写下留言或生成记忆。</p>
         </div>
       </div>
 
@@ -4055,6 +4094,12 @@ async function openEditor(id){
   });
   var catEl=document.getElementById('ed-cat');if(catEl){catEl.onchange=function(){editorDirty=true}}
   setTimeout(function(){var el=document.getElementById('ed-content');if(el)el.focus()},100);
+  /* Rift editor: date + live stats */
+  var riftDate=document.getElementById('rift-date');
+  if(riftDate){var now=new Date();riftDate.textContent=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+String(now.getDate()).padStart(2,'0')}
+  function updateRiftStats(){var c=document.getElementById('ed-content');if(!c)return;var v=c.value;var ch=document.getElementById('rift-chars');var ln=document.getElementById('rift-lines');var sz=document.getElementById('rift-size');if(ch)ch.textContent=v.length;if(ln)ln.textContent=v?v.split('\n').length:0;if(sz)sz.textContent=(new TextEncoder().encode(v).length/1024).toFixed(1)+' KB'}
+  updateRiftStats();
+  var edC=document.getElementById('ed-content');if(edC){edC.addEventListener('input',updateRiftStats)}
 }
 function exitEditor(){
   if(editorDirty){if(!confirm('还没有保存，现在离开会丢失已编辑的内容。确定退出吗？'))return}
@@ -4062,7 +4107,7 @@ function exitEditor(){
 }
 function closeEditor(){editorDirty=false;document.getElementById('blog-edit-view').style.display='none';document.getElementById('blog-list-view').style.display='block';loadPosts();updateBlogStats()}
 async function savePost(){var content=document.getElementById('ed-content').value.trim();if(!content){toast('内容不能为空');return}var ex=editingPostId?await dbGet('posts',editingPostId):null;/* 在密码日记本内新建的日志自动标记为私密；编辑时保留原私密状态 */var post={id:editingPostId||'post_'+Date.now(),title:document.getElementById('ed-title').value.trim(),subtitle:document.getElementById('ed-subtitle').value.trim(),category:document.getElementById('ed-cat').value,locked:(ex?isLockedPost(ex):diaryMode),content:content,created:ex?.created||Date.now(),updated:Date.now()};await dbPut('posts',post);editorDirty=false;closeEditor();toast(post.locked?'已存入密码日记本':'日志已保存')}
-async function viewPost(id){const p=await dbGet('posts',id);if(!p)return;document.getElementById('blog-list-view').style.display='none';document.getElementById('blog-read-view').style.display='block';document.getElementById('blog-edit-view').style.display='none';const commentSelectOpts=apiConfigs.map(a=>'<option value="'+a.id+'">'+esc(a.nickname||a.model||'AI')+'</option>').join('');document.getElementById('post-view-content').innerHTML='<h2 class="post-view-title">'+esc(p.title||'无标题')+'</h2>'+(p.subtitle?'<p class="post-view-sub">'+esc(p.subtitle)+'</p>':'')+'<div class="post-view-meta">'+new Date(p.created).toLocaleString('zh-CN')+(p.category?' · '+esc(p.category):'')+'</div><div class="post-view-content">'+esc(p.content)+'</div><div class="post-view-actions"><button class="btn" onclick="openEditor(\''+p.id+'\')">编辑</button><button class="btn" onclick="deletePost(\''+p.id+'\')">删除</button><button class="btn" onclick="exportPost(\''+p.id+'\')">导出</button></div><div class="blog-comments-section"><div class="blog-comments-header">Comments</div><div class="blog-comment-request"><select class="blog-comment-select" id="blog-comment-select-'+p.id+'"><option value="">Choose one...</option>'+commentSelectOpts+'</select><button class="btn btn-primary" id="blog-comment-btn-'+p.id+'" onclick="requestBlogComment(\''+p.id+'\')">请求留言</button><button class="btn btn-primary" id="blog-mem-btn-'+p.id+'" onclick="generateMemoryFromPost(\''+p.id+'\')">生成记忆</button></div><div class="blog-comment-hint">TA将阅读这篇日志，留下感想或帮你生成记忆。</div><div id="blog-comments-'+p.id+'"></div></div>';loadBlogComments(p.id)}
+async function viewPost(id){const p=await dbGet('posts',id);if(!p)return;document.getElementById('blog-list-view').style.display='none';document.getElementById('blog-read-view').style.display='block';document.getElementById('blog-edit-view').style.display='none';const commentSelectOpts=apiConfigs.map(a=>'<option value="'+a.id+'">'+esc(a.nickname||a.model||'AI')+'</option>').join('');document.getElementById('post-view-content').innerHTML='<h2 class="post-view-title">'+esc(p.title||'无标题')+'</h2>'+(p.subtitle?'<p class="post-view-sub">'+esc(p.subtitle)+'</p>':'')+'<div class="post-view-meta">'+new Date(p.created).toLocaleString('zh-CN')+(p.category?' · '+esc(p.category):'')+'</div><div class="post-view-content">'+esc(p.content)+'</div><div class="post-view-actions"><button class="btn" onclick="openEditor(\''+p.id+'\')">编辑</button><button class="btn" onclick="deletePost(\''+p.id+'\')">删除</button><button class="btn" onclick="exportPost(\''+p.id+'\')">导出</button></div><div class="blog-comments-section"><div class="blog-comments-header">Comments</div><div class="blog-comment-request"><select class="blog-comment-select" id="blog-comment-select-'+p.id+'"><option value="">Choose one...</option>'+commentSelectOpts+'</select><button class="btn btn-primary" id="blog-comment-btn-'+p.id+'" onclick="requestBlogComment(\''+p.id+'\')">写下留言</button><button class="btn btn-primary" id="blog-mem-btn-'+p.id+'" onclick="generateMemoryFromPost(\''+p.id+'\')">生成记忆</button></div><div class="blog-comment-hint">TA将阅读这篇日志，留下感想或帮你生成记忆。</div><div id="blog-comments-'+p.id+'"></div></div>';loadBlogComments(p.id)}
 function setReadFontSize(size){
   var rv=document.getElementById('blog-read-view');
   rv.classList.remove('fontsize-s','fontsize-m','fontsize-l');
@@ -5207,7 +5252,7 @@ async function requestBlogComment(postId){
     context+='\n【请求】\n';
     context+='请针对这篇日志写一段留言/感想。可以评论内容、分享你的看法、给予共鸣或鼓励、提出有趣的问题。';
     context+='请使用该日志正文所使用的语言进行回复，风格自然，就像一个读者在博客下面留言一样。';
-    context+='长度适中（80-250字）。不要与已有留言重复。直接写留言内容，不需要称呼或署名。';
+    context+='长度适中（200-400字）。不要与已有留言重复。直接写留言内容，不需要称呼或署名。';
 
     const response=await callApi(cfg,context);
     const le=document.getElementById('blog-comment-loading');if(le)le.remove();
@@ -7997,7 +8042,7 @@ async function generateMemoryFromPost(postId){
     +'写作规则：用「'+aiName+'」来称呼你自己，用「'+userName+'」来称呼对方。不要使用"我""你""对方""用户"这类代词——因为这条记忆可能会被其他人读到，只有使用名字才不会产生混淆。\n'
     +'你是'+userName+'生活的见证者。写的时候像在回忆'+userName+'跟你说过的一段事，不要写成文章摘要。\n\n'
     +'【日志标题】'+esc(post.title||'无标题')+'\n'
-    +'【日志内容】\n'+post.content.slice(0,4000)+'\n\n'
+    +'【日志内容】\n'+post.content+'\n\n'
     +'【输出格式要求（严格按字段输出，不要输出其他内容）】\n'
     +'标题：（这段记忆的名字，像日记标题一样自然，15字以内）\n'
     +'概括：（一两句话，读完这篇日志后'+aiName+'最想记住的是什么，50字以内）\n'
