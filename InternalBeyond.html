@@ -510,7 +510,7 @@ body:not(.theme-infernal) #page-chat .chat-msg .r-head .r-time{color:#3a5a8c}
 body:not(.theme-infernal) #page-chat .chat-msg .r-text{color:#0a1a3a}
 body:not(.theme-infernal) #page-chat .chat-msg.user .r-head{color:#1a3a6c}
 /* Thinking block — separate from bubble, clickable toggle */
-.chat-thinking-wrap{max-width:82%;align-self:flex-start;margin:-4px 0 4px 0}
+.chat-thinking-wrap{max-width:82%;align-self:flex-start;margin:-2px 0 2px 0}
 .chat-thinking-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:4px 0;
   background:none;border:none;border-radius:0;transition:opacity 0.2s;user-select:none}
 .chat-thinking-toggle:hover{opacity:0.7}
@@ -1337,6 +1337,8 @@ body:not(.theme-infernal) .chat-msg-del:hover{color:#c44;background:rgba(200,60,
 /* Chat Select Mode */
 .chat-select-mode .chat-msg{margin-left:34px;transition:margin-left 0.15s}
 .chat-select-mode .chat-thinking-wrap{margin-left:34px;transition:margin-left 0.15s}
+.chat-select-mode .chat-msg-header{margin-left:34px;transition:margin-left 0.15s}
+.chat-select-mode .chat-msg-cont-time{margin-left:34px;transition:margin-left 0.15s}
 .chat-select-mode .chat-msg-del{display:none!important}
 .chat-sel-circle{display:none;position:absolute;left:-30px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:1.5px solid var(--silver);cursor:pointer;background:transparent;transition:all 0.15s;box-sizing:border-box}
 .chat-select-mode .chat-sel-circle{display:flex;align-items:center;justify-content:center}
@@ -1422,6 +1424,48 @@ body.theme-infernal .api-form-group input::placeholder,body.theme-infernal .api-
 .api-avatar-area{display:flex;align-items:center;gap:14px}
 .api-avatar-preview{width:56px;height:56px;border-radius:50%;border:1px solid var(--glass-border);object-fit:cover;background:var(--bg-mid);cursor:pointer}
 .api-avatar-hint{font-size:0.72rem;color:var(--text-muted)}
+/* ── API Editor: Avatar upload zone ── */
+.api-avatar-upload-zone{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:14px;background:rgba(114,168,216,0.06);border:1px solid rgba(114,168,216,0.15);margin-bottom:18px}
+.api-avatar-upload-circle{position:relative;flex-shrink:0}
+.api-avatar-upload-circle .aav-img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--glass-border);display:block}
+.api-avatar-upload-circle .aav-placeholder{width:56px;height:56px;border-radius:50%;background:rgba(120,165,220,0.12);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:500;color:var(--text-muted)}
+.api-avatar-upload-circle .aav-edit{position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-radius:50%;background:rgba(80,128,176,0.65);border:1.5px solid rgba(200,220,245,0.4);display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#fff;cursor:pointer;transition:background 0.2s}
+.api-avatar-upload-circle .aav-edit:hover{background:rgba(80,128,176,0.85)}
+.api-avatar-upload-info{font-size:0.82rem;color:var(--pale);font-weight:400}
+.api-avatar-upload-hint{font-size:0.72rem;color:var(--text-muted);line-height:1.6;margin-top:3px}
+.api-avatar-upload-btns{display:flex;gap:8px;margin-top:8px}
+.api-avatar-upload-btns button{padding:4px 12px;border-radius:10px;font-size:0.74rem;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:all 0.2s}
+.api-avatar-upload-btns .aav-upload{border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text-secondary)}
+.api-avatar-upload-btns .aav-upload:hover{background:rgba(175,195,228,0.18);border-color:rgba(175,195,228,0.4)}
+.api-avatar-upload-btns .aav-remove{border:1px solid rgba(220,100,100,0.25);background:rgba(220,100,100,0.08);color:rgba(220,130,130,0.8)}
+.api-avatar-upload-btns .aav-remove:hover{background:rgba(220,100,100,0.18)}
+body:not(.theme-infernal) .api-avatar-upload-zone{background:rgba(200,225,255,0.35);border-color:rgba(120,170,220,0.25)}
+body:not(.theme-infernal) .api-avatar-upload-circle .aav-placeholder{background:rgba(180,215,250,0.3);border-color:rgba(120,170,220,0.3);color:#2a5080}
+body:not(.theme-infernal) .api-avatar-upload-info{color:#152c58}
+body:not(.theme-infernal) .api-avatar-upload-hint{color:#3a5a8c}
+body:not(.theme-infernal) .api-avatar-upload-btns .aav-upload{background:rgba(220,240,255,0.5);border-color:rgba(120,170,220,0.3);color:#1a3a6c}
+body:not(.theme-infernal) .api-avatar-upload-btns .aav-remove{background:rgba(240,200,200,0.35);border-color:rgba(200,100,100,0.25);color:#8a3030}
+/* ── API Management List: avatar in each row ── */
+.api-item-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:500;color:var(--text-muted);background:rgba(120,165,220,0.12);border:1px solid var(--glass-border)}
+.api-item-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+body:not(.theme-infernal) .api-item-avatar{background:rgba(180,215,250,0.25);border-color:rgba(120,170,220,0.3);color:#2a5080}
+/* ── Chat fullscreen: grouped avatar layout ── */
+#page-chat .chat-msg-header{display:flex;align-items:center;gap:10px;margin-bottom:1px;animation:fadeUp 0.25s ease}
+#page-chat .chat-msg-header.align-right{flex-direction:row-reverse;align-self:flex-end}
+#page-chat .chat-msg-header.align-left{align-self:flex-start}
+#page-chat .chat-msg-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:500;color:var(--text-muted);background:rgba(120,165,220,0.12);border:1px solid var(--glass-border);overflow:hidden}
+#page-chat .chat-msg-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+#page-chat .chat-msg-header .r-head-name{font-size:0.78rem;font-weight:500;letter-spacing:0.02em}
+#page-chat .chat-msg-header.align-left .r-head-name{color:var(--accent-light)}
+#page-chat .chat-msg-header.align-right .r-head-name{color:var(--silver)}
+#page-chat .chat-msg-header .r-time{font-size:0.65rem;font-weight:300;color:var(--text-muted)}
+#page-chat .chat-msg.chat-msg-avatared{margin-bottom:1px;margin-top:-10px}
+#page-chat .chat-msg.ai.chat-msg-avatared{margin-left:46px}
+#page-chat .chat-msg.user.chat-msg-avatared{margin-right:46px}
+#page-chat .chat-msg-cont-time{font-size:0.6rem;color:var(--text-muted);opacity:0.5;margin-bottom:1px;margin-top:-9px}
+body:not(.theme-infernal) #page-chat .chat-msg-header.align-left .r-head-name{color:#1a3a6c;font-weight:500}
+body:not(.theme-infernal) #page-chat .chat-msg-header.align-right .r-head-name{color:#1a3a6c;font-weight:500}
+body:not(.theme-infernal) #page-chat .chat-msg-avatar{background:rgba(180,215,250,0.25);border-color:rgba(120,170,220,0.3);color:#2a5080}
 .api-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 .chat-history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(175,195,228,0.04);border:1px solid var(--glass-border);border-radius:10px;margin-bottom:8px;font-size:0.88rem;color:var(--silver)}
 .chat-history-item .del-btn{color:var(--text-muted);cursor:pointer;font-size:0.85rem;transition:color 0.3s}
@@ -1583,6 +1627,111 @@ body:not(.theme-infernal) .page.active .blog-comment-text{color:#0a1e42}
 body:not(.theme-infernal) .page.active .blog-comment-time{color:#2b487a;opacity:1}
 .blog-comment-loading{text-align:center;padding:16px;color:var(--silver);font-size:0.82rem}
 body:not(.theme-infernal) .page.active .blog-comment-loading{color:#233e6c}
+
+/* ── Blog Annotations (Reading Companion) ── */
+.pv-para{margin-bottom:1.2em}
+.pv-annotated{text-decoration:underline;text-decoration-color:rgba(114,168,216,0.4);text-underline-offset:3px;text-decoration-thickness:1.5px;cursor:pointer;transition:background 0.15s}
+.pv-annotated:hover{background:rgba(114,168,216,0.08);border-radius:2px}
+body:not(.theme-infernal) .page.active .pv-annotated{text-decoration-color:rgba(50,100,170,0.35)}
+body:not(.theme-infernal) .page.active .pv-annotated:hover{background:rgba(80,140,220,0.06)}
+/* temporary highlight while toolbar is open */
+.pv-sel-active{text-decoration:underline;text-decoration-color:rgba(114,168,216,0.5);text-underline-offset:3px;text-decoration-thickness:1.5px;background:rgba(114,168,216,0.08);border-radius:2px}
+body:not(.theme-infernal) .page.active .pv-sel-active{text-decoration-color:rgba(50,100,170,0.4);background:rgba(80,140,220,0.08)}
+/* annotation count — inline at end of underlined text */
+.pv-anno-count{display:inline;font-size:0.55rem;color:var(--text-muted);opacity:0.4;
+  font-family:'Noto Sans SC',sans-serif;font-weight:400;
+  cursor:default;margin-left:3px;vertical-align:baseline}
+.pv-anno-count:hover{opacity:0.7}
+body:not(.theme-infernal) .page.active .pv-anno-count{color:#5a7a9c}
+/* floating selection toolbar */
+#anno-toolbar{position:fixed;z-index:600;display:none;align-items:center;gap:2px;
+  background:rgba(24,34,58,0.94);border:1px solid rgba(114,168,216,0.18);
+  border-radius:22px;padding:4px 5px;
+  backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);
+  box-shadow:0 8px 32px rgba(0,0,0,0.38),0 0 0 1px rgba(114,168,216,0.06);
+  animation:annoToolIn 0.2s var(--transition)}
+@keyframes annoToolIn{from{opacity:0;transform:translateY(4px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+#anno-toolbar.show{display:inline-flex}
+.anno-tb-btn{height:30px;padding:0 11px;border-radius:16px;border:none;background:transparent;color:var(--silver);
+  font-family:'Noto Sans SC',sans-serif;font-size:0.74rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:5px}
+.anno-tb-btn:hover{background:rgba(114,168,216,0.12);color:var(--white)}
+.anno-tb-btn svg{width:13px;height:13px;opacity:0.6}
+.anno-tb-sep{width:1px;height:18px;background:rgba(165,188,230,0.15);margin:0 2px;flex-shrink:0}
+.anno-tb-pen{height:30px;padding:0 10px;border-radius:16px;border:none;background:rgba(114,168,216,0.08);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;color:var(--silver);
+  font-family:'Noto Sans SC',sans-serif;font-size:0.74rem;position:relative}
+.anno-tb-pen:hover{background:rgba(114,168,216,0.2);color:var(--white)}
+.anno-tb-pen svg{width:13px;height:13px;opacity:0.6;flex-shrink:0}
+.anno-tb-pen .anno-sel-name{color:var(--accent-light);font-weight:400;font-size:0.74rem}
+.anno-tb-drop{position:absolute;top:calc(100% + 6px);right:-4px;z-index:610;
+  background:rgba(24,34,58,0.96);border:1px solid var(--glass-border);border-radius:12px;padding:5px;min-width:148px;
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 10px 32px rgba(0,0,0,0.38);
+  opacity:0;pointer-events:none;transform:translateY(-5px) scale(0.96);transition:all 0.22s var(--transition)}
+.anno-tb-pen.open .anno-tb-drop{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+.anno-tb-drop-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.anno-tb-drop-item:hover{background:rgba(114,168,216,0.1)}
+.anno-tb-drop-item .atdi-name{font-size:0.78rem;color:var(--silver)}
+.anno-tb-drop-item.selected .atdi-name{color:var(--accent-light)}
+.anno-tb-drop-item .atdi-check{font-size:0.65rem;color:var(--accent-light);margin-left:auto;opacity:0}
+.anno-tb-drop-item.selected .atdi-check{opacity:1}
+/* input bar (replaces toolbar after picking AI) */
+#anno-input-bar{position:fixed;z-index:600;display:none;align-items:center;gap:7px;
+  background:rgba(24,34,58,0.94);border:1px solid rgba(114,168,216,0.18);
+  border-radius:14px;padding:5px 8px 5px 14px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 28px rgba(0,0,0,0.35);
+  animation:annoToolIn 0.2s var(--transition)}
+#anno-input-bar.show{display:flex}
+#anno-input-bar .ai-name{font-size:0.72rem;color:var(--accent-light);font-weight:500;white-space:nowrap}
+#anno-input-bar .ai-dot{color:var(--text-muted);opacity:0.3;font-size:0.7rem}
+#anno-input-bar input{flex:1;border:none;background:transparent;outline:none;font-family:'Noto Sans SC',sans-serif;font-size:0.8rem;font-weight:300;color:var(--light);min-width:140px}
+#anno-input-bar input::placeholder{color:var(--text-muted);opacity:0.4}
+.anno-send-btn{width:26px;height:26px;border-radius:50%;border:none;background:rgba(114,168,216,0.18);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.anno-send-btn:hover{background:rgba(114,168,216,0.35)}
+/* annotation blocks in reading view */
+.anno-block{margin:6px 0 14px;position:relative}
+.anno-block-inner{border-radius:10px;overflow:hidden;
+  border:1px solid rgba(114,168,216,0.08);background:rgba(155,180,218,0.05);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:10px 20px}
+.anno-block-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer}
+.anno-block-name{font-size:0.74rem;font-weight:500;color:var(--accent-light);letter-spacing:0.015em}
+.anno-block-chev{font-size:0.5rem;color:var(--text-muted);opacity:0.35;transition:transform 0.25s var(--transition);margin-left:2px}
+.anno-block-time{font-size:0.6rem;color:var(--text-muted);opacity:0.5;margin-left:auto}
+.anno-block-q{font-size:0.78rem;color:var(--text-muted);font-style:italic;margin-bottom:4px;line-height:1.6}
+.anno-block-q::before{content:'\201c';font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--accent);opacity:0.3;margin-right:2px}
+.anno-block-q::after{content:'\201d';font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--accent);opacity:0.3;margin-left:1px}
+.anno-block-txt{font-size:0.82rem;line-height:1.8;color:var(--silver)}
+.anno-block-del{position:absolute;top:4px;right:6px;width:16px;height:16px;border-radius:50%;border:none;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;color:var(--text-muted);font-size:0.6rem;padding:0;line-height:1}
+.anno-block:hover .anno-block-del{opacity:0.5}
+.anno-block-del:hover{opacity:1!important;color:#e88;background:rgba(230,130,130,0.1)}
+.anno-block.folded .anno-block-txt,.anno-block.folded .anno-block-q{display:none}
+.anno-block.folded .anno-block-inner{padding:5px 20px}
+.anno-block.folded .anno-block-head{margin-bottom:0}
+.anno-block.folded .anno-block-chev{transform:rotate(-90deg)}
+.anno-block{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.anno-group{display:none;animation:annoGroupIn 0.3s var(--transition)}
+.anno-group.open{display:block}
+@keyframes annoGroupIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.anno-block-loading{font-size:0.78rem;color:var(--silver);padding:8px 0 4px;display:flex;align-items:center;gap:6px}
+body:not(.theme-infernal) .page.active .anno-block-inner{background:rgba(242,248,255,0.35);border-color:rgba(205,230,250,0.18)}
+body:not(.theme-infernal) .page.active .anno-block-name{color:#0a2e74}
+body:not(.theme-infernal) .page.active .anno-block-txt{color:#0a1e42}
+body:not(.theme-infernal) .page.active .anno-block-q{color:#3a5a8c}
+body:not(.theme-infernal) .page.active .anno-block-time{color:#2b487a;opacity:1}
+body:not(.theme-infernal) .page.active .anno-block-loading{color:#233e6c}
+body:not(.theme-infernal) .anno-block-del:hover{color:#c44;background:rgba(200,60,60,0.1)}
+body:not(.theme-infernal) #anno-toolbar{background:rgba(240,248,255,0.95);border-color:rgba(170,210,245,0.4);box-shadow:0 8px 28px rgba(80,130,200,0.12)}
+body:not(.theme-infernal) .anno-tb-btn{color:#1a3a6c}
+body:not(.theme-infernal) .anno-tb-btn:hover{background:rgba(100,165,235,0.12);color:#0a1e42}
+body:not(.theme-infernal) .anno-tb-pen{background:rgba(100,165,235,0.1);color:#1a3a6c}
+body:not(.theme-infernal) .anno-tb-pen:hover{background:rgba(100,165,235,0.2);color:#0a1e42}
+body:not(.theme-infernal) .anno-tb-drop{background:rgba(245,250,255,0.97);border-color:rgba(170,210,245,0.35)}
+body:not(.theme-infernal) .anno-tb-drop-item:hover{background:rgba(100,165,235,0.08)}
+body:not(.theme-infernal) .anno-tb-drop-item .atdi-name{color:#1a3a6c}
+body:not(.theme-infernal) #anno-input-bar{background:rgba(240,248,255,0.95);border-color:rgba(170,210,245,0.4)}
+body:not(.theme-infernal) #anno-input-bar input{color:#0a1e42}
+body:not(.theme-infernal) #anno-input-bar .ai-name{color:#0a2e74}
 
 /* ABOUT — Proposal M: 全景窗名片 */
 #page-about{overflow:hidden!important;position:relative}
@@ -2587,6 +2736,21 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
 
     <div class="api-section glass-card" style="padding:20px;display:none" id="api-editor">
       <h3 id="api-editor-title">编辑API</h3>
+      <div class="api-avatar-upload-zone" id="api-avatar-zone">
+        <div class="api-avatar-upload-circle" onclick="document.getElementById('api-avatar-inp').click()">
+          <div class="aav-placeholder" id="api-avatar-preview-el"></div>
+          <div class="aav-edit">✎</div>
+        </div>
+        <div>
+          <div class="api-avatar-upload-info" id="api-avatar-label">头像</div>
+          <div class="api-avatar-upload-hint">点击上传头像，将在 Chat 对话页面中显示。<br>推荐正方形图片，支持 JPG / PNG。</div>
+          <div class="api-avatar-upload-btns">
+            <button class="aav-upload" type="button" onclick="document.getElementById('api-avatar-inp').click()">上传头像</button>
+            <button class="aav-remove" type="button" onclick="removeApiAvatar()">移除</button>
+          </div>
+        </div>
+        <input type="file" id="api-avatar-inp" accept="image/*" style="display:none" onchange="handleApiAvatarUpload(event)">
+      </div>
       <div class="api-form-group">
         <label>昵称</label>
         <input id="api-ai-name" maxlength="16">
@@ -3192,6 +3356,7 @@ i would like the room to be enough.
           <p><strong>写日志</strong>：点击 <strong>「+ 写日志」</strong>，填写标题、副标题（选填）、选择分类、撰写正文，保存即可。</p>
           <p><strong>阅读与操作</strong>：点击日志卡片进入阅读视图，底部提供编辑、删除、导出功能。</p>
           <p><strong>AI 评论</strong>：阅读视图底部 Comments 区域，选择AI后点击 <strong>「写下留言」</strong>，AI 阅读全文后生成评论。点击 <strong>「生成记忆」</strong>，AI 会根据日志内容自动生成一条记忆到 Memory。</p>
+          <p><strong>阅读伴侣（Notes）</strong>：在阅读视图中选中任意一段文字，浏览器原有的右键菜单会被替换为 IB 自定义工具条（复制 + 批注笔）。点击批注笔图标展开 AI 列表，选择后输入想说的话（或留空），AI 会针对你选中的段落写下一段简短的批注。批注以卡片形式显示在对应段落下方，被批注过的文字会出现下划线和小型计数标签（悬浮可查看批注者）。每篇日志最多 10 条批注，用户输入上限 40 加权字符（中文算 2、英文算 1）。批注可单条删除（悬浮后点击 × 按钮）。日志列表中每张卡片的 meta 行会显示该篇日志的批注数量和批注者昵称。</p>
           <p><strong>分类管理</strong>：顶部标签栏可筛选分类，点击 <strong>「+ 分类」</strong> 新建，长按标签可删除。</p>
           <p><strong>密码日记本</strong>：受密码保护的独立分类。Tea 茶歇对话和 Story 存档默认保存至此。首次使用需设置 6 位数字密码（默认 260323）和密保问题。加锁日记对所有 API 不可见——Letters 和 Blog 评论读取时自动跳过。在密码日记本中阅读日志时，同样可以写下留言或生成记忆。</p>
         </div>
@@ -3637,8 +3802,8 @@ i would like the room to be enough.
 </div>
 
 <script>
-const DB_NAME='InternalBeyondDB',DB_VER=10;let db;
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;['posts','categories','about','music','apiSettings','chatMessages','letters','apiConfigs','groups','blogComments','memories','chatThreads','chatSummaries','uploadedFiles'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='categories'?'name':'id'})});/* v7: add friendId index on chatMessages for fast queries */try{const store=e.target.transaction.objectStore('chatMessages');if(!store.indexNames.contains('byFriend'))store.createIndex('byFriend','friendId',{unique:false})}catch(ex){}};req.onsuccess=()=>{db=req.result;resolve(db)};req.onerror=()=>reject(req.error)})}
+const DB_NAME='InternalBeyondDB',DB_VER=11;let db;
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;['posts','categories','about','music','apiSettings','chatMessages','letters','apiConfigs','groups','blogComments','memories','chatThreads','chatSummaries','uploadedFiles','blogAnnotations'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='categories'?'name':'id'})});/* v7: add friendId index on chatMessages for fast queries */try{const store=e.target.transaction.objectStore('chatMessages');if(!store.indexNames.contains('byFriend'))store.createIndex('byFriend','friendId',{unique:false})}catch(ex){}};req.onsuccess=()=>{db=req.result;resolve(db)};req.onerror=()=>reject(req.error)})}
 function dbPut(s,d){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).put(d);t.oncomplete=()=>r();t.onerror=()=>j(t.error)})}
 function dbGetAll(s){return new Promise((r,j)=>{const t=db.transaction(s,'readonly');const q=t.objectStore(s).getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
 function dbGet(s,k){return new Promise((r,j)=>{const t=db.transaction(s,'readonly');const q=t.objectStore(s).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
@@ -3849,6 +4014,7 @@ function navTo(page){
     editorDirty=false;
   }
   currentPage=page;
+  _annoHideAll();_annoPostId='';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));
@@ -4061,7 +4227,7 @@ async function deleteCat(n){
   await dbDelete('categories',n);if(activeCat===n)activeCat='all';loadCategories();loadPosts();toast('分类已删除')
 }
 
-async function loadPosts(){let posts=await dbGetAll('posts');posts.sort((a,b)=>b.created-a.created);/* 公开 Blog 与密码日记本完全隔离 */if(diaryMode){if(!lockedDiaryUnlocked){promptLockedDiary();return}posts=posts.filter(p=>isLockedPost(p));if(activeCat!=='all')posts=posts.filter(p=>(p.category||'')===activeCat)}else{posts=posts.filter(p=>!isLockedPost(p));if(activeCat!=='all')posts=posts.filter(p=>p.category===activeCat)}const c=document.getElementById('posts-container');const diaryBar=(diaryMode&&lockedDiaryUnlocked)?'<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn" style="font-size:0.72rem;padding:4px 12px" onclick="showChangeDiaryPwd()">修改密码</button></div>':'';if(!posts.length){c.innerHTML=diaryBar+'<div class="empty-state"><span>✎</span>'+(diaryMode?'密码日记本中暂无记录。点击"写日志"开始记录，Tea 和 Story 的存档也会自动保存至此。':'还没有日志，点击"写日志"开始记录')+'</div>';return}c.innerHTML=diaryBar+posts.map(p=>'<div class="post-card glass-card" onclick="viewPost(\''+p.id+'\')"><div class="post-card-title">'+esc(p.title||'无标题')+'</div>'+(p.subtitle?'<div class="post-card-sub">'+esc(p.subtitle)+'</div>':'')+'<div class="post-card-preview">'+esc(p.content)+'</div><div class="post-card-meta"><span>'+new Date(p.created).toLocaleDateString('zh-CN')+'</span>'+(p.category?'<span>· '+esc(p.category)+'</span>':'')+'<span>· '+estimateSize(p)+' bytes</span></div></div>').join('')}
+async function loadPosts(){let posts=await dbGetAll('posts');posts.sort((a,b)=>b.created-a.created);/* 公开 Blog 与密码日记本完全隔离 */if(diaryMode){if(!lockedDiaryUnlocked){promptLockedDiary();return}posts=posts.filter(p=>isLockedPost(p));if(activeCat!=='all')posts=posts.filter(p=>(p.category||'')===activeCat)}else{posts=posts.filter(p=>!isLockedPost(p));if(activeCat!=='all')posts=posts.filter(p=>p.category===activeCat)}const c=document.getElementById('posts-container');const diaryBar=(diaryMode&&lockedDiaryUnlocked)?'<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn" style="font-size:0.72rem;padding:4px 12px" onclick="showChangeDiaryPwd()">修改密码</button></div>':'';if(!posts.length){c.innerHTML=diaryBar+'<div class="empty-state"><span>✎</span>'+(diaryMode?'密码日记本中暂无记录。点击"写日志"开始记录，Tea 和 Story 的存档也会自动保存至此。':'还没有日志，点击"写日志"开始记录')+'</div>';return}c.innerHTML=diaryBar+posts.map(p=>'<div class="post-card glass-card" onclick="viewPost(\''+p.id+'\')"><div class="post-card-title">'+esc(p.title||'无标题')+'</div>'+(p.subtitle?'<div class="post-card-sub">'+esc(p.subtitle)+'</div>':'')+'<div class="post-card-preview">'+esc(p.content)+'</div><div class="post-card-meta"><span>'+new Date(p.created).toLocaleDateString('zh-CN')+'</span>'+(p.category?'<span>· '+esc(p.category)+'</span>':'')+'<span>· '+estimateSize(p)+' bytes</span></div></div>').join('');_annoEnrichPostCards()}
 function estimateSize(p){return new Blob([JSON.stringify(p)]).size}
 async function updateBlogStats(){const all=await dbGetAll('posts');/* 修复：公开页只统计公开日志；密码日记本(已解锁)内只统计私密日志，避免在公开页暴露私密条目的数量与体积 */const inDiary=diaryMode&&lockedDiaryUnlocked;const posts=all.filter(p=>inDiary?isLockedPost(p):!isLockedPost(p));let t=0;posts.forEach(p=>t+=estimateSize(p));document.getElementById('blog-stats').textContent=posts.length+' 篇日志 · '+(t/1024).toFixed(1)+' KB'}
 
@@ -4107,7 +4273,7 @@ function exitEditor(){
 }
 function closeEditor(){editorDirty=false;document.getElementById('blog-edit-view').style.display='none';document.getElementById('blog-list-view').style.display='block';loadPosts();updateBlogStats()}
 async function savePost(){var content=document.getElementById('ed-content').value.trim();if(!content){toast('内容不能为空');return}var ex=editingPostId?await dbGet('posts',editingPostId):null;/* 在密码日记本内新建的日志自动标记为私密；编辑时保留原私密状态 */var post={id:editingPostId||'post_'+Date.now(),title:document.getElementById('ed-title').value.trim(),subtitle:document.getElementById('ed-subtitle').value.trim(),category:document.getElementById('ed-cat').value,locked:(ex?isLockedPost(ex):diaryMode),content:content,created:ex?.created||Date.now(),updated:Date.now()};await dbPut('posts',post);editorDirty=false;closeEditor();toast(post.locked?'已存入密码日记本':'日志已保存')}
-async function viewPost(id){const p=await dbGet('posts',id);if(!p)return;document.getElementById('blog-list-view').style.display='none';document.getElementById('blog-read-view').style.display='block';document.getElementById('blog-edit-view').style.display='none';const commentSelectOpts=apiConfigs.map(a=>'<option value="'+a.id+'">'+esc(a.nickname||a.model||'AI')+'</option>').join('');document.getElementById('post-view-content').innerHTML='<h2 class="post-view-title">'+esc(p.title||'无标题')+'</h2>'+(p.subtitle?'<p class="post-view-sub">'+esc(p.subtitle)+'</p>':'')+'<div class="post-view-meta">'+new Date(p.created).toLocaleString('zh-CN')+(p.category?' · '+esc(p.category):'')+'</div><div class="post-view-content">'+esc(p.content)+'</div><div class="post-view-actions"><button class="btn" onclick="openEditor(\''+p.id+'\')">编辑</button><button class="btn" onclick="deletePost(\''+p.id+'\')">删除</button><button class="btn" onclick="exportPost(\''+p.id+'\')">导出</button></div><div class="blog-comments-section"><div class="blog-comments-header">Comments</div><div class="blog-comment-request"><select class="blog-comment-select" id="blog-comment-select-'+p.id+'"><option value="">Choose one...</option>'+commentSelectOpts+'</select><button class="btn btn-primary" id="blog-comment-btn-'+p.id+'" onclick="requestBlogComment(\''+p.id+'\')">写下留言</button><button class="btn btn-primary" id="blog-mem-btn-'+p.id+'" onclick="generateMemoryFromPost(\''+p.id+'\')">生成记忆</button></div><div class="blog-comment-hint">TA将阅读这篇日志，留下感想或帮你生成记忆。</div><div id="blog-comments-'+p.id+'"></div></div>';loadBlogComments(p.id)}
+async function viewPost(id){const p=await dbGet('posts',id);if(!p)return;document.getElementById('blog-list-view').style.display='none';document.getElementById('blog-read-view').style.display='block';document.getElementById('blog-edit-view').style.display='none';const commentSelectOpts=apiConfigs.map(a=>'<option value="'+a.id+'">'+esc(a.nickname||a.model||'AI')+'</option>').join('');const paraHTML=p.content.split(/\n\n+/).map((para,i)=>'<div class="pv-para" data-idx="'+i+'">'+esc(para)+'</div>').join('');document.getElementById('post-view-content').innerHTML='<h2 class="post-view-title">'+esc(p.title||'无标题')+'</h2>'+(p.subtitle?'<p class="post-view-sub">'+esc(p.subtitle)+'</p>':'')+'<div class="post-view-meta">'+new Date(p.created).toLocaleString('zh-CN')+(p.category?' · '+esc(p.category):'')+'</div><div class="post-view-content">'+paraHTML+'</div><div class="post-view-actions"><button class="btn" onclick="openEditor(\''+p.id+'\')">编辑</button><button class="btn" onclick="deletePost(\''+p.id+'\')">删除</button><button class="btn" onclick="exportPost(\''+p.id+'\')">导出</button></div><div class="blog-comments-section"><div class="blog-comments-header">Comments</div><div class="blog-comment-request"><select class="blog-comment-select" id="blog-comment-select-'+p.id+'"><option value="">Choose one...</option>'+commentSelectOpts+'</select><button class="btn btn-primary" id="blog-comment-btn-'+p.id+'" onclick="requestBlogComment(\''+p.id+'\')">写下留言</button><button class="btn btn-primary" id="blog-mem-btn-'+p.id+'" onclick="generateMemoryFromPost(\''+p.id+'\')">生成记忆</button></div><div class="blog-comment-hint">TA将阅读这篇日志，留下感想或帮你生成记忆。</div><div id="blog-comments-'+p.id+'"></div></div>';_annoPostId=id;_renderAnnotationsForPost(id);loadBlogComments(p.id)}
 function setReadFontSize(size){
   var rv=document.getElementById('blog-read-view');
   rv.classList.remove('fontsize-s','fontsize-m','fontsize-l');
@@ -4115,8 +4281,8 @@ function setReadFontSize(size){
   rv.querySelectorAll('.read-fontsize-btn').forEach(function(b){b.classList.remove('active')});
   rv.querySelector('.read-fontsize-btn.fs-'+size).classList.add('active');
 }
-function backToList(){document.getElementById('blog-list-view').style.display='block';document.getElementById('blog-read-view').style.display='none';document.getElementById('blog-edit-view').style.display='none'}
-async function deletePost(id){if(!confirm('确定删除这篇日志吗？'))return;await dbDelete('posts',id);const allComments=await dbGetAll('blogComments');for(const c of allComments){if(c.postId===id)await dbDelete('blogComments',c.id)}backToList();loadPosts();updateBlogStats();toast('日志已删除')}
+function backToList(){document.getElementById('blog-list-view').style.display='block';document.getElementById('blog-read-view').style.display='none';document.getElementById('blog-edit-view').style.display='none';_annoHideAll();_annoPostId=''}
+async function deletePost(id){if(!confirm('确定删除这篇日志吗？'))return;await dbDelete('posts',id);const allComments=await dbGetAll('blogComments');for(const c of allComments){if(c.postId===id)await dbDelete('blogComments',c.id)}const allAnnos=await dbGetAll('blogAnnotations');for(const a of allAnnos){if(a.postId===id)await dbDelete('blogAnnotations',a.id)}backToList();loadPosts();updateBlogStats();toast('日志已删除')}
 async function exportPost(id){const p=await dbGet('posts',id);downloadJSON(p,'post_'+id+'.json');toast('日志已导出')}
 
 /* ABOUT */
@@ -4426,7 +4592,9 @@ async function renderApiList(){
   if(!apiConfigs.length){c.innerHTML='<div class="empty-state" style="padding:20px">还没有添加API</div>';return}
   c.innerHTML=apiConfigs.map((a,idx)=>{
     var keyTag=a.apiKey?'':'<span style="color:#e88;font-size:0.68rem;margin-left:6px;font-weight:400">（无密钥）</span>';
-    return '<div class="chat-history-item" style="cursor:grab" draggable="true" data-api-idx="'+idx+'" data-api-id="'+a.id+'" ondragstart="_apiDragStart(event)" ondragover="_apiDragOver(event)" ondrop="_apiDrop(event)" ondragend="_apiDragEnd(event)" onclick="editApi(\''+a.id+'\')"><div><strong class="api-item-name">'+esc(a.nickname||a.model||'未命名')+keyTag+'</strong><div class="api-item-detail" style="font-size:0.72rem;margin-top:2px">'+esc(a.provider)+' · '+esc(a.model)+'</div></div><span class="del-btn" onclick="event.stopPropagation();deleteApiConfig(\''+a.id+'\')" title="删除">✕</span></div>'}).join('');
+    var avInit=(a.nickname||a.model||'?').charAt(0).toUpperCase();
+    var avHtml=a.avatar?'<div class="api-item-avatar"><img src="'+a.avatar+'" alt=""></div>':'<div class="api-item-avatar">'+avInit+'</div>';
+    return '<div class="chat-history-item" style="cursor:grab;gap:12px" draggable="true" data-api-idx="'+idx+'" data-api-id="'+a.id+'" ondragstart="_apiDragStart(event)" ondragover="_apiDragOver(event)" ondrop="_apiDrop(event)" ondragend="_apiDragEnd(event)" onclick="editApi(\''+a.id+'\')">'+avHtml+'<div style="flex:1;min-width:0"><strong class="api-item-name">'+esc(a.nickname||a.model||'未命名')+keyTag+'</strong>'+(a.relationship?'<span style="font-size:0.7rem;color:var(--accent-light);opacity:0.7;margin-left:6px">'+esc(a.relationship)+'</span>':'')+'<div class="api-item-detail" style="font-size:0.72rem;margin-top:2px">'+esc(a.provider)+' · '+esc(a.model)+'</div></div><span class="del-btn" onclick="event.stopPropagation();deleteApiConfig(\''+a.id+'\')" title="删除">✕</span></div>'}).join('');
 }
 var _dragApiIdx=null;
 function _apiDragStart(e){_dragApiIdx=parseInt(e.currentTarget.dataset.apiIdx);e.currentTarget.style.opacity='0.4';e.dataTransfer.effectAllowed='move'}
@@ -4445,9 +4613,30 @@ async function _apiDrop(e){
   _dragApiIdx=null;renderApiList();loadFriendsList();toast('排序已更新');
 }
 
+var _pendingApiAvatar=null;/* null=no change, ''=remove, string=new dataUrl */
+function handleApiAvatarUpload(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(){
+    _pendingApiAvatar=r.result;
+    _renderApiAvatarPreview(r.result);
+    toast('头像已选择');
+  };r.readAsDataURL(f);e.target.value='';
+}
+function removeApiAvatar(){_pendingApiAvatar='';_renderApiAvatarPreview('');toast('头像已移除（保存后生效）')}
+function _renderApiAvatarPreview(src){
+  var el=document.getElementById('api-avatar-preview-el');
+  if(!el)return;
+  if(src){el.innerHTML='<img class="aav-img" src="'+src+'" alt="">';el.className=''}
+  else{
+    var nn=(document.getElementById('api-ai-name').value||'').trim();
+    var init=nn?nn.charAt(0).toUpperCase():'?';
+    el.innerHTML='';el.textContent=init;el.className='aav-placeholder';
+  }
+}
 function addNewApi(){
   if(apiConfigs.length>=10){toast('最多添加10个API');return}
   editingApiId='friend_'+Date.now();
+  _pendingApiAvatar=null;
   document.getElementById('api-editor-title').textContent='添加API';
   document.getElementById('api-editor').style.display='block';
   document.getElementById('api-ai-name').value='';
@@ -4472,6 +4661,7 @@ function addNewApi(){
   document.getElementById('api-thinking-hint').textContent='开启后，AI 在每次回复前会先展示内部思考过程。思考内容以可折叠的文字显示在消息气泡上方。此设定创建后不可更改。';
   document.getElementById('api-thinking-hint').style.opacity='0.55';
   document.getElementById('api-ai-name').focus();
+  _renderApiAvatarPreview('');
 }
 
 function editApi(id){
@@ -4501,6 +4691,10 @@ function editApi(id){
   thinkEl.disabled=true;
   document.getElementById('api-thinking-hint').textContent=thinkEl.checked?'✓ 思考链已启用（创建后不可更改）':'✗ 思考链未启用（创建后不可更改）';
   document.getElementById('api-thinking-hint').style.opacity='0.7';
+  _pendingApiAvatar=null;
+  _renderApiAvatarPreview(cfg.avatar||'');
+  var lbl=document.getElementById('api-avatar-label');
+  if(lbl)lbl.textContent=(cfg.nickname||'AI')+' 的头像';
 }
 
 async function saveCurrentApi(){
@@ -4510,6 +4704,11 @@ async function saveCurrentApi(){
     var dup=apiConfigs.find(function(c){return c.id!==editingApiId&&(c.nickname||'').trim()===nn});
     if(dup){toast('昵称「'+nn+'」已被其他API使用，请换一个不同的昵称。');return}
   }
+  /* Merge with existing config to preserve sortOrder, avatar, created */
+  const existing=apiConfigs.find(a=>a.id===editingApiId)||{};
+  /* Resolve avatar: _pendingApiAvatar===null means no change, ''=remove, string=new */
+  var avatarVal=existing.avatar||'';
+  if(_pendingApiAvatar!==null)avatarVal=_pendingApiAvatar;
   const cfg={
     id:editingApiId,
     provider:document.getElementById('api-provider').value,
@@ -4524,8 +4723,11 @@ async function saveCurrentApi(){
     vision:!!document.getElementById('api-vision-toggle').checked,
     streaming:!!document.getElementById('api-streaming-toggle').checked,
     thinkingEnabled:document.getElementById('api-thinking-toggle').disabled?document.getElementById('api-thinking-toggle').checked:document.getElementById('api-thinking-toggle').checked,
-    created:Date.now()
+    avatar:avatarVal,
+    sortOrder:existing.sortOrder!=null?existing.sortOrder:undefined,
+    created:existing.created||Date.now()
   };
+  _pendingApiAvatar=null;
   await dbPut('apiConfigs',cfg);
   document.getElementById('api-editor').style.display='none';
   renderApiList();
@@ -4919,7 +5121,7 @@ async function calJump(dk,dayEl){
   }
   const ct=document.getElementById('chat-full-messages');ct.innerHTML='';
   const lb=document.createElement('div');lb.className='chat-msg system';lb.textContent=dk+' ('+msgs.length+'条)';ct.appendChild(lb);
-  msgs.forEach(m=>ct.appendChild(_buildMsgEl(m,true)));ct.scrollTop=0;
+  msgs.forEach(function(m,i){var prev=i>0?msgs[i-1]:null;var isCont=prev&&prev.role===m.role&&(m.role==='user'||((prev.friendId||'_')===(m.friendId||'_')&&(!m.senderName||(prev.senderName||'_')===(m.senderName||'_'))));ct.appendChild(_buildMsgEl(m,true,isCont))});ct.scrollTop=0;
   const bb=document.createElement('button');bb.className='chat-load-more';bb.textContent='← 返回完整对话';bb.style.cssText='margin-top:12px;cursor:pointer';
   bb.onclick=function(){document.querySelectorAll('.chat-cal-day.selected').forEach(e=>e.classList.remove('selected'));if(activeFriendId.startsWith('group_'))selectGroup(activeFriendId);else selectFriend(activeFriendId)};
   ct.appendChild(bb);
@@ -5279,6 +5481,264 @@ async function requestBlogComment(postId){
 
 async function deleteBlogComment(id,postId){if(confirm('确定删除？')){await dbDelete('blogComments',id);loadBlogComments(postId);toast('已删除')}}
 
+/* ═══════════════════════════════════════════════════
+   BLOG ANNOTATIONS — Reading Companion (阅读伴侣)
+   ═══════════════════════════════════════════════════ */
+let _annoPostId='';let _annoSelText='';let _annoParaIdx=-1;let _annoSelectedAI=null;let _annoSelRange=null;
+
+/* ── Create toolbar elements (once) ── */
+(function _initAnnoToolbar(){
+  if(document.getElementById('anno-toolbar'))return;
+  const tb=document.createElement('div');tb.id='anno-toolbar';
+  tb.innerHTML='<button class="anno-tb-btn" onclick="_annoCopy()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>复制</button><div class="anno-tb-sep"></div><div class="anno-tb-pen" id="anno-pen" onclick="_annoToggleDrop(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span class="anno-sel-name" id="anno-sel-name"></span><div class="anno-tb-drop" id="anno-drop"></div></div>';
+  document.body.appendChild(tb);
+  const ib=document.createElement('div');ib.id='anno-input-bar';
+  ib.innerHTML='<span class="ai-name" id="anno-inp-name"></span><span class="ai-dot">·</span><input id="anno-inp-field" maxlength="40" placeholder="Say something or don\'t" onkeydown="if(event.key===\'Enter\')_annoSend()" oninput="_annoLimitInput(this)"><button class="anno-send-btn" onclick="_annoSend()"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4z"/></svg></button>';
+  document.body.appendChild(ib);
+})();
+
+/* Limit input: EN=1, CN=2, max 40 */
+function _annoLimitInput(el){let len=0;let cut=-1;for(let i=0;i<el.value.length;i++){len+=(el.value.charCodeAt(i)>127?2:1);if(len>40&&cut<0)cut=i}if(cut>=0)el.value=el.value.slice(0,cut)}
+
+/* ── Selection handler ── */
+document.addEventListener('mouseup',function(e){
+  const pvc=document.querySelector('#blog-read-view[style*="block"] .post-view-content');
+  if(!pvc||!pvc.contains(e.target))return;
+  /* Ignore selections inside annotation cards */
+  if(e.target.closest('.anno-block'))return;
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed||!sel.toString().trim()){_annoHideAll();return}
+  const text=sel.toString().trim();if(!text||text.length<2)return;
+  _annoSelText=text;
+  /* Detect paragraph index */
+  let node=sel.anchorNode;_annoParaIdx=-1;
+  while(node&&node!==pvc){if(node.nodeType===1&&node.classList&&node.classList.contains('pv-para')){_annoParaIdx=parseInt(node.dataset.idx||'-1');break}node=node.parentNode}
+  /* Apply temporary underline highlight */
+  _annoClearTempHL();
+  try{const range=sel.getRangeAt(0);_annoSelRange=range.cloneRange();
+    const wrapper=document.createElement('span');wrapper.className='pv-sel-active';wrapper.id='anno-temp-hl';
+    range.surroundContents(wrapper);sel.removeAllRanges();
+  }catch(ex){/* complex selections across nodes */}
+  /* Position toolbar */
+  const hlEl=document.getElementById('anno-temp-hl');
+  const anchor=hlEl||pvc;
+  const rect=hlEl?hlEl.getBoundingClientRect():e.target.getBoundingClientRect();
+  const tb=document.getElementById('anno-toolbar');
+  _annoPopulateDrop();
+  tb.classList.add('show');
+  tb.style.left=Math.max(8,rect.left+rect.width/2-tb.offsetWidth/2)+'px';
+  tb.style.top=Math.max(8,rect.top-42+window.scrollY)+'px';
+  tb.style.position='absolute';
+  document.getElementById('anno-input-bar').classList.remove('show');
+});
+
+document.addEventListener('mousedown',function(e){
+  const tb=document.getElementById('anno-toolbar');
+  const ib=document.getElementById('anno-input-bar');
+  if(tb&&!tb.contains(e.target)&&ib&&!ib.contains(e.target)){_annoHideAll()}
+  if(!e.target.closest('.anno-tb-pen')){const pen=document.getElementById('anno-pen');if(pen)pen.classList.remove('open')}
+});
+
+document.addEventListener('contextmenu',function(e){
+  const pvc=document.querySelector('#blog-read-view[style*="block"] .post-view-content');
+  if(pvc&&pvc.contains(e.target)){e.preventDefault()}
+});
+
+function _annoClearTempHL(){const old=document.getElementById('anno-temp-hl');if(old){const p=old.parentNode;while(old.firstChild)p.insertBefore(old.firstChild,old);p.removeChild(old);p.normalize()}}
+
+function _annoHideAll(){
+  const tb=document.getElementById('anno-toolbar');if(tb)tb.classList.remove('show');
+  const ib=document.getElementById('anno-input-bar');if(ib)ib.classList.remove('show');
+  _annoSelectedAI=null;_annoSelRange=null;
+  const sn=document.getElementById('anno-sel-name');if(sn)sn.textContent='';
+  const pen=document.getElementById('anno-pen');if(pen)pen.classList.remove('open');
+  _annoClearTempHL();
+}
+
+function _annoPopulateDrop(){
+  const drop=document.getElementById('anno-drop');if(!drop)return;
+  drop.innerHTML=apiConfigs.map(a=>'<div class="anno-tb-drop-item" onclick="_annoPickAI(\''+a.id+'\',event)"><span class="atdi-name">'+esc(a.nickname||a.model||'AI')+'</span><span class="atdi-check">✓</span></div>').join('');
+}
+
+function _annoCopy(){
+  if(_annoSelText)navigator.clipboard?.writeText(_annoSelText).catch(()=>{});
+  toast('已复制');_annoHideAll();window.getSelection()?.removeAllRanges();
+}
+
+function _annoToggleDrop(e){e.stopPropagation();document.getElementById('anno-pen').classList.toggle('open')}
+
+function _annoPickAI(aiId,e){
+  if(e)e.stopPropagation();
+  const cfg=apiConfigs.find(a=>a.id===aiId);if(!cfg)return;
+  _annoSelectedAI=cfg;
+  document.getElementById('anno-sel-name').textContent=cfg.nickname||cfg.model;
+  document.getElementById('anno-pen').classList.remove('open');
+  document.querySelectorAll('.anno-tb-drop-item').forEach(el=>el.classList.remove('selected'));
+  if(e&&e.currentTarget)e.currentTarget.classList.add('selected');
+  const tb=document.getElementById('anno-toolbar');
+  const rect=tb.getBoundingClientRect();
+  tb.classList.remove('show');
+  const ib=document.getElementById('anno-input-bar');
+  ib.style.left=Math.max(8,rect.left)+'px';
+  ib.style.top=rect.top+window.scrollY+'px';
+  ib.style.position='absolute';
+  ib.classList.add('show');
+  document.getElementById('anno-inp-name').textContent=cfg.nickname||cfg.model;
+  const field=document.getElementById('anno-inp-field');
+  field.value='';field.placeholder='Say something or don\'t';field.focus();
+}
+
+async function _annoSend(){
+  if(!_annoSelectedAI||!_annoPostId)return;
+  const cfg=_annoSelectedAI;
+  if(!cfg.apiKey){toast('该API未配置密钥');return}
+  if(!cfg.endpoint){toast('该API未配置接口地址');return}
+  /* Max 10 annotations per post */
+  const existing=await _loadAnnotations(_annoPostId);
+  if(existing.length>=10){toast('每篇日志最多 10 条批注');_annoHideAll();return}
+  const userMsg=document.getElementById('anno-inp-field').value.trim();
+  const selText=_annoSelText;
+  const paraIdx=_annoParaIdx;
+  _annoHideAll();window.getSelection()?.removeAllRanges();
+
+  const post=await dbGet('posts',_annoPostId);if(!post)return;
+  const paras=post.content.split(/\n\n+/);
+  const paraText=paras[paraIdx]||'';
+
+  const paraEl=document.querySelector('.pv-para[data-idx="'+paraIdx+'"]');
+  const loadDiv=document.createElement('div');loadDiv.className='anno-block-loading';loadDiv.id='anno-loading-tmp';
+  loadDiv.innerHTML='<span class="letter-loading-spinner"></span>'+esc(cfg.nickname||'AI')+' 正在批注…';
+  if(paraEl)paraEl.insertAdjacentElement('afterend',loadDiv);
+
+  const about=await dbGet('about','main');
+  let prompt='';
+  if(cfg.relationship)prompt+='你和对方的关系是：'+cfg.relationship+'。\n';
+  prompt+='你现在正在陪TA阅读日志内容，用户在阅读过程中选中了一段文字。\n';
+  if(about){prompt+='用户昵称：'+about.name+(about.bio?'（'+about.bio+'）':'')+'\n'}
+  prompt+='\n【日志标题】'+(post.title||'无标题')+'\n';
+  prompt+='【选中文字所在的段落】\n'+paraText+'\n';
+  prompt+='【用户选中的文字】\n'+selText+'\n';
+  if(userMsg){prompt+='【用户对你说的话】\n'+userMsg+'\n'}
+  const memCtx=await getMemoryContext(cfg.id,{maxChars:800});
+  if(memCtx)prompt+='\n'+memCtx;
+  prompt+='\n【请求】\n';
+  prompt+='请针对用户选中的文字写一段简短的批注或感想。';
+  if(userMsg)prompt+='用户写了话，请优先回应用户的话。';
+  else prompt+='用户没有写话，请自由发挥。';
+  prompt+='自然地分享你的理解、感受、或提出一个出其不意的有趣角度。';
+  prompt+='简短精炼（50-150字），使用日志正文所使用的语言。直接写批注内容，不需要称呼或署名。';
+
+  try{
+    const response=await callApi(cfg,prompt);
+    const le=document.getElementById('anno-loading-tmp');if(le)le.remove();
+    if(response){
+      const anno={id:'anno_'+Date.now(),postId:_annoPostId,selectedText:selText,paraIdx:paraIdx,
+        aiId:cfg.id,aiName:cfg.nickname||cfg.model,userMsg:userMsg,content:response,created:Date.now()};
+      await dbPut('blogAnnotations',anno);
+      _renderAnnotationsForPost(_annoPostId);
+      toast('收到 '+esc(cfg.nickname||'AI')+' 的批注');
+    }
+  }catch(e){
+    const le=document.getElementById('anno-loading-tmp');if(le)le.remove();
+    let msg='请求失败';
+    if(e.message){if(e.message.includes('Failed to fetch'))msg='无法连接到API';else if(e.message.includes('401'))msg='API Key 无效';else if(e.message.includes('429'))msg='请求频率过高';else msg=e.message}
+    toast(msg);
+  }
+}
+
+async function _loadAnnotations(postId){
+  const all=await dbGetAll('blogAnnotations');
+  return all.filter(a=>a.postId===postId).sort((a,b)=>a.created-b.created);
+}
+
+function _annoFormatTime(ts){const d=new Date(ts);return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+
+async function _renderAnnotationsForPost(postId){
+  const annos=await _loadAnnotations(postId);
+  const post=await dbGet('posts',postId);if(!post)return;
+  const paras=post.content.split(/\n\n+/);
+  const pvc=document.querySelector('#blog-read-view .post-view-content');if(!pvc)return;
+
+  pvc.innerHTML=paras.map((p,i)=>'<div class="pv-para" data-idx="'+i+'">'+esc(p)+'</div>').join('');
+
+  const byPara={};
+  annos.forEach(a=>{
+    let idx=a.paraIdx;
+    if(idx>=0&&idx<paras.length&&paras[idx].includes(a.selectedText)){/* ok */}
+    else{idx=-1;for(let i=0;i<paras.length;i++){if(paras[i].includes(a.selectedText)){idx=i;break}}}
+    if(idx<0)idx=a.paraIdx;if(idx<0)idx=paras.length-1;
+    if(!byPara[idx])byPara[idx]=[];
+    byPara[idx].push(a);
+  });
+
+  let _grpId=0;
+  Object.keys(byPara).forEach(idx=>{
+    const paraEl=pvc.querySelector('.pv-para[data-idx="'+idx+'"]');
+    if(!paraEl)return;
+    const annoGroup=byPara[idx];
+    /* Group annotations by selectedText */
+    const textGroups={};
+    annoGroup.forEach(a=>{if(!textGroups[a.selectedText])textGroups[a.selectedText]=[];textGroups[a.selectedText].push(a)});
+    /* Underline text + count marker, each linked to a group */
+    let html=paraEl.innerHTML;
+    const groupIds={};/* selectedText → grpId */
+    Object.keys(textGroups).forEach(t=>{
+      const escaped=esc(t);
+      const gid='anno-grp-'+(_grpId++);
+      groupIds[t]=gid;
+      const count=textGroups[t].length;
+      const bubble='<span class="pv-anno-count">'+count+'</span>';
+      if(html.includes(escaped)){
+        html=html.replace(escaped,'<span class="pv-annotated" onclick="_annoToggleGroup(\''+gid+'\')" data-grp="'+gid+'">'+escaped+'</span>'+bubble);
+      }
+    });
+    paraEl.innerHTML=html;
+    /* Render annotation groups (hidden by default) */
+    let insertAfter=paraEl;
+    Object.keys(textGroups).forEach(t=>{
+      const gid=groupIds[t];
+      const grpDiv=document.createElement('div');grpDiv.className='anno-group';grpDiv.id=gid;
+      textGroups[t].forEach(a=>{
+        const block=document.createElement('div');block.className='anno-block';
+        block.innerHTML='<div class="anno-block-inner">'
+          +'<div class="anno-block-head"><span class="anno-block-name">'+esc(a.aiName)+'</span><span class="anno-block-time">'+_annoFormatTime(a.created)+'</span></div>'
+          +(a.userMsg?'<div class="anno-block-q">'+esc(a.userMsg)+'</div>':'')
+          +'<div class="anno-block-txt">'+esc(a.content)+'</div>'
+          +'</div>'
+          +'<button class="anno-block-del" onclick="_deleteAnno(\''+a.id+'\',\''+a.postId+'\')" title="删除">×</button>';
+        grpDiv.appendChild(block);
+      });
+      insertAfter.insertAdjacentElement('afterend',grpDiv);
+      insertAfter=grpDiv;
+    });
+  });
+}
+
+function _annoToggleGroup(gid){
+  const grp=document.getElementById(gid);if(!grp)return;
+  grp.classList.toggle('open');
+}
+
+async function _deleteAnno(id,postId){
+  if(!confirm('删除这条批注？'))return;
+  await dbDelete('blogAnnotations',id);
+  _renderAnnotationsForPost(postId);
+  toast('批注已删除');
+}
+
+/* Annotation info for post cards */
+async function _annoEnrichPostCards(){
+  try{const all=await dbGetAll('blogAnnotations');if(!all.length)return;
+  const byPost={};all.forEach(a=>{if(!byPost[a.postId])byPost[a.postId]={count:0,names:[]};byPost[a.postId].count++;if(!byPost[a.postId].names.includes(a.aiName))byPost[a.postId].names.push(a.aiName)});
+  document.querySelectorAll('.post-card').forEach(card=>{
+    const onclick=card.getAttribute('onclick')||'';const m=onclick.match(/viewPost\('([^']+)'\)/);if(!m)return;
+    const pid=m[1];const info=byPost[pid];if(!info)return;
+    const meta=card.querySelector('.post-card-meta');if(!meta)return;
+    const span=document.createElement('span');span.textContent='· '+info.count+' notes';
+    meta.appendChild(span);
+  })}catch(e){}
+}
+
 /* API CALL HELPER */
 async function callApi(cfg,userMsg){
   const format=PROVIDERS[cfg.provider]?.format||'openai';
@@ -5288,6 +5748,7 @@ async function callApi(cfg,userMsg){
   if(format==='anthropic'){
     headers['x-api-key']=cfg.apiKey;
     headers['anthropic-version']='2023-06-01';
+    headers['anthropic-dangerous-direct-browser-access']='true';
     const ab={model:cfg.model,max_tokens:1024,system:cfg.systemPrompt||'',messages:[{role:'user',content:userMsg}]};
     if(cfg.temperature!=null)ab.temperature=cfg.temperature;
     body=JSON.stringify(ab);
@@ -5310,11 +5771,14 @@ async function callApi(cfg,userMsg){
     const res=await fetch(url,{method:'POST',headers,body,signal:ac.signal});
     clearTimeout(tm);
     if(!res.ok)throw new Error('API返回 '+res.status);
+    /* Detect HTML response (relay/proxy misconfiguration) */
+    const ct=res.headers.get('content-type')||'';
+    if(ct.includes('text/html')){throw new Error('API端点返回了网页而非JSON——请检查端点URL是否正确（当前格式: '+format+'）。如使用中转站，请确认API地址填写到完整路径（如 https://xxx.com/v1/chat/completions）')}
     const data=await res.json();
     if(format==='anthropic')return data.content?.[0]?.text||'';
     if(format==='gemini')return (data.candidates?.[0]?.content?.parts||[]).map(pp=>pp.text||'').join('')||'';
     return data.choices?.[0]?.message?.content||'';
-  }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时（120秒），请检查网络连接或API服务状态');throw e}
+  }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时（120秒），请检查网络连接或API服务状态');if(e.message&&e.message.includes('not valid JSON'))throw new Error('API端点返回了非JSON内容——请检查端点URL是否正确。如使用中转站，请确认地址填写到完整API路径');throw e}
 }
 
 async function initChatHeader(){
@@ -5349,7 +5813,16 @@ function closeChatPanel(){
 }
 
 /* ── Chat pagination helpers ── */
-function _buildMsgEl(m,isFullscreen){
+function _getApiAvatar(friendId){var fid=friendId||activeFriendId;var cfg=apiConfigs.find(a=>a.id===fid);return cfg&&cfg.avatar?cfg.avatar:''}
+function _getApiAvatarByName(senderName){if(!senderName)return '';var cfg=apiConfigs.find(a=>(a.nickname||a.model)===senderName);return cfg&&cfg.avatar?cfg.avatar:''}
+function _buildAvatarCircle(name,src,size){
+  var d=document.createElement('div');d.className='chat-msg-avatar';
+  if(size){d.style.width=size+'px';d.style.height=size+'px';d.style.fontSize=(size*0.4)+'px'}
+  if(src){var img=document.createElement('img');img.src=src;img.alt='';d.appendChild(img)}
+  else{d.textContent=(name||'?').charAt(0).toUpperCase()}
+  return d;
+}
+function _buildMsgEl(m,isFullscreen,isGroupCont){
   /* Returns a DocumentFragment with the bubble + optional separate thinking block */
   const frag=document.createDocumentFragment();
   const isUser=m.role==='user';
@@ -5373,14 +5846,44 @@ function _buildMsgEl(m,isFullscreen){
   if(m.id)div.dataset.msgId=m.id;
   if(isFullscreen){
     const sName=isUser?(_cachedUserName||'You'):(m.senderName||_getActiveAiName()||'AI');
-    const head=document.createElement('div');
-    head.className='r-head';
-    head.innerHTML=esc(sName)+(m.timestamp?'<span class="r-time">'+new Date(m.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'</span>':'');
-    div.appendChild(head);
-    const txt=document.createElement('div');
-    txt.className='r-text';
-    if(!isUser){_renderAiContent(txt,div,m.content)}else{txt.textContent=m.content}
-    div.appendChild(txt);
+    const timeStr=m.timestamp?new Date(m.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+    /* Determine if this sender uses the new avatar layout */
+    const aiAvatar=!isUser?(_getApiAvatar(m.friendId)||_getApiAvatarByName(m.senderName)):'';
+    const userAvatar=isUser?_cachedUserAvatar:'';
+    const useAvatarLayout=isUser||!!aiAvatar;
+    if(useAvatarLayout){
+      /* ── New grouped avatar layout ── */
+      div.classList.add('chat-msg-avatared');
+      div.dataset.senderRole=isUser?'user':'ai';
+      var _isGrpMsg=!isUser&&(m.friendId||'').startsWith('group_');
+      div.dataset.senderId=isUser?'_user_':(_isGrpMsg?(m.senderName||''):(m.friendId||activeFriendId||''));
+      if(!isGroupCont){
+        /* Build header row: avatar + name + time */
+        const hdr=document.createElement('div');
+        hdr.className='chat-msg-header '+(isUser?'align-right':'align-left');
+        hdr.appendChild(_buildAvatarCircle(sName,isUser?userAvatar:aiAvatar));
+        const nm=document.createElement('span');nm.className='r-head-name';nm.textContent=sName;hdr.appendChild(nm);
+        if(timeStr){const tm=document.createElement('span');tm.className='r-time';tm.textContent=timeStr;hdr.appendChild(tm)}
+        frag.appendChild(hdr);
+      }else if(timeStr){
+        /* Continuation: show subtle inline timestamp */
+        const ct=document.createElement('div');ct.className='chat-msg-cont-time';
+        ct.style.textAlign=isUser?'right':'left';
+        if(isUser)ct.style.marginRight='46px'; else ct.style.marginLeft='46px';
+        ct.textContent=timeStr;frag.appendChild(ct);
+      }
+      const txt=document.createElement('div');txt.className='r-text';
+      if(!isUser){_renderAiContent(txt,div,m.content)}else{txt.textContent=m.content}
+      div.appendChild(txt);
+    }else{
+      /* ── Original layout for AI without avatar — unchanged ── */
+      const head=document.createElement('div');head.className='r-head';
+      head.innerHTML=esc(sName)+(timeStr?'<span class="r-time">'+timeStr+'</span>':'');
+      div.appendChild(head);
+      const txt=document.createElement('div');txt.className='r-text';
+      if(!isUser){_renderAiContent(txt,div,m.content)}else{txt.textContent=m.content}
+      div.appendChild(txt);
+    }
     if(m.files&&m.files.length)m.files.forEach(function(f){div.appendChild(_buildFileCard(f))});
     if(m.images&&m.images.length)m.images.forEach(function(img){var el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
     if(m.id){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(m.id,div,frag)};div.appendChild(db)}
@@ -5424,7 +5927,8 @@ function _buildMsgEl(m,isFullscreen){
   return frag;
 }
 var _cachedUserName='';
-function _refreshCachedUserName(){dbGet('about','main').then(a=>{if(a&&a.name)_cachedUserName=a.name;updateNavUserIdentity(a)}).catch(()=>{})}
+var _cachedUserAvatar='';
+function _refreshCachedUserName(){dbGet('about','main').then(a=>{if(a&&a.name)_cachedUserName=a.name;_cachedUserAvatar=(a&&a.avatar)||'';updateNavUserIdentity(a)}).catch(()=>{})}
 async function updateNavUserIdentity(data){
   try{
     if(!data)data=await dbGet('about','main');
@@ -5458,7 +5962,11 @@ function _renderBatch(container,msgs,fromEnd,isFullscreen){
     btn.onclick=function(){loadMoreChat(container,isFullscreen)};
     container.appendChild(btn);
   }
-  batch.forEach(m=>container.appendChild(_buildMsgEl(m,isFullscreen)));
+  batch.forEach(function(m,i){
+    var prev=i>0?batch[i-1]:null;
+    var isCont=prev&&prev.role===m.role&&(m.role==='user'||((prev.friendId||'_')===(m.friendId||'_')&&(!m.senderName||(prev.senderName||'_')===(m.senderName||'_'))));
+    container.appendChild(_buildMsgEl(m,isFullscreen,isCont));
+  });
   container.scrollTop=container.scrollHeight;
 }
 function loadMoreChat(container,isFullscreen){
@@ -5476,7 +5984,7 @@ function loadMoreChat(container,isFullscreen){
     if(oldBtn)oldBtn.remove();
   }
   const firstMsg=container.querySelector('.chat-msg');
-  newMsgs.forEach(m=>{container.insertBefore(_buildMsgEl(m,isFullscreen),firstMsg)});
+  newMsgs.forEach(function(m,i){var prev=i>0?newMsgs[i-1]:null;var isCont=prev&&prev.role===m.role&&(m.role==='user'||((prev.friendId||'_')===(m.friendId||'_')&&(!m.senderName||(prev.senderName||'_')===(m.senderName||'_'))));container.insertBefore(_buildMsgEl(m,isFullscreen,isCont),firstMsg)});
   /* Select模式：为新加载的消息补加选择圆圈 */
   if(_chatSelectMode){
     container.querySelectorAll('.chat-msg[data-msg-id]').forEach(el=>{
@@ -5897,7 +6405,7 @@ async function sendChatMessage(){
           const gStreamRefs=activeFriendId===_targetFriend?_createStreamBubble(_targetFriend,selfName):[];
           let _gSBuf='',_gSThinkBuf='',_gSState=0;
           let _gLiveThink=[];
-          const _gEnsureThink=()=>{if(_gLiveThink.length)return;gStreamRefs.forEach(ref=>{const w=document.createElement('div');w.className='chat-thinking-wrap expanded';if(!ref.full)w.style.cssText='max-width:100%;margin:0 0 4px 0';const t=document.createElement('div');t.className='chat-thinking-toggle open';t.innerHTML='<span class="think-arrow">\u25b8</span><span class="think-label">thinking</span>';t.onclick=function(){w.classList.toggle('expanded');t.classList.toggle('open')};w.appendChild(t);const b=document.createElement('div');b.className='chat-thinking-body chat-stream-cursor';b.style.whiteSpace='pre-wrap';w.appendChild(b);ref.container.insertBefore(w,ref.div);_gLiveThink.push({w,b,t})})};
+          const _gEnsureThink=()=>{if(_gLiveThink.length)return;gStreamRefs.forEach(ref=>{const w=document.createElement('div');w.className='chat-thinking-wrap expanded';if(!ref.full)w.style.cssText='max-width:100%;margin:0 0 4px 0';const t=document.createElement('div');t.className='chat-thinking-toggle open';t.innerHTML='<span class="think-arrow">\u25b8</span><span class="think-label">thinking</span>';t.onclick=function(){w.classList.toggle('expanded');t.classList.toggle('open')};w.appendChild(t);const b=document.createElement('div');b.className='chat-thinking-body chat-stream-cursor';b.style.whiteSpace='pre-wrap';w.appendChild(b);var _gThIns=ref.div;var _gThPr=ref.div.previousElementSibling;if(_gThPr&&(_gThPr.classList.contains('chat-msg-header')||_gThPr.classList.contains('chat-msg-cont-time')))_gThIns=_gThPr;ref.container.insertBefore(w,_gThIns);_gLiveThink.push({w,b,t})})};
           const _gThinkF=(tk)=>{_gEnsureThink();_gLiveThink.forEach(e=>{e.b.textContent+=tk})};
           const _gFlush=(ch)=>{gStreamRefs.forEach(ref=>{if(ref.isTextNode)ref.txt.textContent+=ch;else ref.txt.textContent+=ch})};
           try{
@@ -6101,7 +6609,11 @@ async function sendChatMessage(){
           wrap.appendChild(toggle);
           const body=document.createElement('div');body.className='chat-thinking-body chat-stream-cursor';body.style.whiteSpace='pre-wrap';
           wrap.appendChild(body);
-          ref.container.insertBefore(wrap,ref.div);
+          /* Insert thinking BEFORE the avatar header (not between header and bubble) */
+          var _thInsertRef=ref.div;
+          var _thPrev=ref.div.previousElementSibling;
+          if(_thPrev&&(_thPrev.classList.contains('chat-msg-header')||_thPrev.classList.contains('chat-msg-cont-time')))_thInsertRef=_thPrev;
+          ref.container.insertBefore(wrap,_thInsertRef);
           _liveThinkEls.push({wrap,body,toggle});
         });
       };
@@ -6167,7 +6679,10 @@ async function sendChatMessage(){
           wrap.appendChild(toggle);
           const body=document.createElement('div');body.className='chat-thinking-body';body.textContent=thinkingText;
           wrap.appendChild(body);
-          ref.container.insertBefore(wrap,ref.div)
+          /* Insert thinking BEFORE header, not between header and bubble */
+          var _fbIns=ref.div;var _fbPr=ref.div.previousElementSibling;
+          if(_fbPr&&(_fbPr.classList.contains('chat-msg-header')||_fbPr.classList.contains('chat-msg-cont-time')))_fbIns=_fbPr;
+          ref.container.insertBefore(wrap,_fbIns)
         })
       }
       const aiMsg={id:'msg_'+(Date.now()+1),role:'assistant',content:replyText,thinking:thinkingText||undefined,friendId:_targetFriend,timestamp:Date.now()};
@@ -6257,14 +6772,43 @@ function appendChatBubble(role,text,senderName,thinkingText,msgId,images,files){
     if(msgId)div.dataset.msgId=msgId;
     if(full){
       const sName=isUser?(_cachedUserName||'You'):(senderName||_getActiveAiName()||'AI');
-      const head=document.createElement('div');
-      head.className='r-head';
-      head.innerHTML=esc(sName)+'<span class="r-time">'+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'</span>';
-      div.appendChild(head);
-      const txt=document.createElement('div');
-      txt.className='r-text';
-      if(!isUser){_renderAiContent(txt,div,text)}else{txt.textContent=text}
-      div.appendChild(txt);
+      const timeStr=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      const aiAvatar=!isUser?(_getApiAvatar()||_getApiAvatarByName(senderName)):'';
+      const userAvatar=isUser?_cachedUserAvatar:'';
+      const useAvatarLayout=isUser||!!aiAvatar;
+      if(useAvatarLayout){
+        div.classList.add('chat-msg-avatared');
+        div.dataset.senderRole=isUser?'user':'ai';
+        var _isGrpCtx=(activeFriendId||'').startsWith('group_');
+        div.dataset.senderId=isUser?'_user_':(_isGrpCtx?(senderName||''):(activeFriendId||''));
+        /* Detect if previous msg is from same sender → continuation */
+        var _prevMsgs=container.querySelectorAll('.chat-msg');
+        var _lastM=_prevMsgs.length?_prevMsgs[_prevMsgs.length-1]:null;
+        var _isCont=_lastM&&_lastM.dataset.senderRole===(isUser?'user':'ai')&&_lastM.dataset.senderId===(isUser?'_user_':(_isGrpCtx?(senderName||''):(activeFriendId||'')));
+        if(!_isCont){
+          const hdr=document.createElement('div');
+          hdr.className='chat-msg-header '+(isUser?'align-right':'align-left');
+          hdr.appendChild(_buildAvatarCircle(sName,isUser?userAvatar:aiAvatar));
+          const nm=document.createElement('span');nm.className='r-head-name';nm.textContent=sName;hdr.appendChild(nm);
+          const tm=document.createElement('span');tm.className='r-time';tm.textContent=timeStr;hdr.appendChild(tm);
+          container.appendChild(hdr);
+        }else{
+          const ct=document.createElement('div');ct.className='chat-msg-cont-time';
+          ct.style.textAlign=isUser?'right':'left';
+          if(isUser)ct.style.marginRight='46px'; else ct.style.marginLeft='46px';
+          ct.textContent=timeStr;container.appendChild(ct);
+        }
+        const txt=document.createElement('div');txt.className='r-text';
+        if(!isUser){_renderAiContent(txt,div,text)}else{txt.textContent=text}
+        div.appendChild(txt);
+      }else{
+        const head=document.createElement('div');head.className='r-head';
+        head.innerHTML=esc(sName)+'<span class="r-time">'+timeStr+'</span>';
+        div.appendChild(head);
+        const txt=document.createElement('div');txt.className='r-text';
+        if(!isUser){_renderAiContent(txt,div,text)}else{txt.textContent=text}
+        div.appendChild(txt);
+      }
       fls.forEach(function(f){div.appendChild(_buildFileCard(f))});
       imgs.forEach(img=>{const el=document.createElement('img');el.className='chat-bubble-img';el.src=img.dataUrl;el.alt=img.name||'image';el.onclick=function(){_viewImageFull(img.dataUrl)};div.appendChild(el)});
       if(msgId){const db=document.createElement('button');db.className='chat-msg-del';db.textContent='✕';db.title='删除此消息';db.onclick=function(ev){ev.stopPropagation();deleteSingleMsg(msgId,div)};div.appendChild(db)}
@@ -6295,9 +6839,12 @@ function appendChatBubble(role,text,senderName,thinkingText,msgId,images,files){
 
 async function deleteSingleMsg(id,bubble,frag){
   try{await dbDelete('chatMessages',id)}catch(e){toast('删除失败');return}
-  /* Remove the bubble and its thinking block if present */
+  /* Remove the bubble and its thinking block / avatar header if present */
   if(bubble){
-    const prev=bubble.previousElementSibling;
+    let prev=bubble.previousElementSibling;
+    /* Remove avatar header or continuation timestamp before the bubble */
+    if(prev&&(prev.classList.contains('chat-msg-header')||prev.classList.contains('chat-msg-cont-time')))prev.remove();
+    prev=bubble.previousElementSibling;
     if(prev&&prev.classList.contains('chat-thinking-wrap'))prev.remove();
     bubble.remove();
   }
@@ -6433,6 +6980,8 @@ async function callApiChatStream(cfg,messages,opts){
     const res=await fetch(url,{method:'POST',signal:ac.signal,headers:hdrs,body});
     clearTimeout(tm);_resetHB();
     if(!res.ok){const e=await res.text();throw new Error(res.status+': '+e)}
+    const _sct=res.headers.get('content-type')||'';
+    if(_sct.includes('text/html')){throw new Error('API端点返回了网页而非JSON——请检查端点URL是否正确。如使用中转站，请确认API地址填写到完整路径（如 https://xxx.com/v1/chat/completions）')}
     const reader=res.body.getReader();const decoder=new TextDecoder();let buf='';
     while(true){
       const{done,value}=await reader.read();if(done)break;
@@ -6488,11 +7037,36 @@ function _createStreamBubble(_targetFriend,senderName){
     const div=document.createElement('div');div.className='chat-msg ai';
     if(full){
       const sName=senderName||_getActiveAiName()||'AI';
-      const head=document.createElement('div');head.className='r-head';
-      head.innerHTML=esc(sName)+'<span class="r-time">'+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'</span>';
-      div.appendChild(head);
-      const txt=document.createElement('div');txt.className='r-text chat-stream-cursor';
-      div.appendChild(txt);refs.push({div,txt,full:true,container});
+      const timeStr=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      const aiAvatar=_getApiAvatar()||_getApiAvatarByName(senderName);
+      if(aiAvatar){
+        /* ── New avatar layout for streaming ── */
+        div.classList.add('chat-msg-avatared');
+        div.dataset.senderRole='ai';
+        var _isGrpSCtx=(activeFriendId||'').startsWith('group_');
+        div.dataset.senderId=_isGrpSCtx?(senderName||''):(activeFriendId||'');
+        var _prevMsgs=container.querySelectorAll('.chat-msg');
+        var _lastM=_prevMsgs.length?_prevMsgs[_prevMsgs.length-1]:null;
+        var _isCont=_lastM&&_lastM.dataset.senderRole==='ai'&&_lastM.dataset.senderId===(_isGrpSCtx?(senderName||''):(activeFriendId||''));
+        if(!_isCont){
+          const hdr=document.createElement('div');hdr.className='chat-msg-header align-left';
+          hdr.appendChild(_buildAvatarCircle(sName,aiAvatar));
+          const nm=document.createElement('span');nm.className='r-head-name';nm.textContent=sName;hdr.appendChild(nm);
+          const tm=document.createElement('span');tm.className='r-time';tm.textContent=timeStr;hdr.appendChild(tm);
+          container.appendChild(hdr);
+        }else{
+          const ct=document.createElement('div');ct.className='chat-msg-cont-time';ct.style.textAlign='left';ct.style.marginLeft='46px';ct.textContent=timeStr;container.appendChild(ct);
+        }
+        const txt=document.createElement('div');txt.className='r-text chat-stream-cursor';
+        div.appendChild(txt);refs.push({div,txt,full:true,container});
+      }else{
+        /* ── Original layout for AI without avatar ── */
+        const head=document.createElement('div');head.className='r-head';
+        head.innerHTML=esc(sName)+'<span class="r-time">'+timeStr+'</span>';
+        div.appendChild(head);
+        const txt=document.createElement('div');txt.className='r-text chat-stream-cursor';
+        div.appendChild(txt);refs.push({div,txt,full:true,container});
+      }
     }else{
       if(senderName){
         const label=document.createElement('span');label.style.cssText='font-size:0.68rem;opacity:0.7;display:block;margin-bottom:2px';label.textContent=senderName;div.appendChild(label)
@@ -6602,11 +7176,13 @@ async function callApiChat(cfg,messages,opts){
   });
   clearTimeout(tm);
   if(!res.ok){const e=await res.text();throw new Error(res.status+': '+e)}
+  const _oct=res.headers.get('content-type')||'';
+  if(_oct.includes('text/html')){throw new Error('API端点返回了网页而非JSON——请检查端点URL是否正确。如使用中转站，请确认API地址填写到完整路径（如 https://xxx.com/v1/chat/completions）')}
   const data=await res.json();
   const ch=(data.choices&&data.choices[0])||{};
   if(ch.message&&ch.message.reasoning_content) _lastApiThinking=String(ch.message.reasoning_content).replace(/<\/?thinking>/gi,'').trim();
   return pack((ch.message&&ch.message.content)||'',ch.finish_reason==='length');
-  }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时（'+Math.round(timeoutMs/1000)+'秒），请检查网络连接或API服务状态');throw e}
+  }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时（'+Math.round(timeoutMs/1000)+'秒），请检查网络连接或API服务状态');if(e.message&&e.message.includes('not valid JSON'))throw new Error('API端点返回了非JSON内容——请检查端点URL是否正确。如使用中转站，请确认地址填写到完整API路径');throw e}
 }
 
 async function clearChatHistory(){
