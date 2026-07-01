@@ -4875,6 +4875,8 @@ async function selectFriend(id){
     document.getElementById('chat-header-name').textContent=cfg.nickname||cfg.model;
     document.getElementById('chat-mini-title').textContent=cfg.nickname||cfg.model;
   }
+  /* 打开聊天时自动检查/生成摘要 */
+  setTimeout(()=>autoSummaryOnOpen(id,null),300);
 }
 
 function createGroup(){
@@ -4956,6 +4958,8 @@ async function selectGroup(gid){
   }
   document.getElementById('chat-header-name').textContent=group.name;
   document.getElementById('chat-mini-title').textContent=group.name;
+  /* 打开群聊时自动检查/生成摘要 */
+  setTimeout(()=>autoSummaryOnOpen(gid,null),300);
 }
 
 async function deleteGroup(gid){
@@ -4963,6 +4967,8 @@ async function deleteGroup(gid){
   await dbDelete('groups',gid);
   const msgs=await dbGetByIndex('chatMessages','byFriend',gid);
   for(const m of msgs){await dbDelete('chatMessages',m.id)}
+  /* 清理群聊摘要 */
+  try{const sums=await dbGetAll('chatSummaries');for(const s of sums){if(s.friendId===gid)await dbDelete('chatSummaries',s.id)}}catch(e){}
   if(activeFriendId===gid)activeFriendId=null;
   loadFriendsList();
   document.getElementById('chat-full-messages').innerHTML='<div class="chat-msg system">选择一个API开始对话</div>';
@@ -4997,6 +5003,8 @@ async function deleteThread(tid){
   await dbDelete('chatThreads',tid);
   const msgs=await dbGetAll('chatMessages');
   for(const m of msgs){if(m.threadId===tid)await dbDelete('chatMessages',m.id)}
+  /* 清理话题摘要 */
+  try{await dbDelete('chatSummaries','sum_'+tid)}catch(e){}
   if(activeThreadId===tid){activeThreadId=null;if(activeFriendId)selectFriend(activeFriendId)}
   loadFriendsList();toast('话题频道已删除');
 }
@@ -5031,6 +5039,8 @@ async function selectThread(friendId,threadId){
     document.getElementById('chat-header-name').textContent=(cfg.nickname||cfg.model)+' · '+threadName;
     document.getElementById('chat-mini-title').textContent=(cfg.nickname||cfg.model)+' · '+threadName;
   }
+  /* 打开话题频道时自动检查/生成摘要 */
+  setTimeout(()=>autoSummaryOnOpen(friendId,threadId),300);
 }
 
 function searchChat(q){
@@ -5841,6 +5851,8 @@ function openChatPanel(){
   renderChatPanelFriends();
   loadChatMessages();
   document.getElementById('chat-input').focus();
+  /* 打开迷你面板时也检查摘要 */
+  if(activeFriendId)setTimeout(()=>autoSummaryOnOpen(activeFriendId,activeThreadId||null),300);
 }
 function closeChatPanel(){
   const panel=document.getElementById('chat-panel');
@@ -7227,6 +7239,8 @@ async function clearChatHistory(){
   for(const m of msgs){await dbDelete('chatMessages',m.id)}
   /* Also clear all threads */
   try{const threads=await dbGetAll('chatThreads');for(const t of threads)await dbDelete('chatThreads',t.id)}catch(e){}
+  /* 清理所有摘要 */
+  try{const sums=await dbGetAll('chatSummaries');for(const s of sums)await dbDelete('chatSummaries',s.id)}catch(e){}
   activeThreadId=null;
   updateChatCount();updateChatStorageInfo();
   document.getElementById('chat-messages').innerHTML='<div class="chat-msg system">发送消息开始对话</div>';
@@ -7297,6 +7311,8 @@ async function confirmDeleteByApi(){
   }
   /* Also delete threads for selected friends */
   try{const threads=await dbGetAll('chatThreads');for(const t of threads){if(selected.includes(t.friendId))await dbDelete('chatThreads',t.id)}}catch(e){}
+  /* 清理相关摘要 */
+  try{const sums=await dbGetAll('chatSummaries');for(const s of sums){if(selected.includes(s.friendId))await dbDelete('chatSummaries',s.id)}}catch(e){}
   updateChatCount();updateChatStorageInfo();
   /* Refresh current chat view if affected */
   if(activeFriendId&&selected.includes(activeFriendId)){
@@ -7554,6 +7570,45 @@ async function _doSummarize(cfg,friendId,threadId,allMsgs){
     return newSummary;
   }
   return existing?existing.summary:null;
+}
+
+/* ===== AUTO SUMMARY ON CHAT OPEN ===== */
+/* 打开聊天时自动检查并生成摘要（修复：仅在发送消息后才触发摘要的BUG） */
+async function autoSummaryOnOpen(friendId,threadId){
+  try{
+    const ss=await getSummarySettings();if(!ss.enabled)return;
+    /* 加载该好友/话题的所有消息 */
+    const allMsgs=(await dbGetByIndex('chatMessages','byFriend',friendId))
+      .filter(m=>threadId?m.threadId===threadId:!m.threadId)
+      .sort((a,b)=>a.timestamp-b.timestamp);
+    if(allMsgs.length<SUMMARY_TRIGGER_COUNT)return;/* 消息太少，不需要摘要 */
+    /* 快速预检：是否真的有足够多未覆盖的消息（避免不必要的API调用） */
+    const existing=await getChatSummary(friendId,threadId);
+    const keepCount=ss.keepCount||6;
+    const maxWindow=ss.summaryWindow||60;
+    const windowStart=Math.max(0,allMsgs.length-maxWindow-keepCount);
+    const windowMsgs=allMsgs.slice(windowStart);
+    let coveredInWindow=0;
+    if(existing&&existing.coveredUpTo){
+      for(let i=0;i<windowMsgs.length;i++){if(windowMsgs[i].timestamp<=existing.coveredUpTo)coveredInWindow=i+1;else break}
+    }
+    if(windowMsgs.length-coveredInWindow<SUMMARY_TRIGGER_COUNT)return;/* 未覆盖消息不够，跳过 */
+    /* 确定 API 配置：1v1用好友API，群聊用第一个成员API */
+    let cfg;
+    if(friendId.startsWith('group_')){
+      const groups=await loadGroups();
+      const group=groups.find(g=>g.id===friendId);
+      if(group&&group.members&&group.members.length)cfg=apiConfigs.find(a=>a.id===group.members[0]);
+    }else{
+      cfg=apiConfigs.find(a=>a.id===friendId);
+    }
+    /* 如果聊天API无效，尝试用摘要专用API */
+    if(!cfg||!cfg.apiKey||!cfg.endpoint){
+      if(ss.summaryApiId){const sc=apiConfigs.find(a=>a.id===ss.summaryApiId);if(sc&&sc.apiKey&&sc.endpoint)cfg=sc}
+    }
+    if(!cfg||!cfg.apiKey||!cfg.endpoint)return;
+    await maybeSummarize(cfg,friendId,threadId,allMsgs);
+  }catch(e){/* 静默失败，不阻塞聊天加载 */}
 }
 
 /* ===== WELCOME-BACK TIME GAP MESSAGE (Presence v2) ===== */
