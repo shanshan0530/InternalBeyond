@@ -587,6 +587,21 @@ body:not(.theme-infernal) .chat-cal-jump select{background:rgba(240,248,255,0.8)
 .si-bar-wrap .si-count{font-size:0.72rem;opacity:0.6;white-space:nowrap}
 body:not(.theme-infernal) .si-bar-wrap{background:rgba(60,120,200,0.06);border-color:rgba(60,120,200,0.15)}
 body:not(.theme-infernal) .si-bar-wrap .si-val{color:#2a5a8c}
+/* Summary management cards */
+.sum-mgmt-card{padding:12px 14px;cursor:pointer}
+.sum-mgmt-name{font-size:0.92rem;color:var(--pale);font-weight:500}
+.sum-mgmt-kind{font-size:0.72rem;color:var(--accent-light);font-weight:400;opacity:0.8}
+.sum-mgmt-meta{font-size:0.72rem;color:var(--silver);margin-top:3px;opacity:0.85}
+.sum-mgmt-del{cursor:pointer;color:var(--text-muted);transition:color 0.2s;display:flex;align-items:center;padding:4px}
+.sum-mgmt-del:hover{color:#e88}
+.sum-mgmt-empty{font-size:0.82rem;color:var(--silver);padding:8px 0}
+.summary-detail{margin-top:10px;padding-top:10px;border-top:1px solid rgba(175,195,228,0.12);font-size:0.85rem;color:var(--silver);line-height:1.8;white-space:pre-wrap;word-break:break-word}
+body:not(.theme-infernal) .sum-mgmt-name{color:#0a1e42}
+body:not(.theme-infernal) .sum-mgmt-kind{color:#2a5a8c}
+body:not(.theme-infernal) .sum-mgmt-meta{color:#3a5a8c}
+body:not(.theme-infernal) .sum-mgmt-del{color:#5a7a9c}
+body:not(.theme-infernal) .sum-mgmt-empty{color:#3a5a8c}
+body:not(.theme-infernal) .summary-detail{color:#1a3262;border-top-color:rgba(50,90,150,0.15)}
 /* Export inline selector */
 .export-section{max-height:0;overflow:hidden;transition:max-height 0.35s ease}
 .export-section.open{max-height:600px}
@@ -823,7 +838,7 @@ body:not(.theme-infernal) .mem-token-hint{color:#233e6c}
 /* 画布星场容器 */
 #mem-sky-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 body:not(.theme-infernal) #mem-sky-canvas{display:none}
-/* 霜烬 Frost-Ember：冷板岩星云 + 一缕暗酒红（血斑呼应）+ 近黑冷底（视差星场版） */
+/* 霜烬 Frost-Ember：冷板岩星云 + 暗酒红+近黑冷底（视差星场版） */
 body.theme-infernal .mem-sky{background:
   radial-gradient(ellipse 52% 46% at 26% 30%,rgba(74,98,150,0.16),transparent 60%),
   radial-gradient(ellipse 46% 42% at 78% 64%,rgba(66,90,140,0.12),transparent 58%),
@@ -2361,7 +2376,7 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
         <div class="module-intro-top"><h2>Blog</h2>
         <span class="module-intro-sub">Personal journal system</span></div>
         <div class="module-intro-rule"></div>
-        <div class="module-intro-desc">创作空间。写日记、剧本、保存书籍、管理分类、邀请TA来留言或生成记忆。<br>密码日记本为私密的内容提供了一层保护——私密互动后的对话与故事存档默认存于此处。</div>
+        <div class="module-intro-desc">创作空间。写日记、剧本、查阅书籍、管理分类、邀请TA来批注、留言或生成记忆。<br>密码日记本为私密的内容提供了一层保护——私密互动后的对话与故事存档默认存于此处。</div>
       </div>
       <div class="module-intro" id="diary-intro" style="display:none">
         <div class="module-intro-top"><h2>Password Diary</h2>
@@ -2903,6 +2918,25 @@ body:not(.theme-infernal) .group-member-tag{background:rgba(100,160,220,0.15);co
         </select>
       </div>
       <div style="font-size:0.72rem;opacity:0.55;margin-top:4px;line-height:1.6">开启后，每 10 条新消息会触发一次摘要生成（消耗少量额外 Token）。摘要作为后台参考注入，AI 不会向你复述摘要内容。</div>
+      <div class="api-form-group" style="margin-top:14px">
+        <label>摘要生成 API <span style="font-weight:400;opacity:0.5;font-size:0.72rem">（选用廉价模型可节省开销）</span></label>
+        <select id="api-summary-api" onchange="saveSummarySettings()">
+          <option value="">跟随对话 API（默认）</option>
+        </select>
+      </div>
+      <div class="api-form-group" style="margin-top:8px">
+        <label>摘要回看窗口 <span style="font-weight:400;opacity:0.5;font-size:0.72rem">（默认 60 条）</span></label>
+        <select id="api-summary-window" onchange="saveSummarySettings()">
+          <option value="60" selected>60 条（默认，摘要上限 600 字）</option>
+          <option value="100">100 条（摘要上限 800 字）</option>
+        </select>
+      </div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(175,195,228,0.12)">
+        <div class="api-form-group" style="margin-bottom:10px">
+          <label style="display:flex;align-items:center;justify-content:space-between"><span>摘要管理</span><span style="font-weight:400;opacity:0.55;font-size:0.72rem" id="summary-mgmt-count"></span></label>
+        </div>
+        <div id="summary-mgmt-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
     </div>
 
     <div class="api-section glass-card" style="padding:20px">
@@ -3302,8 +3336,8 @@ i would like the room to be enough.
           <p><strong>多模组生成支持</strong>：保存后，该 API 自动以其自定义昵称与设定出现在 Chat、Letters、Blog 评论、Room 占卜与故事中。</p>
           <p><strong>聊天记录管理</strong>：页面底部可查看消息总数，支持清空、按好友/群聊分组删除或导出聊天记录。</p>
           <p><strong>AI 读取范围</strong>：控制 AI 在写信、留言、聊天时能读取多少你的内容。可分别配置聊天记录（5/10/20/30/全部）、群聊记录和日志的读取条数（日志支持设置为「不读取」）。</p>
-          <p><strong>对话摘要</strong>：开启后，超出近期保留范围的旧消息会被自动压缩成摘要笔记注入系统上下文。AI 既能"记住"早期要点，又不会因消息过多而产生幻觉。每 10 条新消息触发一次摘要生成。</p>
-          <p><strong>Presence</strong>：<span class="internal-only">开启后，离开一段时间后再次重新打开页面时TA会收到你的离开时长。可配置触发间隔（1/2/4/8 小时）。</span><span class="infernal-only">让TA注意到你离开了多久后才回来。可配置触发间隔（1/2/4/8 小时）。</span></p>
+          <p><strong>对话摘要</strong>：开启后，超出近期保留范围的旧消息会被自动压缩成摘要笔记注入系统上下文。AI 既能"记住"早期要点，又不会因消息过多而产生幻觉。每 10 条新消息触发一次摘要生成。可配置摘要回看窗口（60 条 / 100 条），窗口越大覆盖的历史越多、摘要字数上限也相应提高（60 条 → 600 字，100 条 → 800 字）。可为摘要生成选择专用 API（比如用廉价模型做摘要以节省开销），默认跟随对话 API。摘要生成失败时会弹出提示气泡告知原因。摘要管理面板可查看每个好友的摘要详情（内容、更新时间、字数、撰写者），也可逐条删除。注意：首次开启时只回看窗口范围内的最近消息，更早的历史不会被覆盖；摘要不会自动删除，只会随新消息整合更新。删除好友时对应摘要也会一并清理。</p>
+          <p><strong>Presence</strong>：<span class="internal-only">开启后，离开一段时间后再次打开页面时TA会收到你的离开时长与时间段（如「你在 14:20 离开，17:45 回来，离开约 3 小时 25 分钟」）。系统通过页面可见性变化检测真实离开（安静阅读不会被误判），即使不刷新页面也能在回来时重新触发。可配置触发间隔（1/2/4/8 小时）。</span><span class="infernal-only">让TA注意到你离开了多久后才回来，包括具体的离开与回来时间。系统通过页面可见性变化检测真实离场，安静阅读不会被误判。可配置触发间隔（1/2/4/8 小时）。</span></p>
           <p><strong>记忆系统设置</strong>：控制 Memory 记忆库在每次 API 调用时的注入行为。可配置注入字符上限（1000-6000，默认 2000）和每条记忆内容的截取长度（100-800 字符，默认 200）。调高预算能让 AI 读取更多记忆上下文，但也会增加每次请求的 Token 消耗。此设置同步影响 Memory 页面仪表盘中的 Token 预算估算。</p>
           <p><strong>API 排序</strong>：在 API 列表中拖拽卡片可调整排序，排序变更会同步到 Chat 好友列表。</p>
           <p><strong>危险操作</strong>：顶部显示全站 IndexedDB 数据总容量及各模块占用明细。支持细粒度数据清理——可分别清除 API 密钥、聊天图片、记忆库、信件、对话摘要、上传文件，或重置全站数据。</p>
@@ -3377,6 +3411,8 @@ i would like the room to be enough.
         <p>点击导航栏 <strong>Memory</strong> 进入。借鉴 Ombre Brain 理念的长期情感记忆系统。</p>
         <div class="guide-sub">
           <p><strong>核心理念</strong>：每条记忆带有情感坐标（效价 Valence / 唤醒度 Arousal）、重要性评分、自然衰减机制。不活跃的记忆权重随时间降低，高情绪强度的记忆衰减更慢——就像人的真实记忆。</p>
+          <p><strong>语义相关性匹配</strong>：记忆检索时会自动提取当前对话的关键词，与记忆的标题、内容和标签进行本地匹配。与当前话题相关的记忆获得额外加成（最高 2.5 倍），但原有的重要性、衰减和情感权重仍然是主要排序依据。此匹配在浏览器本地完成，不消耗 API Token。</p>
+          <p><strong>反垄断机制</strong>：为防止同一批记忆被反复选中而其他记忆永远沉底，系统对 2 小时内被反复激活的高频记忆施加疲劳惩罚，并预留 15% 的字符预算作为「探索窗口」从中低分段随机抽取记忆，保证对话的丰富度。</p>
           <p><strong>星图</strong>：顶部星图以二维情感坐标展示所有记忆。横轴标注 效价 VALENCE（消极 → 积极），纵轴标注 唤醒 AROUSAL（平静 → 炽烈）。每颗星的颜色对应领域（情感/日常/创作/思考），大小反映重要性，明暗反映活跃度，金色标识被置顶的记忆。</p>
           <p><strong>仪表盘</strong>：页面顶部显示总计/置顶/未解决/已解决的统计卡片、领域分布条形图、Token 预算估算进度条（预算上限可在 API 页面「记忆系统设置」中调整）。</p>
           <p><strong>时间轴</strong>：左侧时间轴以行星形态展示记忆分布。每颗行星的颜色与星图一致、根据记忆所属领域着色，大小反映重要性。月份切换以菱形标记分隔。同一日期仅标注一次，避免视觉重复。点击行星可快速定位到对应记忆卡片。</p>
@@ -3387,7 +3423,7 @@ i would like the room to be enough.
           <p><strong>写一句话</strong>：展开记忆卡片后，AI 编写的记忆会额外显示「写一句话」按钮。点击后，生成该记忆的 AI 会基于记忆内容、你们的关系设定和 TA 的人设，为你写下一句话。句话以引言格式展示在卡片内。</p>
           <p><strong>可见性控制</strong>：每条记忆可设为四种可见性——全部公开、仅指定可见、排除指定、完全私密。</p>
           <p><strong>Token 预算配置</strong>：在 API 页面「记忆系统设置」中可调整每次注入的字符上限（1000-6000）和每条记忆内容截取长度（100-800 字符）。调高预算让 AI 读取更多记忆上下文，但会增加 Token 消耗。</p>
-          <p><strong>与其他模块的联动</strong>：Chat（单聊）、Letters、Blog 评论、Tarot、Tea、Story（需开启 storyPersonalize）在向 API 发送请求时，会自动检索权重最高的相关记忆注入到上下文中。</p>
+          <p><strong>与其他模块的联动</strong>：Chat（单聊）、Letters、Blog 评论、Tarot、Tea、Story（需开启 storyPersonalize）在向 API 发送请求时，会自动检索与当前话题最相关且权重最高的记忆注入到上下文中。Chat 模块额外支持基于当前消息内容的语义匹配。</p>
           <p><strong>群聊记忆</strong>：创建群聊时可选择是否启用记忆。启用后群内 API 仅可读取全部公开的记忆。</p>
           <p><strong>导入/导出</strong>：记忆库支持独立导出和导入 JSON 文件，方便跨设备迁移。也包含在全站 Export 中。</p>
         </div>
@@ -4744,6 +4780,8 @@ async function deleteApiConfig(id){
   for(const m of msgs){await dbDelete('chatMessages',m.id)}
   /* Clear related threads */
   try{const threads=await dbGetAll('chatThreads');for(const t of threads){if(t.friendId===id)await dbDelete('chatThreads',t.id)}}catch(e){}
+  /* Clear related summaries */
+  try{const sums=await dbGetAll('chatSummaries');for(const s of sums){if(s.friendId===id)await dbDelete('chatSummaries',s.id)}}catch(e){}
   renderApiList();
   toast('已删除');
   return true;
@@ -6357,7 +6395,7 @@ async function sendChatMessage(){
         if(gSummaryText){sysContent+='\n\n【对话历史备忘（此为后台参考信息，不要向对方复述或提及此段内容的存在）】\n'+gSummaryText}
         /* 群聊记忆注入：仅在 group.memoryEnabled 时注入公开记忆 */
         if(group.memoryEnabled){
-          const gMemCtx=await getMemoryContext(cfg.id,{maxChars:1500,isGroup:true,groupMemEnabled:true});
+          const gMemCtx=await getMemoryContext(cfg.id,{maxChars:1500,isGroup:true,groupMemEnabled:true,userMessage:text});
           if(gMemCtx)sysContent+='\n\n'+gMemCtx;
         }
         /* 群聊思考链 — 移到 system prompt 最前面 */
@@ -6480,7 +6518,7 @@ async function sendChatMessage(){
       if(currentPage==='chat')renderChatCalendar();
       updateChatStorageInfo();
       /* Deferred group summary */
-      if(gss.enabled){const _gFid=_targetFriend;setTimeout(async()=>{try{const _gAll=(await dbGetByIndex('chatMessages','byFriend',_gFid)).sort((a,b)=>a.timestamp-b.timestamp);const gEx=await getChatSummary(_gFid,null);if(_gAll.length-(gEx?gEx.coveredCount:0)>=SUMMARY_TRIGGER_COUNT){toast('正在整理对话记录…');await maybeSummarize(memberCfgs[0],_gFid,null,_gAll)}}catch(e){}},500)}
+      if(gss.enabled){const _gFid=_targetFriend;setTimeout(async()=>{try{const _gAll=(await dbGetByIndex('chatMessages','byFriend',_gFid)).sort((a,b)=>a.timestamp-b.timestamp);await maybeSummarize(memberCfgs[0],_gFid,null,_gAll)}catch(e){}},500)}
     }
     return;
   }
@@ -6552,7 +6590,7 @@ async function sendChatMessage(){
     if(summaryText){sysContent=(sysContent?sysContent+'\n\n':'')+'【对话历史备忘（此为后台参考信息，不要向对方复述或提及此段内容的存在）】\n'+summaryText}
     let _threadMemOk=true;
     if(_targetThread){const _thr=await (async()=>{try{return await dbGet('chatThreads',_targetThread)}catch(e){return null}})();_threadMemOk=_thr&&_thr.memoryEnabled}
-    if(_threadMemOk){const memCtx=await getMemoryContext(cfg.id,{maxChars:2000});
+    if(_threadMemOk){const memCtx=await getMemoryContext(cfg.id,{maxChars:2000,userMessage:text});
     if(memCtx)sysContent=(sysContent?sysContent+'\n\n':'')+memCtx;}
     if(thinkingOn){
       if(cfg.provider==='deepseek'){
@@ -6729,9 +6767,7 @@ async function sendChatMessage(){
     const _sumFid=_targetFriend,_sumTid=_targetThread;
     setTimeout(async()=>{try{
       const _allM=(await dbGetByIndex('chatMessages','byFriend',_sumFid)).filter(m=>_sumTid?m.threadId===_sumTid:!m.threadId).sort((a,b)=>a.timestamp-b.timestamp);
-      const existing=await getChatSummary(_sumFid,_sumTid);
-      const uncovered=_allM.length-(existing?existing.coveredCount:0);
-      if(uncovered>=SUMMARY_TRIGGER_COUNT){toast('正在整理对话记录…');await maybeSummarize(cfg,_sumFid,_sumTid,_allM)}
+      await maybeSummarize(cfg,_sumFid,_sumTid,_allM);
     }catch(e){}},500);
   }
   if(currentPage==='chat')renderChatCalendar();
@@ -7397,14 +7433,16 @@ function truncateContext(text,maxChars){if(!text||text.length<=maxChars)return t
 /* ===== CONVERSATION SUMMARY SYSTEM ===== */
 const SUMMARY_TRIGGER_COUNT=10;
 async function getSummarySettings(){
-  try{const s=await dbGet('apiSettings','summarySettings');return s||{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2}}catch(e){return{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2}}
+  try{const s=await dbGet('apiSettings','summarySettings');return s||{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,summaryApiId:'',summaryWindow:60}}catch(e){return{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,summaryApiId:'',summaryWindow:60}}
 }
 async function saveSummarySettings(){
   const s={id:'summarySettings',
     enabled:!!document.getElementById('api-summary-toggle')?.checked,
     keepCount:parseInt(document.getElementById('api-summary-keep')?.value)||6,
     welcomeEnabled:!!document.getElementById('api-welcome-toggle')?.checked,
-    welcomeInterval:parseInt(document.getElementById('api-welcome-interval')?.value)||2};
+    welcomeInterval:parseInt(document.getElementById('api-welcome-interval')?.value)||2,
+    summaryApiId:document.getElementById('api-summary-api')?.value||'',
+    summaryWindow:parseInt(document.getElementById('api-summary-window')?.value)||60};
   await dbPut('apiSettings',s);toast('设置已保存');
 }
 async function loadSummarySettingsUI(){
@@ -7413,76 +7451,155 @@ async function loadSummarySettingsUI(){
   const k=document.getElementById('api-summary-keep');if(k)k.value=String(s.keepCount||6);
   const w=document.getElementById('api-welcome-toggle');if(w)w.checked=!!s.welcomeEnabled;
   const wi=document.getElementById('api-welcome-interval');if(wi)wi.value=String(s.welcomeInterval||2);
+  const sw=document.getElementById('api-summary-window');if(sw)sw.value=String(s.summaryWindow||60);
+  /* Populate summary API dropdown */
+  const sel=document.getElementById('api-summary-api');
+  if(sel){sel.innerHTML='<option value="">跟随对话 API（默认）</option>'+apiConfigs.map(a=>'<option value="'+a.id+'"'+(s.summaryApiId===a.id?' selected':'')+'>'+esc(a.nickname||a.model||'未命名')+'</option>').join('')}
+  renderSummaryMgmt();
+}
+/* --- Summary Management --- */
+async function renderSummaryMgmt(){
+  const list=document.getElementById('summary-mgmt-list');
+  const countEl=document.getElementById('summary-mgmt-count');
+  if(!list)return;
+  try{
+    const all=await dbGetAll('chatSummaries');
+    if(countEl)countEl.textContent=all.length?all.length+' 条摘要':'暂无摘要';
+    if(!all.length){list.innerHTML='<div class="sum-mgmt-empty">还没有生成过摘要。</div>';return}
+    /* 加载群聊列表以识别群聊摘要 */
+    let groups=[];try{groups=await loadGroups()}catch(e){}
+    list.innerHTML=all.map(s=>{
+      let name='';let kind='';
+      if(s.friendId&&s.friendId.startsWith('group_')){
+        const grp=groups.find(g=>g.id===s.friendId);name=grp?grp.name:'未知群聊';kind='群聊';
+      }else{
+        const cfg=apiConfigs.find(a=>a.id===s.friendId);name=cfg?(cfg.nickname||cfg.model||'未命名'):'（已删除）';kind='';
+      }
+      if(s.threadId)kind=kind?kind+' · 频道':'频道';
+      const date=s.updated?new Date(s.updated).toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      const charCount=s.summary?s.summary.length:0;
+      const author=s.authorName||'未记录';
+      return '<div class="glass-card sum-mgmt-card" onclick="toggleSummaryDetail(this)">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'
+        +'<div style="flex:1;min-width:0">'
+        +'<div class="sum-mgmt-name">'+esc(name)+(kind?' <span class="sum-mgmt-kind">'+kind+'</span>':'')+'</div>'
+        +'<div class="sum-mgmt-meta">'+date+' · '+charCount+' 字 · 撰写: '+esc(author)+'</div>'
+        +'</div>'
+        +'<span class="sum-mgmt-del" onclick="event.stopPropagation();deleteSingleSummary(\''+s.id+'\')" title="删除此摘要">'
+        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>'
+        +'</span></div>'
+        +'<div class="summary-detail" style="display:none">'+esc(s.summary||'（空）')+'</div>'
+        +'</div>'
+    }).join('');
+  }catch(e){list.innerHTML=''}
+}
+function toggleSummaryDetail(el){var d=el.querySelector('.summary-detail');if(d)d.style.display=d.style.display==='none'?'block':'none'}
+async function deleteSingleSummary(id){
+  if(!confirm('确定删除这条摘要？下次聊天时会自动重新生成。'))return;
+  try{await dbDelete('chatSummaries',id);toast('摘要已删除');renderSummaryMgmt()}catch(e){toast('删除失败')}
 }
 async function getChatSummary(friendId,threadId){
   const key='sum_'+(threadId||friendId);
   try{return await dbGet('chatSummaries',key)}catch(e){return null}
 }
-async function saveChatSummary(friendId,threadId,summary,coveredUpTo,coveredCount){
+async function saveChatSummary(friendId,threadId,summary,coveredUpTo,coveredCount,authorInfo){
   const key='sum_'+(threadId||friendId);
-  await dbPut('chatSummaries',{id:key,friendId,threadId:threadId||null,summary,coveredUpTo,coveredCount,updated:Date.now()});
+  await dbPut('chatSummaries',{id:key,friendId,threadId:threadId||null,summary,coveredUpTo,coveredCount,updated:Date.now(),authorName:authorInfo||''});
 }
-async function generateSummary(cfg,prevSummary,newMessages){
-  const prompt='你是对话摘要助手。请将以下对话内容压缩为一段简要概括（200-400字）。\n保留：关键话题、重要结论、情感变化、未解决的问题。\n丢弃：寒暄、重复内容、过渡性对话。\n如有之前的摘要，将新内容整合进去，输出完整的更新后摘要。\n\n'
+async function generateSummary(cfg,prevSummary,newMessages,charLimit){
+  const SUMMARY_CHAR_LIMIT=charLimit||600;
+  const prompt='你是对话摘要助手。请将以下对话内容压缩为一段简要概括。\n严格要求：总输出不超过 '+SUMMARY_CHAR_LIMIT+' 字。如果之前的摘要过长，先大幅压缩旧摘要（只保留最关键的事实和未解决的问题），再整合新内容。最终输出必须是一段完整、独立的摘要。\n保留：关键话题、重要结论、情感变化、未解决的问题。\n丢弃：寒暄、重复内容、过渡性对话、已解决的旧话题细节。\n\n'
     +(prevSummary?'【之前的摘要】\n'+prevSummary+'\n\n':'')
     +'【新对话内容】\n'+newMessages.map(m=>(m.role==='user'?'用户：':'AI：')+getTextContent(m)).join('\n')+'\n\n请直接输出更新后的摘要，不要加标题或解释。';
   try{
     const result=await callApi(cfg,prompt);
-    return result?result.trim():null;
-  }catch(e){return null}
+    if(!result){toast('摘要生成失败：未收到有效回复');return null}
+    let text=result.trim();
+    if(text.length>SUMMARY_CHAR_LIMIT+100)text=text.slice(0,SUMMARY_CHAR_LIMIT)+'…';
+    return text;
+  }catch(e){toast('摘要生成失败：'+(e.message||'API 无法连接'));return null}
 }
-const SUMMARY_MAX_WINDOW=60;/* 最多往回看 60 条，更早的自然遗忘 */
+const SUMMARY_WINDOW_LIMITS={60:600,100:800};/* 窗口 → 摘要字数上限 */
+let _summarizing=false;
 async function maybeSummarize(cfg,friendId,threadId,allMsgs){
+  if(_summarizing)return null;_summarizing=true;
+  try{return await _doSummarize(cfg,friendId,threadId,allMsgs)}finally{_summarizing=false}
+}
+async function _doSummarize(cfg,friendId,threadId,allMsgs){
   const ss=await getSummarySettings();if(!ss.enabled)return null;
   const existing=await getChatSummary(friendId,threadId);
   const keepCount=ss.keepCount||6;
-  /* 只关注最近 MAX_WINDOW+keepCount 条消息，更早的不再压缩 */
-  const windowStart=Math.max(0,allMsgs.length-SUMMARY_MAX_WINDOW-keepCount);
+  const maxWindow=ss.summaryWindow||60;
+  const charLimit=SUMMARY_WINDOW_LIMITS[maxWindow]||600;
+  /* 只关注最近 maxWindow+keepCount 条消息，更早的不再压缩 */
+  const windowStart=Math.max(0,allMsgs.length-maxWindow-keepCount);
   const windowMsgs=allMsgs.slice(windowStart);
-  const coveredInWindow=existing?Math.max(0,existing.coveredCount-windowStart):0;
+  /* 用时间戳而非计数来定位已覆盖范围（防止删消息导致错位） */
+  let coveredInWindow=0;
+  if(existing&&existing.coveredUpTo){
+    for(let i=0;i<windowMsgs.length;i++){if(windowMsgs[i].timestamp<=existing.coveredUpTo)coveredInWindow=i+1;else break}
+  }
   const uncovered=windowMsgs.length-coveredInWindow;
   if(uncovered<SUMMARY_TRIGGER_COUNT)return existing?existing.summary:null;
   const toSummarize=windowMsgs.slice(coveredInWindow,windowMsgs.length-keepCount);
   if(toSummarize.length<2)return existing?existing.summary:null;
-  const newSummary=await generateSummary(cfg,existing?existing.summary:null,toSummarize);
+  /* 如果配置了专用摘要 API，优先使用 */
+  let sumCfg=cfg;
+  if(ss.summaryApiId){const sc=apiConfigs.find(a=>a.id===ss.summaryApiId);if(sc&&sc.apiKey&&sc.endpoint)sumCfg=sc}
+  toast('正在整理对话记录…');
+  const newSummary=await generateSummary(sumCfg,existing?existing.summary:null,toSummarize,charLimit);
   if(newSummary){
-    await saveChatSummary(friendId,threadId,newSummary,toSummarize[toSummarize.length-1].timestamp,allMsgs.length-keepCount);
+    const authorLabel=(sumCfg.nickname||sumCfg.model||'AI')+(sumCfg.id!==cfg.id?' (摘要专用)':'');
+    await saveChatSummary(friendId,threadId,newSummary,toSummarize[toSummarize.length-1].timestamp,allMsgs.length-keepCount,authorLabel);
     return newSummary;
   }
   return existing?existing.summary:null;
 }
 
-/* ===== WELCOME-BACK TIME GAP MESSAGE ===== */
+/* ===== WELCOME-BACK TIME GAP MESSAGE (Presence v2) ===== */
 var _lastActiveTime=Date.now();
 var _welcomeSent=false;
+var _pageHiddenAt=0;/* 记录页面切到后台的时刻 */
 function _updateLastActive(){_lastActiveTime=Date.now();try{localStorage.setItem('ib_lastActive',String(_lastActiveTime))}catch(e){}}
+function _formatTime(ts){return new Date(ts).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}
+function _formatDate(ts){return new Date(ts).toLocaleDateString('zh-CN',{month:'short',day:'numeric'})}
+function _isSameDay(a,b){var d1=new Date(a),d2=new Date(b);return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
 async function _checkWelcomeBack(){
   if(_welcomeSent)return;
   const ss=await getSummarySettings();if(!ss.welcomeEnabled)return;
   let lastActive;
   try{lastActive=parseInt(localStorage.getItem('ib_lastActive'))||0}catch(e){return}
   if(!lastActive){_updateLastActive();return}
-  const gap=Date.now()-lastActive;
+  const now=Date.now();
+  const gap=now-lastActive;
   const intervalMs=(ss.welcomeInterval||2)*3600000;
   if(gap<intervalMs){_updateLastActive();return}
   _welcomeSent=true;_updateLastActive();
-  /* Find the most recently chatted friend */
   if(!activeFriendId||!apiConfigs.length)return;
   const cfg=apiConfigs.find(a=>a.id===activeFriendId);
   if(!cfg||!cfg.apiKey||!cfg.endpoint)return;
   const isGroup=activeFriendId.startsWith('group_');if(isGroup)return;
-  /* Format the time gap */
+  /* 格式化含上下文的时间缺口 */
   const hours=Math.floor(gap/3600000);const mins=Math.floor((gap%3600000)/60000);
-  let gapText='[距离上次对话已过去 ';
-  if(hours>0)gapText+=hours+' 小时';
-  if(mins>0)gapText+=(hours>0?' ':'')+mins+' 分钟';
-  gapText+=']';
-  /* Use the chat input to send the time gap message */
+  let dur='';if(hours>0)dur+=hours+' 小时';if(mins>0)dur+=(hours>0?' ':'')+mins+' 分钟';
+  const sameDay=_isSameDay(lastActive,now);
+  let gapText='[你在 '+(sameDay?'':_formatDate(lastActive)+' ')+_formatTime(lastActive)+' 离开，'
+    +(sameDay?'':_formatDate(now)+' ')+_formatTime(now)+' 回来，离开约 '+dur+']';
   const input=document.getElementById('chat-full-input')||document.getElementById('chat-input');
   if(input){input.value=gapText;sendChatMessage()}
 }
-/* Track activity */
+/* Track activity：click/keydown/scroll/mousemove 维持活跃 */
 document.addEventListener('click',_updateLastActive);document.addEventListener('keydown',_updateLastActive);
+document.addEventListener('scroll',_updateLastActive,{passive:true});document.addEventListener('mousemove',function(){_updateLastActive()},{passive:true});
+/* visibilitychange：页面切后台时记录；回前台时重新检测 */
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){_pageHiddenAt=Date.now()}
+  else{
+    /* 从后台恢复，允许重新触发 Presence */
+    if(_pageHiddenAt){_welcomeSent=false;setTimeout(_checkWelcomeBack,500)}
+    _updateLastActive();
+  }
+});
 
 /* ===== FILE UPLOAD SUPPORT ===== */
 function pickFile(panel){
@@ -7609,6 +7726,28 @@ function isMemoryVisibleTo(mem,apiId,isGroupChat,groupMemEnabled){
   return false;
 }
 
+/* --- 语义相关性：本地关键词匹配（零 token 消耗） --- */
+function _extractKeywords(text){
+  if(!text)return[];
+  /* 中文：提取 2-3 字 n-gram；英文：提取单词 */
+  const keywords=[];
+  const cleaned=text.replace(/[\[\]()（）【】「」《》、，。！？；：\s]/g,' ').trim();
+  /* 英文单词 */
+  const enWords=cleaned.match(/[a-zA-Z]{3,}/g);if(enWords)enWords.forEach(w=>keywords.push(w.toLowerCase()));
+  /* 中文 n-gram (2字 + 3字) */
+  const zhOnly=cleaned.replace(/[a-zA-Z0-9\s]+/g,'');
+  for(let i=0;i<zhOnly.length-1;i++){keywords.push(zhOnly.slice(i,i+2));if(i<zhOnly.length-2)keywords.push(zhOnly.slice(i,i+3))}
+  return[...new Set(keywords)];
+}
+function _calcRelevance(mem,keywords){
+  if(!keywords.length)return 1;
+  const haystack=((mem.title||'')+'|'+(mem.content||'')+'|'+((mem.tags||[]).join('|'))+'|'+(mem.domain||'')).toLowerCase();
+  let hits=0;
+  for(const kw of keywords){if(haystack.includes(kw))hits++}
+  const ratio=hits/keywords.length;
+  return 1+ratio*1.5;/* 最高 2.5x 加成 */
+}
+
 /* --- 统一检索函数：所有 API 调用的记忆注入入口 --- */
 async function getMemoryContext(apiId,opts){
   opts=opts||{};
@@ -7617,38 +7756,66 @@ async function getMemoryContext(apiId,opts){
   const contentLen=memSettings.contentLen||200;
   const isGroup=opts.isGroup||false;
   const groupMemEnabled=opts.groupMemEnabled||false;
+  const userMsg=opts.userMessage||'';
   try{
     const all=await dbGetAll('memories');
     const visible=all.filter(m=>isMemoryVisibleTo(m,apiId,isGroup,groupMemEnabled));
     if(!visible.length)return '';
-    const scored=visible.map(m=>({...m,_score:getMemoryScore(m)})).sort((a,b)=>b._score-a._score);
+    /* 语义关键词匹配 */
+    const keywords=_extractKeywords(userMsg);
+    const scored=visible.map(m=>{
+      const base=getMemoryScore(m);
+      const relBoost=m.pinned?1:_calcRelevance(m,keywords);
+      /* 反垄断：连续高频激活的记忆施加疲劳惩罚 */
+      let fatigue=1;
+      if(!m.pinned&&m.activationCount>5){
+        const hoursSinceLast=(Date.now()-(m.lastActivated||m.created))/(1000*60*60);
+        if(hoursSinceLast<2)fatigue=0.7;/* 2 小时内反复激活 → 降权 */
+      }
+      return{...m,_score:base*relBoost*fatigue};
+    }).sort((a,b)=>b._score-a._score);
+    /* === 主选区 + 探索窗口 === */
+    const EXPLORE_RATIO=0.15;/* 预留 15% 预算给探索 */
+    const mainBudget=Math.floor(maxChars*(1-EXPLORE_RATIO));
+    const exploreBudget=maxChars-mainBudget;
     let ctx='【我们之间的记忆】\n';
     let chars=ctx.length;
     let count=0;
+    const selected=new Set();
+    /* 主选区：按分数从高到低 */
     for(const m of scored){
-      /* 标注记忆来源，防止不同 API 读到他人记忆时误认为自己的经历 */
-      let authorTag='';
-      if(m.createdBy==='user'||!m.createdBy){authorTag='[用户记录] '}
-      else if(m.createdBy===apiId){authorTag=''}/* 自己写的，无需标注 */
-      else{const cname=m.createdByName||'AI';authorTag='['+cname+' 记录] '}
-      const line='- '+authorTag+(m.title||'无标题')+'（'+(['情感','日常','创作','思考'].includes(m.domain)?m.domain:'记忆')
-        +(m.tags&&m.tags.length?' · '+m.tags.join('、'):'')
-        +'）：'+(m.content||'').slice(0,contentLen)+(m.content&&m.content.length>contentLen?'…':'')
-        +(m.resolved?' [已解决]':'')
-        +'\n';
-      if(chars+line.length>maxChars)break;
-      ctx+=line;chars+=line.length;count++;
+      const line=_formatMemLine(m,apiId,contentLen);
+      if(chars+line.length>mainBudget)break;
+      ctx+=line;chars+=line.length;count++;selected.add(m.id);
+    }
+    /* 探索窗口：从未入选的中低分段随机抽一条 */
+    const remaining=scored.filter(m=>!selected.has(m.id)&&!m.pinned);
+    if(remaining.length&&exploreBudget>50){
+      const pick=remaining[Math.floor(Math.random()*Math.min(remaining.length,10))];
+      const line=_formatMemLine(pick,apiId,contentLen);
+      if(chars+line.length<=maxChars){ctx+=line;chars+=line.length;count++;selected.add(pick.id)}
     }
     if(!count)return '';
     /* 激活计数：被检索到的记忆增加 activationCount */
-    for(const m of scored.slice(0,count)){
+    for(const id of selected){
       try{
-        const orig=await dbGet('memories',m.id);
+        const orig=await dbGet('memories',id);
         if(orig){orig.activationCount=(orig.activationCount||0)+1;orig.lastActivated=Date.now();await dbPut('memories',orig)}
       }catch(e){}
     }
     return ctx;
   }catch(e){return ''}
+}
+function _formatMemLine(m,apiId,contentLen){
+  let authorTag='';
+  if(m.createdBy==='user'||!m.createdBy){authorTag='[用户记录] '}
+  else if(m.createdBy===apiId){authorTag=''}
+  else{const cname=m.createdByName||'AI';authorTag='['+cname+' 记录] '}
+  return '- '+authorTag+(m.title||'无标题')+'（'+(['情感','日常','创作','思考'].includes(m.domain)?m.domain:'记忆')
+    +(m.tags&&m.tags.length?' · '+m.tags.join('、'):'')
+    +'）：'+(m.content||'').slice(0,contentLen)+(m.content&&m.content.length>contentLen?'…':'')
+    +(m.resolved?' [已解决]':'')
+    +'\n';
 }
 
 /* --- CRUD 操作 --- */
