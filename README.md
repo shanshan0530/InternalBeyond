@@ -2,7 +2,7 @@
 
 一个离线运行的单文件个人网站项目，支持同时对接多个 AI 模型。
 
-该项目包含九大功能模块与两套视觉主题。所有数据储存在本地，不依赖任何网络服务器。
+该项目包含十大功能模块与两套视觉主题。所有数据储存在本地，不依赖任何网络服务器。
 
 个人资料、角色立绘、系统提示词等均可自定义。
 
@@ -36,7 +36,8 @@
 | **Music** | 本地音乐播放器 + 48 条频率可视化波形 |
 | **Profile** | 液态玻璃风格个人名片 — 头像 + 简介 + 作品集 |
 | **API** | 多端口配置中心 — 最多 10 个独立 API，各有昵称、关系与提示词 |
-| **DIY** | 自定义透明立绘与占卜桌布 |
+| **ICode** | AI 代码工作区 — 文件管理 + 预览 + 内联编辑 + 搜索定位 + 脚本沙箱运行 |
+| **DIY** | 自定义透明立绘、占卜桌布与外部工具 |
 
 ## ✦ 主题系统
 
@@ -76,9 +77,13 @@
 
 借鉴GitHub Ombre Brain理念的AI长期记忆系统。每条记忆带有情感坐标（效价 / 唤醒度）、重要性评分和自然衰减。星图以二维情感坐标可视化所有记忆，时间轴以行星形态展示分布。最多 7 条置顶记忆，四种可见性级别。多来源创建（手动 / Chat / Blog / Letters / Story / Tea）。API 调用时自动检索相关记忆注入上下文，Token 预算可配置。
 
+### ICode — AI 代码工作区
+
+对话中 AI 生成、编辑或运行文件时，通过工作区指令完成操作，每一步在聊天中渲染为对应的操作卡片。生成的文件统一存放在 ICode 工作区，点击顶部工具栏的 ICode 按钮即可打开悬浮窗查看和管理。支持文件预览（代码高亮）、内联编辑、文本搜索定位、HTML 渲染预览、脚本沙箱运行（支持超时控制）、项目管理与文件导出。
+
 ### DIY — 创意工坊
 
-为每个 API 配置专属透明立绘（PNG，推荐 800×920），显示在 Story / Tea 对话框左侧。自定义占卜桌布（1920×1080）。游戏文件夹内置一张测试用立绘 `portrait_[Cluade].png`，将 API 昵称改为括号内名称即可测试。
+为每个 API 配置专属透明立绘（PNG，推荐 800×920），显示在 Story / Tea 对话框左侧。自定义占卜桌布（1920×1080）。外部工具功能允许配置 HTTP 接口（如 Home Assistant 的 REST API），启用后 AI 可在对话中调用。游戏文件夹内置一张测试用立绘 `portrait_[Cluade].png`，将 API 昵称改为括号内名称即可测试。
 
 ## ✦ API 配置指南
 
@@ -147,7 +152,7 @@ game/
 
 ## ✦ Introduction (EN)
 
-**Internal Beyond** is a fully offline, single-file personal website with multi-AI support. Nine modules, two visual themes, all data stored locally. Free and open source.
+**Internal Beyond** is a fully offline, single-file personal website with multi-AI support. Ten modules, two visual themes, all data stored locally. Free and open source.
 
 Connect your own AI API keys to unlock all interactive features. Supports Claude, GPT, DeepSeek, Gemini, and custom relay endpoints.
 
@@ -161,7 +166,8 @@ Connect your own AI API keys to unlock all interactive features. Supports Claude
 - **Music** — Local audio player with 48-band frequency visualizer.
 - **Profile** — Liquid glass personal card.
 - **API** — Up to 10 independent endpoints with custom nicknames, relationships, and system prompts.
-- **DIY** — Custom character portraits and tarot tablecloth.
+- **ICode** — AI code workspace with file management, inline editing, search, HTML preview, and sandboxed script execution.
+- **DIY** — Custom character portraits, tarot tablecloth, and external tool integration (HTTP webhooks).
 - **Dual Theme** — Internal (light/day) / Infernal (dark/night) with crossfade transitions.
 
 ### Quick start
