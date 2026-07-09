@@ -15,7 +15,7 @@
 
 ---
 
-## ✦ 快速开始
+## ✦ 开始游戏
 
 1. 下载本仓库（点击上方绿色 **Code** → **Download ZIP**）
 2. 解压后，用浏览器打开 `InternalBeyond.html`
