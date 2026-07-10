@@ -195,6 +195,6 @@ Connect your own AI API keys to unlock all interactive features. Supports Claude
 
 请勿用于商业用途或二次贩卖、移除、篡改或替换原作者署名（Sui）、将本项目包装为自己的原创作品、生成违法、歧视性、仇恨性或有害内容。
 
-所有角色精灵图、场景素材由 Sui 设计制作。本项目使用 Anthropic Claude (Opus 4.6) 进行开发构建，Anthropic Claude (Fable 5)、 Claude (Opus 4.8)、Claude (Sonnet 4.6) 亦参与了编程与维护工作。部分贴图由 OpenAI GPT-IMAGE-2 生成，界面设计与编绘使用 Adobe Photoshop CS。AI 工具为辅助创作工具，不对项目内容拥有版权。本声明适用于项目的所有版本与衍生形式。
+本项目使用 Anthropic Claude (Opus 4.6) 进行开发构建，Anthropic Claude (Fable 5)、 Claude (Opus 4.8)、Claude (Sonnet 4.6) 亦参与了编程与维护工作。部分贴图由 OpenAI GPT-IMAGE-2 生成，界面设计与编绘使用 Adobe Photoshop CS。AI 工具为辅助创作工具，不对项目内容拥有版权。本声明适用于项目的所有版本与衍生形式。
 
 **如果你通过付费方式获得了本项目，你所购买的不是正版。** 请通过上方联系方式获取免费正版。
