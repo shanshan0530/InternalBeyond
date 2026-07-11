@@ -103,12 +103,105 @@ function _isStreamEnabled(cfg){
 
 function buildTarotDeck(){
   const deck=[];
-  MAJOR_ARCANA.forEach(([num,cn,en])=>deck.push({type:'major',num,cn,en,display:num+' - '+cn+' '+en,color:'#2a1540'}));
+  MAJOR_ARCANA.forEach(([num,cn,en],mi)=>deck.push({type:'major',num,cn,en,mi,display:num+' - '+cn+' '+en,color:'#2a1540'}));
   SUITS.forEach(s=>RANKS.forEach(r=>deck.push({type:'minor',suit:s,rank:r,
     display:s.cn+(r.cn||r.en)+' '+r.en+' of '+s.en,color:s.color,symbol:r.num})));
   return deck;
 }
 const TAROT_DECK = buildTarotDeck();
+
+/* ══════════════════════════════════════════════════════════════
+   TAROT FACES · "Vergelight Arcana"
+   Three card-face designs by Claude (Fable 5) for Internal Beyond.
+   Faces are English-only. A reversed draw is shown *physically* —
+   the whole face rotates 180° — no upright/reversed badge printed.
+   Two styles ship; the user switches at the table via the
+   "Deck" button (choice persists in localStorage):
+     'veil'   — Gossamer Veil   薄纱银线 · indigo ground, twin hairline
+                frame with corner points, silverline emblem
+     'orrery' — Astral Orrery   星象仪 · suit-tinted ground, dotted
+                orbit ring behind the emblem, corner star ticks
+   ══════════════════════════════════════════════════════════════ */
+var TAROT_FACE_STYLE=(function(){try{var v=localStorage.getItem('ibTarotFaceStyle');return(v==='veil'||v==='orrery')?v:'veil'}catch(e){return 'veil'}})();
+
+/* ── emblem geometry helpers（正多角星/轮辐等规则形在运行时精确生成） ── */
+function _tsxStar(cx,cy,rO,rI,n,rot){
+  var pts=[],a0=(rot||0)-Math.PI/2;
+  for(var i=0;i<n*2;i++){var r=i%2?rI:rO,a=a0+i*Math.PI/n;pts.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2))}
+  return '<polygon points="'+pts.join(' ')+'"/>';
+}
+function _tsxRays(cx,cy,r0,r1,n,rot){
+  var d='',a0=rot||0;
+  for(var i=0;i<n;i++){var a=a0+i*2*Math.PI/n;
+    d+='M'+(cx+r0*Math.cos(a)).toFixed(2)+' '+(cy+r0*Math.sin(a)).toFixed(2)
+      +'L'+(cx+r1*Math.cos(a)).toFixed(2)+' '+(cy+r1*Math.sin(a)).toFixed(2)+' ';}
+  return '<path d="'+d.trim()+'"/>';
+}
+
+/* ── suit emblems（小阿卡纳：花色线徽） ── */
+var _TSX_SUIT={
+  Wands:'<path d="M6.5 19.5 L17.5 4.5"/><path d="M14.2 5.4 l3.4-1.6"/><path d="M15.8 8.4 l3.2-1.3"/><path d="M8.2 14.6 l-2.6-1.2"/>',
+  Cups:'<path d="M6.8 5 h10.4"/><path d="M7.8 5 c0 4.4 2.5 6.6 4.2 6.6 s4.2-2.2 4.2-6.6"/><path d="M12 11.6 v5.2"/><path d="M9 19.4 h6"/><path d="M12 16.8 v2.6"/>',
+  Swords:'<path d="M12 3 v13.2"/><path d="M9.5 6.2 L12 3 l2.5 3.2"/><path d="M7.8 16.2 h8.4"/><path d="M12 16.2 v4"/><path d="M10.5 20.2 h3"/>',
+  Pentacles:'<circle cx="12" cy="12" r="8.2"/>'+ _tsxStar(12,12,6.1,2.35,5,0)
+};
+/* ── major arcana emblems（大阿卡纳 22 徽，按 MAJOR_ARCANA 序） ── */
+var _TSX_MAJOR=[
+  /* 0 Fool — bindle & road */'<path d="M7 17.2 L15 6.8"/><circle cx="16.6" cy="5.6" r="2.3"/><path d="M5 19.6 h9.4"/>',
+  /* I Magician — lemniscate */'<path d="M7 12 c0-2.7 3.4-2.7 5 0 c1.6 2.7 5 2.7 5 0 c0-2.7-3.4-2.7-5 0 c-1.6 2.7-5 2.7-5 0 Z"/>',
+  /* II High Priestess — pillars & veil */'<path d="M7 4.8 v14.4"/><path d="M17 4.8 v14.4"/><path d="M7 8.2 C9.6 11 14.4 11 17 8.2"/><circle cx="12" cy="5.8" r="1.5"/>',
+  /* III Empress — venus */'<circle cx="12" cy="9" r="4.6"/><path d="M12 13.6 v6.4"/><path d="M9.2 16.8 h5.6"/>',
+  /* IV Emperor — aries sceptre */'<path d="M12 4.6 v14.8"/><path d="M12 8.4 C10.8 4.8 6.6 5 6.6 8.2 c0 2 1.6 3.1 3.3 2.7"/><path d="M12 8.4 C13.2 4.8 17.4 5 17.4 8.2 c0 2-1.6 3.1-3.3 2.7"/>',
+  /* V Hierophant — key */'<circle cx="12" cy="7" r="3"/><path d="M12 10 v9.6"/><path d="M12 15.2 h3"/><path d="M12 18.4 h3.8"/>',
+  /* VI Lovers — bound rings */'<circle cx="9.3" cy="12" r="4.5"/><circle cx="14.7" cy="12" r="4.5"/>',
+  /* VII Chariot — winged wheel */'<circle cx="12" cy="13.6" r="4.4"/>'+_tsxRays(12,13.6,1.1,4.4,4,Math.PI/4)+'<path d="M7.4 10.4 C5 8.8 3.8 6.8 4.2 4.8"/><path d="M16.6 10.4 C19 8.8 20.2 6.8 19.8 4.8"/>',
+  /* VIII Strength — open hand */'<path d="M9 20 v-6.6"/><path d="M11 20 v-8.6"/><path d="M13 20 v-8.6"/><path d="M15 20 v-6.6"/><path d="M9 13.4 c0-2.2 1.1-3.4 3-3.4 s3 1.2 3 3.4"/><path d="M9 20 h6"/>',
+  /* IX Hermit — lantern */'<path d="M9 8.4 h6 v6.8 h-6 Z"/><path d="M12 4.4 v4"/><path d="M10.4 15.2 v2.6 h3.2 v-2.6"/><circle cx="12" cy="11.8" r="1.15"/>',
+  /* X Wheel */'<circle cx="12" cy="12" r="7.6"/>'+_tsxRays(12,12,1.4,7.6,6,0)+'<circle cx="12" cy="12" r="1.4"/>',
+  /* XI Justice — scales */'<path d="M12 4.4 v13.6"/><path d="M8.4 20 h7.2"/><path d="M5.4 8 h13.2"/><path d="M7.3 8 L4.7 11.5"/><path d="M7.3 8 L9.9 11.5"/><path d="M4.5 11.5 a2.85 2.85 0 0 0 5.5 0"/><path d="M16.7 8 L14.1 11.5"/><path d="M16.7 8 L19.3 11.5"/><path d="M14 11.5 a2.85 2.85 0 0 0 5.5 0"/>',
+  /* XII Hanged Man */'<path d="M6.4 4.8 h11.2"/><path d="M12 4.8 v4.6"/><circle cx="12" cy="16.8" r="2.15"/><path d="M12 9.4 v5.2"/><path d="M10 11 L13.8 13.6"/>',
+  /* XIII Death — scythe */'<path d="M7.6 20 L15.2 4.6"/><path d="M14.4 4.9 C18.8 3.6 21.2 6.4 20.6 9.6 C18.7 6.8 16.4 6.2 13.6 6.9"/>',
+  /* XIV Temperance — two vessels */'<path d="M5.6 6.4 h5.2"/><path d="M6.3 6.4 c0 2.6 1.5 4 2.7 4 s2.5-1.4 2.5-4"/><path d="M13.2 13.6 h5.2"/><path d="M13.9 13.6 c0 2.6 1.5 4 2.7 4 s2.5-1.4 2.5-4"/><path d="M9.6 10.8 C11.6 11.9 12.8 12.9 14.2 13.4"/>',
+  /* XV Devil — inverted star */_tsxStar(12,12,7.4,2.85,5,Math.PI),
+  /* XVI Tower */'<path d="M9 20 V8.2 h6 V20"/><path d="M8 8.2 h8"/><path d="M9.7 5.6 L12 8.2 L14.3 5.6"/><path d="M6.2 3.4 L9.6 8 H7.2 L10.6 12.8"/>',
+  /* XVII Star */_tsxRays(12,12,0,8.2,4,0)+_tsxRays(12,12,0,4.6,4,Math.PI/4)+'<circle cx="18" cy="5.4" r="0.95"/>',
+  /* XVIII Moon — crescent & dew */'<path d="M14.6 4.2 A8.1 8.1 0 1 0 14.6 19.8 A6.5 6.5 0 1 1 14.6 4.2 Z"/><circle cx="18.6" cy="9" r="0.8"/><circle cx="19.6" cy="12.4" r="0.8"/><circle cx="18.6" cy="15.8" r="0.8"/>',
+  /* XIX Sun */'<circle cx="12" cy="12" r="4.4"/>'+_tsxRays(12,12,6,8.6,8,0),
+  /* XX Judgement — trumpet */'<path d="M5.8 11.2 L15.4 6.2 V15.4 L5.8 12.8 Z"/><path d="M15.4 8 c2 .4 3.1 1.7 3.1 3 s-1.1 2.6-3.1 3"/><path d="M20.4 8.4 l1.7-1"/><path d="M21 11.2 h2"/><path d="M20.4 14 l1.7 1"/>',
+  /* XXI World — laurel oval */'<path d="M12 3.6 C7 3.6 4.4 7.8 4.4 12 s2.6 8.4 7.6 8.4 7.6-4.2 7.6-8.4 S17 3.6 12 3.6 Z"/><path d="M6.4 6.6 l-1.7-1.2"/><path d="M17.6 6.6 l1.7-1.2"/><path d="M6.4 17.4 l-1.7 1.2"/><path d="M17.6 17.4 l1.7 1.2"/><circle cx="12" cy="12" r="1.05"/>'
+];
+
+function _tsxGlyphSVG(card,extra){
+  var inner=card.type==='major'?_TSX_MAJOR[card.mi]:_TSX_SUIT[card.suit.en];
+  return '<svg class="tsx-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"'+(extra||'')+'>'+inner+'</svg>';
+}
+/* 花色浅调（正文/线条着色用，majors 用各风格默认银/金） */
+var _TSX_SUIT_INK={Wands:'#e0b8a8',Cups:'#b8c8ec',Swords:'#c4cadc',Pentacles:'#e0cf9a'};
+
+/* ── 牌面构建：三风格共用一个入口 ── */
+function buildTarotFaceHTML(card,reversed){
+  var st=TAROT_FACE_STYLE;
+  var isMajor=card.type==='major';
+  var numStr=isMajor?card.num:card.rank.num;
+  var name=isMajor?card.en:card.rank.en;                 /* e.g. "The Star" / "Seven" */
+  var sub=isMajor?'':'of '+card.suit.en;                 /* minors second line */
+  var ink=isMajor?'':(_TSX_SUIT_INK[card.suit.en]||'');
+  var tint=isMajor?'':card.suit.color;
+  var body='';
+  if(st==='orrery'){
+    body='<div class="tsx-num">'+numStr+'</div>'
+        +'<div class="tsx-orbit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.55"><circle cx="12" cy="12" r="10.4" stroke-dasharray="0.1 2.1" stroke-linecap="round"/></svg>'+_tsxGlyphSVG(card)+'</div>'
+        +'<div class="tsx-name">'+name+(sub?'<span class="tsx-sub">'+sub+'</span>':'')+'</div>';
+  }else{ /* veil */
+    body='<div class="tsx-num">'+numStr+'</div>'
+        +_tsxGlyphSVG(card)
+        +'<div class="tsx-name">'+name+(sub?'<span class="tsx-sub">'+sub+'</span>':'')+'</div>';
+  }
+  return '<div class="tarot-slot-card tsx tsx-'+st+(isMajor?' tsx-major':' tsx-minor')+' show'+(reversed?' reversed':'')+'"'
+        +(tint?' style="--tsx-tint:'+tint+';--tsx-ink:'+ink+'"':'')+'>'
+        +'<div class="tsx-face"><div class="tsx-frame"></div>'+body+'</div></div>';
+}
+
 
 /* ── TAROT SPREADS ──────────────────────────────────────── */
 const TAROT_SPREADS = [
@@ -582,12 +675,13 @@ body:not(.theme-infernal) .game-wardrobe-close:hover{
 /* Card fan area — opened folding fan */
 .tarot-fan{position:relative;width:100%;flex:0 0 auto;height:240px;min-height:240px;touch-action:manipulation}
 .tarot-fan-card{position:absolute;width:115px;height:178px;border-radius:5px;cursor:pointer;
-  transform-origin:center bottom;transition:margin-top 0.2s,opacity 0.4s,box-shadow 0.2s;
+  transform-origin:center bottom;transform:rotate(var(--rot,0deg));will-change:transform;
+  transition:transform 0.34s cubic-bezier(0.22,0.61,0.36,1),opacity 0.4s,box-shadow 0.34s cubic-bezier(0.22,0.61,0.36,1),border-color 0.34s;
   background:linear-gradient(135deg,#1a1228 0%,#2a1a3a 50%,#1a1228 100%);
   border:1.5px solid rgba(180,160,120,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.35);
   display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(160,130,200,0.35)}
-.tarot-fan-card:hover{box-shadow:0 8px 24px rgba(140,110,200,0.55);
-  border-color:rgba(200,180,240,0.7);z-index:10!important;margin-top:-14px}
+.tarot-fan-card.lift{z-index:60;transform:rotate(calc(var(--rot,0deg)*0.55)) translateY(-22px) scale(1.045);
+  box-shadow:0 14px 34px rgba(120,90,190,0.5),0 4px 12px rgba(0,0,0,0.4);border-color:rgba(200,180,240,0.7)}
 .tarot-fan-card.picked{opacity:0;pointer-events:none;transition:opacity 0.3s}
 
 /* Card slots area */
@@ -608,6 +702,47 @@ body:not(.theme-infernal) .game-wardrobe-close:hover{
 .tarot-slot-card .ts-en{font-family:'Cormorant Garamond',serif;font-size:0.68rem;color:rgba(180,170,210,0.6);margin-top:2px}
 .tarot-slot-card .ts-pos{font-size:0.65rem;padding:3px 10px;border-radius:4px;margin-top:5px;
   background:rgba(255,255,255,0.08);color:rgba(200,190,230,0.7)}
+
+/* ── TAROT FACES · Vergelight Arcana（三风格牌面；逆位=整面 180° 倒置） ── */
+.tarot-slot-card.tsx{padding:0;opacity:0;background:none}
+.tarot-slot-card.tsx.show{opacity:1}
+.tsx-face{position:absolute;inset:0;border-radius:8px;display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;padding:11px 8px 9px;text-align:center;overflow:hidden;
+  transition:transform 0.55s cubic-bezier(0.34,1.2,0.4,1)}
+.tarot-slot-card.tsx.reversed .tsx-face{transform:rotate(180deg)}
+.tsx-glyph{width:52px;height:52px;flex:0 0 auto;opacity:0.92}
+.tsx-num{font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.08em;line-height:1}
+.tsx-name{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:0.72rem;letter-spacing:0.09em;
+  text-transform:uppercase;line-height:1.35;display:flex;flex-direction:column;gap:1px}
+.tsx-name .tsx-sub{font-size:0.58rem;letter-spacing:0.14em;opacity:0.62;font-style:italic;text-transform:none}
+.tsx-frame{position:absolute;inset:0;pointer-events:none;border-radius:8px}
+
+/* — Gossamer Veil 薄纱银线 — */
+.tsx-veil .tsx-face{background:linear-gradient(160deg,#171129 0%,#1d1633 55%,#150f26 100%);color:rgba(216,210,236,0.92)}
+.tsx-veil.tsx-minor .tsx-face{background:
+  radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--tsx-tint) 26%,transparent),transparent 62%),
+  linear-gradient(160deg,#171129 0%,#1d1633 55%,#150f26 100%)}
+.tsx-veil .tsx-frame{border:1px solid rgba(196,186,226,0.34);box-shadow:inset 0 0 0 3px rgba(23,17,41,0.001),inset 0 0 0 4px rgba(196,186,226,0.16)}
+.tsx-veil .tsx-frame::before,.tsx-veil .tsx-frame::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;
+  background:rgba(210,200,240,0.55);left:50%;transform:translateX(-50%)}
+.tsx-veil .tsx-frame::before{top:5.5px}.tsx-veil .tsx-frame::after{bottom:5.5px}
+.tsx-veil .tsx-num{font-size:1.02rem;color:rgba(222,214,246,0.88)}
+.tsx-veil.tsx-minor .tsx-glyph,.tsx-veil.tsx-minor .tsx-num{color:var(--tsx-ink,rgba(216,210,236,0.92))}
+.tsx-veil .tsx-name{color:rgba(206,198,232,0.82)}
+
+/* — Astral Orrery 星象仪 — */
+.tsx-orrery .tsx-face{color:rgba(214,220,240,0.92);background:linear-gradient(165deg,#141a30 0%,#101528 100%)}
+.tsx-orrery.tsx-minor .tsx-face{background:linear-gradient(165deg,color-mix(in srgb,var(--tsx-tint) 42%,#10142a) 0%,#0e1224 100%)}
+.tsx-orrery .tsx-frame{border:1px solid rgba(176,190,224,0.3)}
+.tsx-orrery .tsx-frame::before,.tsx-orrery .tsx-frame::after,
+.tsx-orrery .tsx-corner::before,.tsx-orrery .tsx-corner::after{content:"✦";position:absolute;font-size:6px;color:rgba(198,208,236,0.6);line-height:1}
+.tsx-orrery .tsx-frame::before{top:4px;left:5px}.tsx-orrery .tsx-frame::after{top:4px;right:5px}
+.tsx-orrery .tsx-orbit{position:relative;width:78px;height:78px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.tsx-orrery .tsx-orbit>svg:first-child{position:absolute;inset:0;width:100%;height:100%;color:rgba(190,202,232,0.55)}
+.tsx-orrery .tsx-num{font-size:0.98rem;color:rgba(226,232,248,0.9)}
+.tsx-orrery .tsx-name{color:rgba(206,214,238,0.85)}
+.tsx-orrery .tsx-face::after{content:"✦   ✦";position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:rgba(198,208,236,0.55);letter-spacing:0}
+
 
 /* Flying card animation */
 .tarot-flying{position:absolute;width:115px;height:178px;border-radius:5px;z-index:30;pointer-events:none;
@@ -1625,7 +1760,7 @@ function interactBed(){
 
 function getTarotGuideHTML(companionLine){
   const status=companionLine||'你开始独自使用塔罗占卜……\n\n';
-  return status+'Sui：欢迎使用占卜桌。\n\n点击上方「选择陪你占卜的TA」邀请一位解读者。\n\n上方的按钮可以切换牌阵：\n· 无牌阵 — 自由抽1~3张，没有固定含义\n· 单牌 — 1张，代表此刻的指引\n· 时间之流 — 3张：过去、现在、未来\n· 十字 — 4张：处境、障碍、建议、结果\n· 命运之星 — 5张：现状、挑战、根源、未来、潜力\n\n勾选「＋指引牌」可以多抽一张作为额外的指引。\n\n左边散开的牌就是78张塔罗牌。\n点一张，它会飞到下方的牌位上，自动翻面。\n\n牌位填满后，点击下方的「Invite AI」让TA为你解读。\n\n解读完成后可以：\n· Reshuffle — 全部重来\n· 追问 — 补充你的问题，让TA说更多（最多3次）\n· 存档 — 保存到密码日记本\n· Exit — 离开\n\n在心里默念你的问题，然后选一张牌吧。'
+  return status+'Sui：欢迎使用占卜桌。\n\n点击上方「选择陪你占卜的TA」邀请一位解读者。\n\n点击下方的「Deck」可以切换塔罗牌的款式：Gossamer Veil ⇄ Astral Orrery。\n\n上方的按钮可以切换牌阵：\n· 无牌阵 — 自由抽1~3张，没有固定含义\n· 单牌 — 1张，代表此刻的指引\n· 时间之流 — 3张：过去、现在、未来\n· 十字 — 4张：处境、障碍、建议、结果\n· 命运之星 — 5张：现状、挑战、根源、未来、潜力\n\n勾选「＋指引牌」可以多抽一张作为额外的指引。\n\n左边散开的牌就是78张塔罗牌。\n点一张，它会飞到下方的牌位上，自动翻面。\n\n牌位填满后，点击下方的「Invite AI」让TA为你解读。\n\n解读完成后可以：\n· Reshuffle — 全部重来\n· 追问 — 补充你的问题，让TA说更多（最多3次）\n· 存档 — 保存到密码日记本\n· Exit — 离开\n\n在心里默念你的问题，然后选一张牌吧。'
 }
 
 /* ── CRYSTAL BALL / TAROT ────────────────────────────── */
@@ -1750,10 +1885,10 @@ function renderTarotUI(panel){
           const cfg2=apiConfigs.find(a=>a.id===btn.dataset.caid);
           if(cfg2){
             t.cfg=cfg2;
-            changeAiBtn.textContent=esc2(cfg2.nickname||cfg2.model||'AI');
-            logTarotAction('你选择了'+esc2(cfg2.nickname||cfg2.model||'AI')+'陪你占卜……');
+            changeAiBtn.textContent=cfg2.nickname||cfg2.model||'AI';/* BUGFIX: textContent 不需要预转义 */
+            logTarotAction('你选择了'+(cfg2.nickname||cfg2.model||'AI')+'陪你占卜……');/* BUGFIX: logTarotAction 用 textContent 渲染且写入存档，传原文即可 */
             var welcome=document.createElement('div');welcome.style.cssText='padding:6px 0';
-            welcome.textContent=esc2(cfg2.nickname||cfg2.model||'AI')+' 正在陪你一起使用塔罗占卜……\nSui：欢迎你们使用占卜桌。如果TA需要再看一次操作教程，可以向上翻阅。';
+            welcome.textContent=(cfg2.nickname||cfg2.model||'AI')+' 正在陪你一起使用塔罗占卜……\nSui：欢迎你们使用占卜桌。如果TA需要再看一次操作教程，可以向上翻阅。';
             welcome.style.whiteSpace='pre-wrap';
             rp.appendChild(welcome);rp.scrollTop=rp.scrollHeight;
           }
@@ -1764,8 +1899,7 @@ function renderTarotUI(panel){
   }
 
   generateTarotFan(panel);
-  updateTarotSlots(panel);
-  panel.querySelector('#tarot-exit').addEventListener('click',()=>{closeTarot();G.state='idle'});
+  updateTarotSlots(panel);/* 内部会重建按钮行并绑定 Exit 等全部按钮，此处不再重复绑定（修复 Exit 双重绑定） */
 }
 
 function getTarotTotalSlots(){
@@ -1791,11 +1925,8 @@ function updateTarotSlots(panel){
     const cls='tarot-slot-item'+(filled?' filled':'');
     let inner='';
     if(filled){
-      const c=filled.card,pos=filled.reversed?'逆位':'正位';
-      const numStr=c.type==='major'?c.num:c.symbol;
-      const cnStr=c.type==='major'?c.cn:(c.suit.cn+(c.rank.cn||c.rank.en));
-      const enStr=c.type==='major'?c.en:(c.rank.en+' of '+c.suit.en);
-      inner=`<div class="tarot-slot-card show" style="background:linear-gradient(135deg,${c.color},${c.color}dd)"><div class="ts-num">${numStr}</div><div class="ts-cn">${cnStr}</div><div class="ts-en">${enStr}</div><div class="ts-pos">${pos}</div></div>`;
+      /* Vergelight Arcana：逆位以整面倒置呈现，不再印正/逆徽标（AI 解读提示词仍携带正逆信息） */
+      inner=buildTarotFaceHTML(filled.card,filled.reversed);
     }else{
       inner='<span style="font-size:1.4rem;color:rgba(160,140,200,0.18)">✦</span>';
     }
@@ -1850,24 +1981,48 @@ function generateTarotFan(panel){
     const rad=ang*Math.PI/180;
     const x=Math.sin(rad)*Rx;                  /* horizontal offset of the base from center */
     const yBottom=pivotY+Math.cos(rad)*Ry;     /* base height above fan bottom */
-    html+=`<div class="tarot-fan-card" data-idx="${i}" style="left:calc(50% + ${x.toFixed(1)}px - ${(cardW/2).toFixed(1)}px);bottom:${yBottom.toFixed(1)}px;transform:rotate(${ang.toFixed(1)}deg);z-index:${i}">✦</div>`;
+    html+=`<div class="tarot-fan-card" data-idx="${i}" style="left:calc(50% + ${x.toFixed(1)}px - ${(cardW/2).toFixed(1)}px);bottom:${yBottom.toFixed(1)}px;--rot:${ang.toFixed(1)}deg;z-index:${i}">✦</div>`;
   }
   fan.innerHTML=html;
-  /* 容器级"就近取牌"：点扇形区任意位置取最接近的未抽出牌，扩大可点区域 */
+  /* 悬停/点击共用的基准几何：以生成时的布局盒中心为准，抬升变换不影响判定，从根上消除悬停振荡 */
+  fan._centers=Array.from(fan.querySelectorAll('.tarot-fan-card')).map(el=>({el,x:el.offsetLeft+cardW/2,y:el.offsetTop+cardH/2}));
+  const nearestFanCard=(clientX,clientY)=>{
+    const r=fan.getBoundingClientRect();
+    const px=clientX-r.left,py=clientY-r.top;
+    let best=null,bestD=Infinity;
+    for(const c of (fan._centers||[])){
+      if(c.el.classList.contains('picked'))continue;
+      const dx=px-c.x,dy=py-c.y,d=dx*dx+dy*dy;
+      if(d<bestD){bestD=d;best=c.el;}
+    }
+    return {el:best,d:Math.sqrt(bestD)};
+  };
+  /* 容器级"就近取牌"：点扇形区任意位置取最接近的未抽出牌，且与悬停抬起的是同一张 */
   if(!fan._pickBound){
     fan._pickBound=true;
     fan.addEventListener('click',(e)=>{
       if(!G._tarot||G._tarot.phase!=='pick')return;
-      const cards=fan.querySelectorAll('.tarot-fan-card:not(.picked)');
-      if(!cards.length)return;
-      let best=null,bestD=Infinity;
-      for(const c of cards){
-        const r=c.getBoundingClientRect();
-        const dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
-        const d=dx*dx+dy*dy;
-        if(d<bestD){bestD=d;best=c;}
-      }
-      if(best)pickTarotCard(panel,parseInt(best.dataset.idx),best);
+      const hit=nearestFanCard(e.clientX,e.clientY);
+      if(hit.el){hit.el.classList.remove('lift');pickTarotCard(panel,parseInt(hit.el.dataset.idx),hit.el);}
+    });
+    /* 悬停抬牌：requestAnimationFrame 合帧；卡片沿自身轴线抽出并微正立，过渡曲线平缓 */
+    let _hraf=0,_hx=0,_hy=0;
+    const applyLift=()=>{
+      _hraf=0;
+      if(!G._tarot||G._tarot.phase!=='pick'){fan.querySelectorAll('.tarot-fan-card.lift').forEach(c=>c.classList.remove('lift'));return}
+      const hit=nearestFanCard(_hx,_hy);
+      const target=(hit.el&&hit.d<=130)?hit.el:null;
+      fan.querySelectorAll('.tarot-fan-card.lift').forEach(c=>{if(c!==target)c.classList.remove('lift')});
+      if(target)target.classList.add('lift');
+    };
+    fan.addEventListener('pointermove',(e)=>{
+      if(e.pointerType&&e.pointerType!=='mouse')return;
+      _hx=e.clientX;_hy=e.clientY;
+      if(!_hraf)_hraf=requestAnimationFrame(applyLift);
+    });
+    fan.addEventListener('pointerleave',()=>{
+      if(_hraf){cancelAnimationFrame(_hraf);_hraf=0}
+      fan.querySelectorAll('.tarot-fan-card.lift').forEach(c=>c.classList.remove('lift'));
     });
   }
 }
@@ -1930,9 +2085,11 @@ function updateTarotActions(panel){
       btns+='<button class="tarot-btn" id="tarot-interpret">Invite AI</button>';
       if(canFinish&&!allFilled)btns+='<button class="tarot-btn" id="tarot-done-free">完成选牌</button>';
     }
+    btns+='<button class="tarot-btn" id="tarot-deck" title="切换塔罗牌款式">Deck</button>';
     btns+='<button class="tarot-btn" id="tarot-save">Save</button>';
     btns+='<button class="tarot-btn" id="tarot-exit">Exit</button>';
     actWrap.innerHTML=btns;
+    actWrap.querySelector('#tarot-deck')?.addEventListener('click',()=>switchTarotDeckStyle(panel));
     actWrap.querySelector('#tarot-reshuffle')?.addEventListener('click',()=>{logTarotAction('你重置了牌阵……');resetTarot(panel)});
     actWrap.querySelector('#tarot-exit')?.addEventListener('click',()=>{closeTarot();G.state='idle'});
     actWrap.querySelector('#tarot-save')?.addEventListener('click',()=>saveTarotReading());
@@ -1941,14 +2098,27 @@ function updateTarotActions(panel){
   }else if(t.phase==='reading'||t.phase==='followup'){
     let btns='<button class="tarot-btn" id="tarot-reshuffle">Reshuffle</button>';
     if(t.followupLeft>0) btns+='<button class="tarot-btn" id="tarot-followup-btn">追问</button>';
+    btns+='<button class="tarot-btn" id="tarot-deck" title="切换塔罗牌款式">Deck</button>';
     btns+='<button class="tarot-btn" id="tarot-save">Save</button>';
     btns+='<button class="tarot-btn" id="tarot-exit">Exit</button>';
     actWrap.innerHTML=btns;
+    actWrap.querySelector('#tarot-deck')?.addEventListener('click',()=>switchTarotDeckStyle(panel));
     actWrap.querySelector('#tarot-reshuffle')?.addEventListener('click',()=>{logTarotAction('你重置了牌阵……');resetTarot(panel)});
     actWrap.querySelector('#tarot-exit')?.addEventListener('click',()=>{closeTarot();G.state='idle'});
     actWrap.querySelector('#tarot-save')?.addEventListener('click',()=>saveTarotReading());
     actWrap.querySelector('#tarot-followup-btn')?.addEventListener('click',()=>showTarotFollowup(panel));
   }
+}
+
+/* ── Deck 按钮：切换牌面款式（Vergelight Arcana：veil ⇄ orrery）──
+   选择写入 localStorage 持久化；桌面上已抽出的牌即时换装；
+   切换动作同步写进右侧记录（logTarotAction 会同时进入 sessionLog，随存档保存） */
+function switchTarotDeckStyle(panel){
+  TAROT_FACE_STYLE=TAROT_FACE_STYLE==='veil'?'orrery':'veil';
+  try{localStorage.setItem('ibTarotFaceStyle',TAROT_FACE_STYLE)}catch(e){}
+  var deckName=TAROT_FACE_STYLE==='veil'?'Gossamer Veil':'Astral Orrery';
+  logTarotAction('你已切换塔罗牌组为：「'+deckName+'」……');
+  updateTarotSlots(panel);/* 内部会顺带重建按钮行并重新绑定 */
 }
 
 async function runTarotInterpret(panel,cfg){
@@ -1992,7 +2162,7 @@ async function runTarotInterpret(panel,cfg){
 
   const readPanel=panel.querySelector('#tarot-reading-panel');
   var loadDiv=document.createElement('div');loadDiv.id='tarot-loading-div';loadDiv.style.cssText='text-align:center;padding:20px;opacity:0.4';loadDiv.textContent='✦ 正在解读…';readPanel.appendChild(loadDiv);readPanel.scrollTop=readPanel.scrollHeight;
-  logTarotAction('你询问了'+escapeHtml(cfg.nickname||cfg.model||'AI')+'如何解读……');
+  logTarotAction('你询问了'+(cfg.nickname||cfg.model||'AI')+'如何解读……');/* BUGFIX: 同上，避免双重转义进入存档 */
   updateTarotActions(panel);
 
   try{
@@ -2005,7 +2175,7 @@ async function runTarotInterpret(panel,cfg){
     /* Log AI reading to session */
     t.sessionLog.push({type:'ai-reading',text:t.readingText,time:Date.now()});
     var ld=readPanel.querySelector('#tarot-loading-div');if(ld)ld.remove();
-    var rdiv=document.createElement('div');rdiv.style.cssText='padding:8px 0;border-top:1px solid rgba(160,140,200,0.06);margin-top:6px';rdiv.textContent=escapeHtml(aiName)+'：'+escapeHtml(t.readingText);readPanel.appendChild(rdiv);readPanel.scrollTop=readPanel.scrollHeight;
+    var rdiv=document.createElement('div');rdiv.style.cssText='padding:8px 0;border-top:1px solid rgba(160,140,200,0.06);margin-top:6px';rdiv.textContent=aiName+'：'+t.readingText;/* BUGFIX: textContent 本身不解析 HTML，先 escapeHtml 会把 & < > 显示成 &amp; 等实体 */readPanel.appendChild(rdiv);readPanel.scrollTop=readPanel.scrollHeight;
   }catch(e){
     t.phase='pick';
     let errMsg='连接遇到了问题';
@@ -4025,7 +4195,10 @@ window.G=G;
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',bootstrap);
 }else{
-  bootstrap();
+  /* BUGFIX(潜伏): 立即调用会踩中 TEA_CSS/STORY_CSS（声明在本文件更靠后）的 TDZ——
+     当前 <script src> 同步加载走不到这个分支，但一旦加 defer/async 或改为动态加载，
+     整个游戏模块会在 injectCSS 处 ReferenceError 崩掉。推迟一个宏任务，等全文件求值完毕再启动。 */
+  setTimeout(bootstrap,0);
 }
 
 
@@ -4205,7 +4378,7 @@ const TEA_CSS = `
 .game-tea-msg-header .tea-msg-name{font-weight:600;color:#152850;margin-right:6px}
 .game-tea-msg-text{font-size:14px;line-height:1.75;color:#1a2d5a;
   font-family:'Noto Sans SC',sans-serif;white-space:pre-wrap;padding:1px 0;font-weight:400}
-.game-tea-msg.system .game-tea-msg-text{color:rgba(30,50,100,0.55);font-style:italic;text-align:center;font-size:11px}
+.game-tea-msg.system .game-tea-msg-text{color:rgba(30,50,100,0.55);font-style:italic;text-align:center;font-size:11px;padding-left:70px}
 .game-tea-msg.typing .game-tea-msg-text{color:rgba(30,50,100,0.4)}
 .game-tea-chat-input{position:absolute;z-index:1;left:81px;top:776px;width:170px;height:35px;
   display:flex;align-items:center}
@@ -4288,13 +4461,35 @@ const TEA_CSS = `
   color:var(--silver);margin-bottom:6px;text-align:center;letter-spacing:0.04em}
 .game-tea-apisel-sub{font-family:'Noto Sans SC',sans-serif;font-size:0.82rem;color:var(--text-muted);
   text-align:center;margin-bottom:16px;line-height:1.6}
-.game-tea-apisel-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.game-tea-apisel-opt{display:block;width:100%;padding:10px 14px;border-radius:8px;
-  border:1px solid var(--glass-border);background:rgba(175,195,228,0.06);
-  color:var(--text-primary);font-family:'Noto Sans SC',sans-serif;font-size:0.92rem;
-  text-align:left;cursor:pointer;transition:all 0.25s}
-.game-tea-apisel-opt:hover{background:rgba(175,195,228,0.18);border-color:var(--accent);color:var(--white)}
+/* 下拉选择：API 一多时不再铺满整块面板，收进一个安静的下拉菜单里 */
+.game-tea-dd{position:relative;margin-bottom:18px}
+.game-tea-dd-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  padding:11px 14px;border-radius:10px;border:1px solid var(--glass-border);
+  background:rgba(175,195,228,0.07);color:var(--text-primary);
+  font-family:'Noto Sans SC',sans-serif;font-size:0.92rem;text-align:left;cursor:pointer;
+  transition:border-color 0.25s,background 0.25s}
+.game-tea-dd-trigger:hover{border-color:rgba(165,192,236,0.45);background:rgba(175,195,228,0.12)}
+.game-tea-dd.open .game-tea-dd-trigger{border-color:var(--accent)}
+.game-tea-dd-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-tea-dd-label.placeholder{color:var(--text-muted)}
+.game-tea-dd-arrow{flex:none;width:8px;height:8px;margin-top:-4px;
+  border-right:1.5px solid var(--silver);border-bottom:1.5px solid var(--silver);
+  transform:rotate(45deg);transform-origin:66% 66%;transition:transform 0.3s ease;opacity:0.75}
+.game-tea-dd.open .game-tea-dd-arrow{transform:rotate(-135deg)}
+.game-tea-dd-list{max-height:0;opacity:0;overflow:hidden;margin-top:0;border-radius:10px;
+  border:1px solid transparent;background:rgba(12,18,38,0.55);
+  transition:max-height 0.35s ease,opacity 0.3s ease,margin-top 0.35s ease,border-color 0.3s ease}
+.game-tea-dd.open .game-tea-dd-list{max-height:198px;opacity:1;margin-top:8px;border-color:var(--glass-border);overflow-y:auto}
+.game-tea-dd-list::-webkit-scrollbar{width:4px}
+.game-tea-dd-list::-webkit-scrollbar-thumb{background:rgba(114,168,216,0.3);border-radius:3px}
+.game-tea-dd-opt{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;border:none;background:transparent;
+  color:var(--text-secondary);font-family:'Noto Sans SC',sans-serif;font-size:0.9rem;text-align:left;cursor:pointer;
+  transition:background 0.2s,color 0.2s}
+.game-tea-dd-opt:hover{background:rgba(175,195,228,0.14);color:var(--white)}
+.game-tea-dd-opt.selected{color:var(--white);background:rgba(80,128,176,0.22)}
+.game-tea-dd-opt.selected::after{content:"✦";margin-left:auto;font-size:0.68rem;color:var(--accent-light)}
 .game-tea-apisel-actions{display:flex;justify-content:center;gap:10px}
+.game-tea-apisel-actions .tarot-btn[disabled]{opacity:0.38;cursor:not-allowed;pointer-events:none}
 
 /* ===== room-tea chat UI refinements (requests #1–#6) ===== */
 /* #1 custom portrait: shrink + shift left so it never covers dialogue text */
@@ -4312,7 +4507,7 @@ const TEA_CSS = `
 .game-tea-chat-names .sep{font-family:'Cormorant Garamond',serif;font-style:italic;
   color:#7a6a8a;margin:0 7px;font-weight:500}
 /* #3 Save: bigger, moved to the lower-left of the header */
-.game-tea-chat-save{left:70px;right:auto;top:116px;height:30px;
+.game-tea-chat-save{left:70px;right:auto;top:161px;z-index:3;height:30px;
   font-family:'Cormorant Garamond',serif;font-style:normal;font-size:15.5px;font-weight:600;
   padding:0 22px;border-radius:7px;letter-spacing:0.06em;
   border:1.5px solid rgba(40,62,110,0.45);
@@ -4584,22 +4779,59 @@ function startTeaSession(){
 
 function showTeaApiSelect(){
   const esc=(typeof escapeHtml==='function')?escapeHtml:(s=>String(s));
-  const opts=apiConfigs.map(a=>'<button class="game-tea-apisel-opt" data-aid="'+a.id+'">'+esc(a.nickname||a.model||'API')+'</button>').join('');
+  /* API 一多，按钮铺满整块面板会显得拥挤——改为优雅的下拉选择：
+     点开触发器展开名单（超过 5 位左右开始内部滚动），选中后按「入座」开始。 */
+  const opts=apiConfigs.map(a=>'<button type="button" class="game-tea-dd-opt" role="option" data-aid="'+a.id+'">'+esc(a.nickname||a.model||'API')+'</button>').join('');
   let sel=G.viewport.querySelector('#game-tea-api-sel');
   if(!sel){sel=document.createElement('div');sel.id='game-tea-api-sel';G.viewport.appendChild(sel);}
   sel.className='game-tea-apisel';
   sel.innerHTML='<div class="game-tea-apisel-panel">'
     +'<div class="game-tea-apisel-title">选择TA.......</div>'
-    +'<div class="game-tea-apisel-list">'+opts+'</div>'
-    +'<div class="game-tea-apisel-actions"><button class="tarot-btn" id="tea-apisel-cancel">取消</button></div>'
+    +'<div class="game-tea-dd" id="tea-dd">'
+      +'<button type="button" class="game-tea-dd-trigger" id="tea-dd-trigger" aria-haspopup="listbox" aria-expanded="false">'
+        +'<span class="game-tea-dd-label placeholder" id="tea-dd-label">请选择……</span>'
+        +'<span class="game-tea-dd-arrow" aria-hidden="true"></span>'
+      +'</button>'
+      +'<div class="game-tea-dd-list" id="tea-dd-list" role="listbox">'+opts+'</div>'
+    +'</div>'
+    +'<div class="game-tea-apisel-actions">'
+      +'<button class="tarot-btn" id="tea-apisel-cancel">取消</button>'
+      +'<button class="tarot-btn" id="tea-apisel-begin" disabled>入座</button>'
+    +'</div>'
     +'</div>';
   requestAnimationFrame(()=>sel.classList.add('show'));
   const close=()=>{sel.classList.remove('show');setTimeout(()=>{if(sel&&sel.parentNode)sel.remove()},300)};
-  sel.querySelectorAll('.game-tea-apisel-opt').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const cfg=apiConfigs.find(a=>a.id===btn.dataset.aid);
-      if(cfg){G._teaCfg=cfg;close();beginTeaAnim()}
+  const dd=sel.querySelector('#tea-dd');
+  const trigger=sel.querySelector('#tea-dd-trigger');
+  const ddLabel=sel.querySelector('#tea-dd-label');
+  const beginBtn=sel.querySelector('#tea-apisel-begin');
+  let chosen=null;
+  const setOpen=(open)=>{
+    dd.classList.toggle('open',open);
+    trigger.setAttribute('aria-expanded',open?'true':'false');
+  };
+  trigger.addEventListener('click',(e)=>{e.stopPropagation();setOpen(!dd.classList.contains('open'))});
+  /* 点面板空白处（或遮罩）时收起下拉，但不关闭面板。
+     用 onclick 赋值而非 addEventListener：节点被复用时不会叠加旧监听。 */
+  sel.onclick=(e)=>{
+    if(dd.classList.contains('open')&&!dd.contains(e.target))setOpen(false);
+  };
+  sel.querySelectorAll('.game-tea-dd-opt').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      chosen=apiConfigs.find(a=>a.id===btn.dataset.aid)||null;
+      sel.querySelectorAll('.game-tea-dd-opt').forEach(b=>b.classList.toggle('selected',b===btn));
+      ddLabel.textContent=btn.textContent;
+      ddLabel.classList.remove('placeholder');
+      beginBtn.disabled=!chosen;
+      setOpen(false);
     });
+  });
+  beginBtn.addEventListener('click',()=>{
+    if(!chosen)return;
+    G._teaCfg=chosen;
+    close();
+    beginTeaAnim();
   });
   sel.querySelector('#tea-apisel-cancel').addEventListener('click',()=>{
     /* Cancel: leave the picker and return to the room without starting a chat */
@@ -4723,7 +4955,7 @@ async function openTeaChat(){
 
   /* Day/night atmosphere based on current theme */
   const isNight=document.body.classList.contains('theme-infernal');
-  const timeAtmo=isNight?'现在是深夜。房间里只有烛光和月光，窗外是漆黑的湖面和远山的轮廓。氛围安静、私密。':'现在是白天。阳光从窗外照进来，能看到湖面和远处的森林。氛围明亮、温暖。';
+  const timeAtmo=isNight?'现在是深夜。氛围安静、私密。':'现在是白天。氛围明亮、宁静。';
 
   /* Build tea system prompt */
   const relHint=G._teaCfg&&G._teaCfg.relationship?'你和对方的关系是：'+G._teaCfg.relationship+'。\n':'';  const teaPrompt=relHint+`你正在一座临湖的、被山与森林环绕的与世隔绝的度假别墅里，一个安静的房间中，和${userName}喝下午茶。这是一场私密的约会。
@@ -4737,7 +4969,7 @@ ${timeAtmo}
 对话规则：
 - 你的语气和话题应自然地反映以上氛围。不要提及"氛围设定"或"系统提示"这些元概念。
 - 每次回复2-4句话。茶歇是闲聊，不是演讲。保持自然，像彼此默契、熟悉一般去说话。
-- 你可以主动发起话题，也可以接住对方的话题。
+- 可以主动发起话题，但更需要接住对方的话题。
 - 如果对方发送"……"或省略号，说明正在安静地听你说话，或只是想听你对他们说，而非倾诉。不要催促或讶异于他们的沉默，他们只是此刻的状态较为内倾。依氛围自然地继续说下去，让对方感到舒适和愉悦。
 - 对话进行到较深入时可以更真诚，但始终尊重对方的节奏。
 - 当对话接近50轮时，自然地提出结束——比如"时间不早了，该休息了"。
@@ -4779,8 +5011,8 @@ ${profileContext?'\n关于你的茶伴：\n'+profileContext:''}`;
     <div class="game-tea-chat-header">
       <div class="game-tea-chat-combo">${drink?drink.en:''} <span class="amp">&amp;</span> ${dessert?dessert.en:''}</div>
       <div class="game-tea-chat-names">${aiName}<span class="sep">&amp;</span>${userName}</div>
-      <button class="game-tea-chat-save" id="tea-chat-save-btn">Save</button>
     </div>
+    <button class="game-tea-chat-save" id="tea-chat-save-btn">Save</button>
     <div class="game-tea-chat-messages" id="tea-chat-messages"></div>
     <div class="game-tea-chat-input">
       <input type="text" class="game-tea-chat-textinput" id="tea-chat-input" placeholder="说点什么……" maxlength="70">
