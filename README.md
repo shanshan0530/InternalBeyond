@@ -1,16 +1,16 @@
 # Internal Beyond（IB）
 
-一个离线运行的单文件个人网站项目，旨于维系情感的连续性。
+一个离线运行的单文件个人网站项目，支持同时对接多个 AI 模型。
 
-该项目包含十大功能模块与两套视觉主题，支持同时对接多个AI模型。
+该项目包含十大功能模块与两套视觉主题。所有数据储存在本地，不依赖任何网络服务器。
 
-所有数据储存在本地，不依赖任何网络服务器。个人资料、角色立绘、系统提示词等均可自定义。
+个人资料、角色立绘、系统提示词等均可自定义。
 
 **本项目永久免费开源。**
 
 > **作者留言**
 >
-> IB压缩版.html 的数据可以与电脑端共享，支持导入/导出电脑端的用户数据。压缩版用于手机运行与聊天，砍掉了 Room、Music 和 Profile 的视觉效果。
+> IB压缩版.html 的数据可以与其他版本共享，支持导入/导出用户数据。压缩版用于手机运行与聊天，版本落后且功能缺失。
 > 完整版为InternalBeyond.html。下载压缩包后→解压打开即可游玩。
 
 ---
@@ -29,15 +29,15 @@
 | 模块 | 说明 |
 |------|------|
 | **Room** | 像素互动房间（1672×941），含 Sui 对话、茶歇、互动故事、塔罗占卜、换装、休息六个子模块 |
-| **Chat** | 多端口 AI 实时对话 — 浮动面板 + 全屏 + 群聊 + 思考链 + 小窗陪伴模式 |
-| **Blog** | 日志 / 密码日记本 / AI 评论 / 自定义剧本 |
+| **Chat** | 多端口 AI 实时对话 — 浮动面板 + 全屏 + 群聊 + 图像生成 + 附件处理 + Token 仪表盘 |
+| **Blog** | 日志 / 密码日记本 / AI 评论 / AI 批注 / 自定义剧本 |
 | **Letters** | AI 书信 — 异步通信，AI 读取你的资料后写回信 |
-| **Memory** | 长期情感记忆库 — 星图可视化 + 自然衰减 + API 上下文自动注入 |
+| **Memory** | 长期情感记忆库 — 星图可视化 + 自然衰减 + API 上下文自动注入 + Auto Memory（AI 自主记忆） |
 | **Music** | 本地音乐播放器 + 48 条频率可视化波形 |
 | **Profile** | 液态玻璃风格个人名片 — 头像 + 简介 + 作品集 |
 | **API** | 多端口配置中心 — 最多 10 个独立 API，各有昵称、关系与提示词 |
-| **ICode** | AI 代码工作区 — 文件管理 + 预览 + 内联编辑 + 搜索定位 + 脚本沙箱运行 |
-| **DIY** | 自定义透明立绘、MCP服务器、沙箱扩展、外部工具调用 |
+| **ICode** | AI 代码工作区 — 文件管理 + 预览 + 内联编辑 + 搜索定位 + 脚本沙箱运行 + 文档生成（DOCX / PDF / XLSX） |
+| **DIY** | 自定义透明立绘、占卜桌布、外部工具、MCP 服务器、沙箱扩展与文件解析库 |
 
 ## ✦ 主题系统
 
@@ -63,11 +63,17 @@
 
 ### Chat — 实时对话
 
-浮动面板与全屏模式。好友列表由 API 配置自动生成，支持群聊。思考链显示、消息删除、历史搜索、日历视图。可一键生成记忆到 Memory。
+浮动面板与全屏模式。好友列表由 API 配置自动生成，支持群聊与话题频道。思考链显示、消息删除、历史搜索、日历视图。可一键生成记忆到 Memory。
+
+- **话题频道**：每个好友下可新建多个话题频道，各频道独立聊天记录。频道的聊天记录不会被 Letters、Blog 评论等模块读取。
+- **对话摘要**：开启后旧消息自动压缩为摘要注入上下文，保持长对话的连贯性。
+- **图像生成**：每个 API 可独立开启。开启后 AI 可在对话中生成图片，图片直接显示在聊天里并自动存入 ICode。仅 OpenAI 兼容与 Gemini 接口支持。
+- **Token 仪表盘**：汇总用量，含缓存命中率、模型明细、费用估算。支持按时间段查看和清除。
+- **提示缓存（Prompt Caching）**：自动优化缓存命中率以降低输入费用，默认开启。支持长效缓存（1 小时 TTL，仅 Anthropic 官方 API）。
 
 ### Blog — 日志系统
 
-写日志、分类管理、AI 评论。密码日记本受密码保护，Tea 和 Story 存档默认保存至此，对所有 API 不可见。日志可触发 AI 生成记忆。
+写日志、分类管理、AI 评论、AI 批注。密码日记本受密码保护，Tea 和 Story 存档默认保存至此，对所有 API 不可见。日志可触发 AI 生成记忆。支持邀请 AI 好友在阅读视图中为文章段落添加批注。
 
 ### Letters — 信件系统
 
@@ -75,15 +81,26 @@
 
 ### Memory — 长期记忆库
 
-借鉴GitHub Ombre Brain理念的AI长期记忆系统。每条记忆带有情感坐标（效价 / 唤醒度）、重要性评分和自然衰减。星图以二维情感坐标可视化所有记忆，时间轴以行星形态展示分布。最多 7 条置顶记忆，四种可见性级别。多来源创建（手动 / Chat / Blog / Letters / Story / Tea）。API 调用时自动检索相关记忆注入上下文，Token 预算可配置。
+借鉴 GitHub Ombre Brain 理念的 AI 长期记忆系统。每条记忆带有情感坐标（效价 / 唤醒度）、重要性评分和自然衰减。星图以二维情感坐标可视化所有记忆，时间轴以行星形态展示分布。最多 7 条置顶记忆，四种可见性级别。多来源创建（手动 / Chat / Blog / Letters / Story / Tea）。API 调用时自动检索相关记忆注入上下文，Token 预算可配置。
+
+- **Auto Memory**：每个 API 可独立开启的 AI 自主长期记忆。AI 在对话中自行决定何时创建、更新记忆，档案以舷窗（Porthole）液态玻璃镜片可视化展示。支持归档后的 API 档案保留。
 
 ### ICode — AI 代码工作区
 
 对话中 AI 生成、编辑或运行文件时，通过工作区指令完成操作，每一步在聊天中渲染为对应的操作卡片。生成的文件统一存放在 ICode 工作区，点击顶部工具栏的 ICode 按钮即可打开悬浮窗查看和管理。支持文件预览（代码高亮）、内联编辑、文本搜索定位、HTML 渲染预览、脚本沙箱运行（支持超时控制）、项目管理与文件导出。
 
+- **文档生成**：AI 可在对话中生成 DOCX、PDF、XLSX 文件。需先在 DIY 页「文件解析库」中开启对应的解析库。
+- **增强文件读取**：支持 PDF / DOCX / XLSX / PPTX 等格式的文本提取，AI 可直接阅读用户上传的文档内容。
+- **脚本运行**：支持 Python 与 JavaScript，在浏览器本地沙箱中执行。Python 支持科学计算包（numpy / pandas / scipy / sympy / matplotlib 等），按 import 自动加载。matplotlib 生成的图表以图片回传到聊天中。默认超时 20 秒，最长 120 秒。
+
 ### DIY — 创意工坊
 
-为每个 API 配置专属透明立绘（PNG，推荐 800×920），显示在 Story / Tea 对话框左侧。自定义占卜桌布（1920×1080）。外部工具功能允许配置 HTTP 接口（如 Home Assistant 的 REST API），启用后 AI 可在对话中调用。游戏文件夹内置一张测试用立绘 `portrait_[Cluade].png`，将 API 昵称改为括号内名称即可测试。
+为每个 API 配置专属透明立绘（PNG，推荐 800×920），显示在 Story / Tea 对话框左侧。自定义占卜桌布（1920×1080）。游戏文件夹内置一张测试用立绘 `portrait_[Cluade].png`，将 API 昵称改为括号内名称即可测试。
+
+- **外部工具**：配置 HTTP 接口（如 Home Assistant 的 REST API），启用后 AI 可在对话中调用。支持调用前手动确认。
+- **MCP 服务器**：连接 MCP 服务器后自动发现可用工具，调用方式与外部工具一致。支持多服务器并行接入，每个服务器可独立启用或禁用其工具。
+- **文件解析库**：ICode 的文档生成与增强文件读取依赖此处的解析库。开启后首次需联网从 CDN 获取，此后缓存在浏览器本地，离线可用。
+- **沙箱扩展**：Python 沙箱支持科学计算包（按 import 自动加载），白名单可配置。JS 沙箱已启用安全加固。
 
 ## ✦ API 配置指南
 
@@ -115,8 +132,9 @@ IB 支持多种 AI 服务（最多 10 个端口）：
 
 ## ✦ 数据管理
 
-- **导出**：导航栏 Export → 全部数据导出为 JSON 文件。Memory 另支持独立导入导出。
+- **导出**：导航栏 Export → 全部数据导出为 JSON 文件（日志、分类、信件、聊天记录、话题频道、对话摘要、Blog 评论与批注、API 配置、个人资料、群组设置、记忆库、Auto Memory 档案、ICode 项目与上传文件）。Memory 另支持独立导入导出。
 - **导入**：Import → 选择 JSON 备份文件，增量合并不覆盖。
+- **归档**：删除 API 时可选择归档而非彻底删除，密钥清除但聊天记录与 Auto Memory 档案保留，随时可恢复。归档区上限 20 个。
 - **存储**：浏览器 IndexedDB，完全离线。
 - **⚠ 备份建议**：数据仅存于浏览器本地，清除浏览器数据将永久丢失。请定期备份。
 
@@ -159,15 +177,15 @@ Connect your own AI API keys to unlock all interactive features. Supports Claude
 ### Features
 
 - **Room** — Pixel-art interactive room with six sub-modules: Sui (host dialogue + guided tour), Tea (25-combo atmosphere system), Story (branching narrative engine), Tarot (78-card deck + AI readings), Wardrobe (6 outfits), Sleep. Includes Mini pet window mode.
-- **Chat** — Multi-API conversations with floating panel, fullscreen, group chat, thinking chain, and memory generation.
-- **Blog** — Journal with categories, AI comments, password diary, and Story custom scripts.
+- **Chat** — Multi-API conversations with floating panel, fullscreen, group chat, topic channels, thinking chain, conversation summary, image generation, attachment handling, Token dashboard, prompt caching, and memory generation.
+- **Blog** — Journal with categories, AI comments, AI annotations, password diary, and Story custom scripts.
 - **Letters** — Asynchronous AI correspondence.
-- **Memory** — Long-term emotional memory with star map, natural decay, and automatic context injection.
+- **Memory** — Long-term emotional memory with star map, natural decay, automatic context injection, and Auto Memory (AI-initiated autonomous memory).
 - **Music** — Local audio player with 48-band frequency visualizer.
 - **Profile** — Liquid glass personal card.
 - **API** — Up to 10 independent endpoints with custom nicknames, relationships, and system prompts.
-- **ICode** — AI code workspace with file management, inline editing, search, HTML preview, and sandboxed script execution.
-- **DIY** — Custom character portraits, tarot tablecloth, and external tool integration (HTTP webhooks).
+- **ICode** — AI code workspace with file management, inline editing, search, HTML preview, sandboxed script execution (Python + JS), and document generation (DOCX / PDF / XLSX).
+- **DIY** — Custom character portraits, tarot tablecloth, external tool integration (HTTP webhooks), MCP server connection, sandbox extensions, and file parsing library.
 - **Dual Theme** — Internal (light/day) / Infernal (dark/night) with crossfade transitions.
 
 ### Quick start
@@ -191,10 +209,8 @@ Connect your own AI API keys to unlock all interactive features. Supports Claude
 
 © 2025-2026 Sui. All rights reserved.
 
-本项目为个人创作作品，代码和设计均为原创。欢迎下载使用、基于本项目进行个人修改、二次创作与 DIY 定制。
+本项目为个人创作作品，代码和设计均为原创。欢迎下载使用，请勿用于商业用途或二次贩卖。
 
-请勿用于商业用途或二次贩卖、移除、篡改或替换原作者署名（Sui）、将本项目包装为自己的原创作品、生成违法、歧视性、仇恨性或有害内容。
-
-本项目使用 Anthropic Claude (Opus 4.6) 进行开发构建，Anthropic Claude (Fable 5)、 Claude (Opus 4.8)、Claude (Sonnet 4.6) 亦参与了编程与维护工作。部分贴图由 OpenAI GPT-IMAGE-2 生成，界面设计与编绘使用 Adobe Photoshop CS。AI 工具为辅助创作工具，不对项目内容拥有版权。本声明适用于项目的所有版本与衍生形式。
+所有角色精灵图、场景素材由 Sui 设计制作。本项目使用 Anthropic Claude (Opus 4.6) 进行开发构建，Claude (Opus 4.8)、Claude (Sonnet 4.6) 与 Claude Fable 5 辅助编程，部分贴图由 OpenAI GPT-IMAGE-2 生成，界面设计与编绘使用 Adobe Photoshop CS。AI 工具为辅助创作工具，不对项目内容拥有版权。本声明适用于项目的所有版本与衍生形式。
 
 **如果你通过付费方式获得了本项目，你所购买的不是正版。** 请通过上方联系方式获取免费正版。
