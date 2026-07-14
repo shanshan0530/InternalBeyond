@@ -4795,10 +4795,10 @@ i would like the room to be enough.
         <div class="author-body">
           <div class="author-name">Sui/水</div>
           <div class="author-desc"><span class="internal-only">Internal Beyond（IB）</span><span class="infernal-only">Infernal Beyond（IB）</span>的设计者。自由创作者。现代心理占星师。</div>
-          <div class="author-desc" style="margin-top:6px;font-size:0.8rem;opacity:0.85">QQ:1282901880 丨 Email: 1282901880@qq.com</div>
+          <div class="author-desc" style="margin-top:6px;font-size:0.8rem;opacity:0.85">QQ:1282901880 丨 Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40717278727970717878700031316e232f2d">[email&#160;protected]</a></div>
           <div class="author-desc" style="margin-top:4px;font-size:0.8rem;opacity:0.85">微信公众号：水棱镜</div>
           <div class="author-links" style="margin-top:14px">
-            <a class="author-link" href="mailto:1282901880@qq.com" target="_blank">
+            <a class="author-link" href="/cdn-cgi/l/email-protection#0e3f3c363c373e3f36363e4e7f7f206d6163" target="_blank">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
               Email
             </a>
@@ -4851,11 +4851,11 @@ i would like the room to be enough.
         <div class="cp-group">
           <div class="cp-group-name">您不可以</div>
           <p>将本项目或其衍生作品以任何形式出售、收费分发或商业化。</p>
-          <p>移除、篡改或替换原作者署名（Sui）与联系方式（1282901880@qq.com）。</p>
+          <p>移除、篡改或替换原作者署名（Sui）与联系方式（<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c1f0f3f9f3f8f1f0f9f9f181b0b0efa2aeac">[email&#160;protected]</a>）。</p>
           <p>将本项目包装为自己的原创作品。</p>
           <p>将本项目用于生成违法、歧视性、仇恨性或有害内容。</p>
         </div>
-        <p class="cp-warn"><strong>如果你通过付费方式获得了本项目，你所购买的不是正版。</strong><br>请通过以下方式联系作者获取免费正版：<br>GitHub: Sui-IB ｜ QQ: 1282901880 ｜ Email: 1282901880@qq.com</p>
+        <p class="cp-warn"><strong>如果你通过付费方式获得了本项目，你所购买的不是正版。</strong><br>请通过以下方式联系作者获取免费正版：<br>GitHub: Sui-IB ｜ QQ: 1282901880 ｜ Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d0c0f050f040d0c05050d7d4c4c135e5250">[email&#160;protected]</a></p>
       </div>
       <p style="margin-top:14px;font-size:0.82rem;opacity:0.7;line-height:1.8">本项目使用 Anthropic Claude (Opus 4.6) 进行开发构建，Anthropic Claude (Fable 5)、 Claude (Opus 4.8)、Claude (Sonnet 4.6) 亦参与了编程工作。部分贴图由 OpenAI GPT-IMAGE-2 生成，界面设计与编绘使用 Adobe Photoshop CS。AI 工具为辅助创作工具，不对项目内容拥有版权。本声明适用于项目的所有版本与衍生形式。</p>
     </div>
@@ -5128,7 +5128,7 @@ i would like the room to be enough.
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const DB_NAME='InternalBeyondDB',DB_VER=13;let db;
 function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VER);req.onupgradeneeded=e=>{const d=e.target.result;['posts','categories','about','music','apiSettings','chatMessages','letters','apiConfigs','groups','blogComments','memories','chatThreads','chatSummaries','uploadedFiles','blogAnnotations','projects','projectFiles','autoMemory'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='categories'?'name':'id'})});try{const store=e.target.transaction.objectStore('chatMessages');if(!store.indexNames.contains('byFriend'))store.createIndex('byFriend','friendId',{unique:false})}catch(ex){};try{const pf=e.target.transaction.objectStore('projectFiles');if(!pf.indexNames.contains('byProject'))pf.createIndex('byProject','projectId',{unique:false})}catch(ex){};try{const am=e.target.transaction.objectStore('autoMemory');if(!am.indexNames.contains('byFriend'))am.createIndex('byFriend','friendId',{unique:false})}catch(ex){}};req.onsuccess=()=>{db=req.result;resolve(db)};req.onerror=()=>reject(req.error)})}
 function dbPut(s,d){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).put(d);t.oncomplete=()=>{_ibMirrorDirty=true;_ibFsDirty=true;r()};t.onerror=()=>j(t.error)})}
@@ -9927,6 +9927,49 @@ function _parseThinking(raw){
   return {thinking:thinking,reply:reply.trim()};
 }
 
+/* Anthropic 联网搜索 + 思考链泄漏修复：只处理响应文本，不改请求体、搜索工具或缓存断点。 */
+function _anthropicWebThinkResponseMode(cfg,opts,wantThink){
+  try{return !!(wantThink&&cfg&&cfg.provider==='anthropic'&&typeof IBWS!=='undefined'&&IBWS.on(cfg)&&!(opts&&opts._noWebSearch)&&!IBWS.blocked(cfg))}catch(e){return false}
+}
+function _mergeAnthropicWebThink(a,b){
+  a=String(a||'').trim();b=String(b||'').trim();
+  if(!a)return b;if(!b)return a;if(a.indexOf(b)!==-1)return a;if(b.indexOf(a)!==-1)return b;
+  return a+'\n\n'+b;
+}
+/* 中转站可能把 <thinking> 拆跨多个 SSE chunk，且在标签前先吐搜索过程。
+   首个标签未确认前暂存；确认后把标签前缀与标签内容归入思考区。无闭合标签时回退为正文，避免空气泡。 */
+function _makeAnthropicWebThinkMux(onText,onThink){
+  var buf='',reply='',thinking='',phase='pre',prefix='',done=false,last=null;
+  var OPEN=/<think(?:ing)?\b[^>]*>/i,CLOSE=/<\/think(?:ing)?\s*>/i;
+  function text(v){if(!v)return;reply+=v;if(typeof onText==='function')onText(v)}
+  function think(v){if(!v)return;thinking+=v;if(typeof onThink==='function')onThink(v)}
+  function scan(){
+    for(;;){
+      if(phase==='pre'){
+        var op=buf.match(OPEN);if(!op)return;
+        prefix+=buf.slice(0,op.index);buf=buf.slice(op.index+op[0].length);phase='think';continue;
+      }
+      if(phase==='think'){
+        var cl=buf.match(CLOSE);if(!cl)return;
+        think(prefix+buf.slice(0,cl.index));prefix='';buf=buf.slice(cl.index+cl[0].length);phase='text';continue;
+      }
+      var op2=buf.match(OPEN);if(!op2){text(buf);buf='';return}
+      text(buf.slice(0,op2.index));buf=buf.slice(op2.index+op2[0].length);phase='think';continue;
+    }
+  }
+  return{
+    push(v){if(done||v==null)return;buf+=String(v);scan()},
+    releaseAsText(){if(done)return;text(prefix+buf);prefix='';buf='';phase='text'},
+    finish(){
+      if(done)return last;
+      if(phase==='pre')text(buf);
+      else if(phase==='think')text(prefix+buf);/* 标签不完整/未闭合：宁可显示，也不吞正文 */
+      else text(buf);
+      prefix='';buf='';done=true;last={text:reply,thinking:thinking};return last
+    }
+  }
+}
+
 /* Side-channel for native thinking from API response */
 var _lastApiThinking='';
 
@@ -10316,6 +10359,11 @@ async function _callApiChatStreamOnce(cfg,messages,opts){
   let _heartbeat=null;
   const _resetHB=()=>{if(_heartbeat)clearTimeout(_heartbeat);_heartbeat=setTimeout(()=>ac.abort(),_hbMs)};
   let fullText='',thinkingText='';
+  /* 仅响应侧启用：官方原生 thinking_delta 仍走旧路径；只有文本标签泄漏时才由 mux 分流。 */
+  const _anthWebThinkMode=(fmt==='anthropic'&&_anthropicWebThinkResponseMode(cfg,opts,wantThink));
+  let _anthNativeThinkSeen=false;
+  const _anthWebThinkMux=_anthWebThinkMode?_makeAnthropicWebThinkMux(function(t){fullText+=t;onChunk(t)},function(t){thinkingText+=t;onThink(t)}):null;
+  function _anthropicResponseText(t){t=String(t||'');if(!t)return;if(_anthWebThinkMux&&!_anthNativeThinkSeen)_anthWebThinkMux.push(t);else{fullText+=t;onChunk(t)}}
   try{
     let url,hdrs={},body;
     if(fmt==='anthropic'){
@@ -10397,8 +10445,11 @@ async function _callApiChatStreamOnce(cfg,messages,opts){
             }
             if(j.type==='content_block_delta'){
               if(j.delta?.type==='input_json_delta'&&opts._srchIdx!=null&&j.index===opts._srchIdx){opts._srchBuf=(opts._srchBuf||'')+(j.delta.partial_json||'')}
-              if(j.delta?.type==='thinking_delta'){const tk=j.delta.thinking||'';thinkingText+=tk;onThink(tk)}
-              else if(j.delta?.type==='text_delta'){fullText+=j.delta.text||'';onChunk(j.delta.text||'')}
+              if(j.delta?.type==='thinking_delta'){
+                if(!_anthNativeThinkSeen){_anthNativeThinkSeen=true;if(_anthWebThinkMux)_anthWebThinkMux.releaseAsText()}
+                const tk=j.delta.thinking||'';thinkingText+=tk;onThink(tk)
+              }
+              else if(j.delta?.type==='text_delta'){_anthropicResponseText(j.delta.text||'')}
             }
           }else if(fmt==='gemini'){
             if(j.usageMetadata){var _gu=j.usageMetadata,_gc=_gu.cachedContentTokenCount||0;opts._tkU={i:Math.max(0,(_gu.promptTokenCount||0)-_gc),cr:_gc,cw:0,o:(_gu.candidatesTokenCount||0)+(_gu.thoughtsTokenCount||0)}}
@@ -10418,12 +10469,14 @@ async function _callApiChatStreamOnce(cfg,messages,opts){
         }catch(e){}
       }
     }
-    if(thinkingText)_mSetThink(opts,thinkingText.replace(/<\/?thinking>/gi,'').trim());
+    if(_anthWebThinkMux)_anthWebThinkMux.finish();
+    if(thinkingText)_mSetThink(opts,thinkingText.replace(/<\/?think(?:ing)?\b[^>]*>/gi,'').trim());
     if(!_extAC&&_streamAbortController===ac)_streamAbortController=null;if(opts._st&&opts._st.ac===ac)opts._st.ac=null;if(_heartbeat)clearTimeout(_heartbeat);_ibwsFlushSearchMeta(opts);return fullText;
   }catch(e){
     clearTimeout(tm);if(!_extAC&&_streamAbortController===ac)_streamAbortController=null;if(opts._st&&opts._st.ac===ac)opts._st.ac=null;if(_heartbeat)clearTimeout(_heartbeat);
     if(e.name==='AbortError'){
-      if(thinkingText)_mSetThink(opts,thinkingText.replace(/<\/?thinking>/gi,'').trim());
+      if(_anthWebThinkMux)_anthWebThinkMux.finish();
+      if(thinkingText)_mSetThink(opts,thinkingText.replace(/<\/?think(?:ing)?\b[^>]*>/gi,'').trim());
       if(fullText.trim()){_ibwsFlushSearchMeta(opts);return fullText}
       throw new Error('请求超时或已停止')
     }
@@ -10558,13 +10611,20 @@ async function _callApiChatOnce(cfg,messages,opts){
   if(opts._fcCtx){try{opts._fcCtx._nsCalls=IBFC.extractFromResponse(opts._fcCtx,data)}catch(e){opts._fcCtx._nsCalls=null}}
       /* 任务A：非流式响应里的服务端搜索块 → searchLog（query 块在结果块之前出现） */
       try{if(opts.searchLog&&data.content&&Array.isArray(data.content)){let _q='';data.content.forEach(c=>{if(c&&c.type==='server_tool_use'&&/search/i.test(c.name||'')){_q=(c.input&&c.input.query)||''}else if(c&&c.type==='web_search_tool_result'){const rs=[];(Array.isArray(c.content)?c.content:[]).forEach(r=>{if(r&&(r.title||r.url))rs.push({title:r.title||r.url,url:r.url||''})});opts.searchLog.push({query:_q,results:rs});_q=''}})}}catch(e){}
+      let _anthNativeThinking='';
       if(data.content&&Array.isArray(data.content)){
         const thinkParts=data.content.filter(c=>c.type==='thinking');
-        if(thinkParts.length) _mSetThink(opts,thinkParts.map(c=>c.thinking||c.text||'').join('\n').replace(/<\/?thinking>/gi,'').trim());
+        if(thinkParts.length){_anthNativeThinking=thinkParts.map(c=>c.thinking||c.text||'').join('\n').replace(/<\/?thinking>/gi,'').trim();_mSetThink(opts,_anthNativeThinking)}
       }
       const textParts=(data.content||[]).filter(c=>c.type!=='thinking');
       let _out=textParts.map(c=>c.text||'').join('');
       if(_prefillThinking) _out='<thinking>'+_out;
+      /* 官方原生 thinking block 保持原逻辑；仅对中转混入正文的标签做二次分流。 */
+      if(!_anthNativeThinking&&_anthropicWebThinkResponseMode(cfg,opts,wantThink)){
+        const _amx=_makeAnthropicWebThinkMux();_amx.push(_out);const _amr=_amx.finish();
+        if(_amr.thinking)_mSetThink(opts,_mergeAnthropicWebThink(_anthNativeThinking,_amr.thinking).replace(/<\/?think(?:ing)?\b[^>]*>/gi,'').trim());
+        _out=_amr.text;
+      }
       if(data.stop_reason)_mSetFinish(opts,data.stop_reason);
       return pack(_out,data.stop_reason==='max_tokens');
     }catch(e){clearTimeout(tm);if(e.name==='AbortError')throw new Error('请求超时');throw e}
@@ -18423,5 +18483,6 @@ if(!REDUCED)requestAnimationFrame(loop);
   build(); if(built){ vis=true; play(); }
 })();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
