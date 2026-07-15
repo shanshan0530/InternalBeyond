@@ -318,7 +318,7 @@ body.theme-infernal .glass-card:hover{border-color:rgba(155,185,232,0.35);box-sh
 #page-chat{padding-top:60px;padding-bottom:0;max-width:100%;height:100vh;display:none;box-sizing:border-box;overflow:hidden}
 #page-chat.active{display:flex;flex-direction:column}
 .chat-full{flex:1;display:flex;flex-direction:column;max-width:900px;margin:0 auto;width:100%;min-height:0;overflow:hidden}
-.chat-full-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--glass-border)}
+.chat-full-header{display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:1px solid var(--glass-border)}
 .chat-full-header h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.85rem;color:var(--silver)}
 .chat-full-search{display:flex;gap:8px;align-items:center}
 .chat-full-search input{width:184px;height:32px;box-sizing:border-box;padding:6px 12px;border-radius:10px;border:1px solid var(--glass-border);background:rgba(175,195,228,0.06);color:var(--text-primary);font-size:0.78rem;outline:none;font-family:'Noto Sans SC',sans-serif}
@@ -2901,6 +2901,9 @@ body:not(.theme-infernal) .cpf-item{color:#adb8d0}
 body:not(.theme-infernal) .cpf-item:hover{background:rgba(75,125,182,0.2);color:#f0f4f8}
 body:not(.theme-infernal) .cpf-item.active{background:rgba(75,125,182,0.3);border-color:#4e7eb5;color:#f0f4f8}
 /* === LETTER REQUEST UI === */
+/* Letters 顶部三区间距：标题块 → 邮编/搜索栏 → 接收信件，轻量收紧并统一 */
+#page-letters .module-intro{margin-bottom:18px}
+#page-letters .blog-header{margin-bottom:18px}
 .letter-request-area{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
 .letter-ai-select{padding:6px 14px;border-radius:12px;border:1px solid var(--glass-border);background:var(--glass-bg);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--text-primary);font-size:0.78rem;font-family:'Noto Sans SC',sans-serif;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%238895b4' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 body:not(.theme-infernal) .page.active .letter-ai-select{background:rgba(245,250,255,0.65);border-color:rgba(170,210,245,0.35);color:#1a3262}
@@ -3145,7 +3148,7 @@ body:not(.theme-infernal) .page.active .arch-toggle.arch-return:hover{
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.62),inset 0 -1px 0 rgba(80,130,190,0.18),0 2px 5px rgba(105,155,220,0.18)}
 body:not(.theme-infernal) .page.active .arch-toggle:active,body:not(.theme-infernal) .page.active .arch-toggle.arch-return:active{transform:translateY(0.5px);
   box-shadow:inset 0 1.5px 3px rgba(88,128,188,0.2),inset 0 -1px 0 rgba(255,255,255,0.5)}
-#page-chat .module-intro{position:relative}
+#page-chat .module-intro{position:relative;margin-bottom:8px}
 #chat-arch-toggle{position:absolute;top:16px;right:18px;z-index:2}
 /* Chat 页 Archived 按钮：通用凸起款的低调版（Return 态仍为标准款）；按压下沉略深 */
 #chat-arch-toggle:not(.arch-return){color:var(--text-muted);border-color:rgba(165,188,230,0.09);
@@ -18483,6 +18486,7 @@ if(!REDUCED)requestAnimationFrame(loop);
   build(); if(built){ vis=true; play(); }
 })();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
