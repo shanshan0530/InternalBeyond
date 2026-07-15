@@ -8784,18 +8784,25 @@ function _vmToneAnalyze(ab,transcript){
     for(let c=0;c<chN;c++){const d=ab.getChannelData(c);for(let i=0;i<n;i++)x[i]+=d[i*step]/chN}
     const frame=Math.round(sr*0.03),hop=Math.round(sr*0.015),nf=Math.max(1,Math.floor((n-frame)/hop));
     if(nf<8)return '';
+    const _median=function(a){if(!a.length)return 0;const b=a.slice().sort(function(u,v){return u-v});const m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2};
     const rms=new Float32Array(nf);
     for(let f=0;f<nf;f++){let s=0,o=f*hop;for(let i=0;i<frame;i++){const v=x[o+i];s+=v*v}rms[f]=Math.sqrt(s/frame)}
     const sorted=Array.from(rms).sort(function(a,b){return a-b});
     const p10=sorted[Math.floor(nf*0.10)]||0,p90=sorted[Math.floor(nf*0.90)]||0;
     if(p90<0.004)return '';/* 几乎无声 */
-    const thr=Math.max(p90*0.18,p10*2.5,0.0025);
+    const thr=Math.min(p90*0.65,Math.max(p90*0.18,p10*2.5,0.0025));/* 连续发声时 p10≈p90，阈值需封顶，避免整段被误判为静音 */
     let first=-1,last=-1;const act=new Uint8Array(nf);
     for(let f=0;f<nf;f++){if(rms[f]>=thr){act[f]=1;if(first<0)first=f;last=f}}
     if(first<0||last-first<4)return '';
-    let actN=0,sumDb=0;
-    for(let f=first;f<=last;f++){if(act[f]){actN++;sumDb+=20*Math.log10(rms[f]+1e-8)}}
-    const meanDb=sumDb/Math.max(1,actN);
+    let actN=0,sumDb=0,sumR=0,sumR2=0;const activeRms=[];
+    for(let f=first;f<=last;f++){if(act[f]){const rv=rms[f];actN++;sumDb+=20*Math.log10(rv+1e-8);sumR+=rv;sumR2+=rv*rv;activeRms.push(rv)}}
+    const meanDb=sumDb/Math.max(1,actN),meanR=sumR/Math.max(1,actN);
+    const rmsStd=Math.sqrt(Math.max(0,sumR2/Math.max(1,actN)-meanR*meanR));
+    const energyCv=rmsStd/Math.max(1e-6,meanR);
+    const _segRms=function(a,b){let s=0,k=0;for(let f=Math.max(first,a);f<=Math.min(last,b);f++){if(act[f]){s+=rms[f];k++}}return k?s/k:0};
+    const span=last-first+1,seg=Math.max(3,Math.floor(span*0.28));
+    const earlyR=_segRms(first,first+seg-1),lateR=_segRms(last-seg+1,last);
+    const energyTailDb=(earlyR>0&&lateR>0)?20*Math.log10(lateR/earlyR):0;
     /* 停顿：讲话跨度内的静音段占比与明显停顿次数 */
     let pauseFrames=0,longPauses=0,run=0;
     const hopSec=hop/sr;
@@ -8803,10 +8810,11 @@ function _vmToneAnalyze(ab,transcript){
       if(!act[f]){run++;pauseFrames++}
       else{if(run*hopSec>=0.35)longPauses++;run=0}
     }
-    const pauseRatio=pauseFrames/(last-first+1);
-    /* 基频：活跃帧自相关（60–400Hz），取中位数与四分位离散度 */
+    if(run*hopSec>=0.35)longPauses++;
+    const pauseRatio=pauseFrames/span;
+    /* 基频：活跃帧自相关（60–400Hz）。保留时间顺序，用于尾音和声线变化判断 */
     const lagMin=Math.max(2,Math.floor(sr/400)),lagMax=Math.min(frame-2,Math.ceil(sr/60));
-    const f0s=[];
+    const f0seq=[];
     for(let f=first;f<=last;f+=2){
       if(!act[f])continue;
       const o=f*hop;let e0=0;
@@ -8818,28 +8826,95 @@ function _vmToneAnalyze(ab,transcript){
         for(let i=0;i<lim;i+=2)s+=x[o+i]*x[o+i+lag];
         if(s>best){best=s;bestLag=lag}
       }
-      if(bestLag&&best/(e0*0.5)>0.32)f0s.push(sr/bestLag);
+      const q=bestLag?best/(e0*0.5):0;
+      if(bestLag&&q>0.32)f0seq.push({hz:sr/bestLag,f:f,q:Math.max(0,Math.min(1,q))});
     }
-    let f0med=0,f0spread=0;
-    if(f0s.length>=6){
-      f0s.sort(function(a,b){return a-b});
-      f0med=f0s[Math.floor(f0s.length/2)];
-      const q1=f0s[Math.floor(f0s.length*0.25)],q3=f0s[Math.floor(f0s.length*0.75)];
+    let f0med=0,f0spread=0,f0TailDelta=0,f0Jitter=0,f0Quality=0;
+    if(f0seq.length>=6){
+      const f0vals=f0seq.map(function(v){return v.hz});
+      f0med=_median(f0vals);
+      const f0sorted=f0vals.slice().sort(function(a,b){return a-b});
+      const q1=f0sorted[Math.floor(f0sorted.length*0.25)],q3=f0sorted[Math.floor(f0sorted.length*0.75)];
       f0spread=(q3-q1)/Math.max(1,f0med);
+      const edge=Math.max(2,Math.floor(f0seq.length*0.30));
+      const fEarly=_median(f0seq.slice(0,edge).map(function(v){return v.hz}));
+      const fLate=_median(f0seq.slice(-edge).map(function(v){return v.hz}));
+      if(fEarly&&fLate)f0TailDelta=(fLate-fEarly)/Math.max(1,f0med);
+      let jd=0,jn=0,qs=0;
+      for(let i=0;i<f0seq.length;i++){
+        qs+=f0seq[i].q;
+        if(i){const d=Math.abs(f0seq[i].hz-f0seq[i-1].hz);if(d/f0med<0.45){jd+=d;jn++}}
+      }
+      f0Jitter=(jn?jd/jn:0)/Math.max(1,f0med);
+      f0Quality=qs/f0seq.length;
     }
-    /* 语速：文字稿字数 / 有效发声时长 */
-    const chars=String(transcript||'').replace(/[\s\p{P}]/gu,'').length;
+    /* 语速：中文按字数，其他语言按词数 / 有效发声时长 */
+    const txt=String(transcript||'').trim();
+    const cjk=(txt.match(/[\u3400-\u9fff]/g)||[]).length;
+    const words=(txt.match(/[A-Za-z0-9]+(?:'[A-Za-z]+)?/g)||[]).length;
     const voicedSec=actN*hopSec;
-    let rate=0;if(chars>=4&&voicedSec>0.8)rate=chars/voicedSec;
-    const parts=[];
-    if(rate){if(rate<2.6)parts.push('语速偏慢('+rate.toFixed(1)+'字/秒)');else if(rate>5.4)parts.push('语速偏快('+rate.toFixed(1)+'字/秒)');else parts.push('语速中等('+rate.toFixed(1)+'字/秒)')}
-    if(meanDb<-31)parts.push('音量很低');else if(meanDb<-24)parts.push('音量偏低');else if(meanDb>-11)parts.push('音量较大');
-    if(pauseRatio>0.42||longPauses>=3)parts.push('停顿较多('+longPauses+'次明显停顿)');
-    if(f0med){parts.push('基频约'+Math.round(f0med)+'Hz');if(f0spread>0.30)parts.push('语调起伏大');else if(f0spread<0.08)parts.push('语调低平')}
-    return parts.length?parts.join('、'):'语气平稳';
+    const useCjk=cjk>=Math.max(4,words),units=useCjk?cjk:words,unitName=useCjk?'字':'词';
+    let rate=0;if(units>=(useCjk?4:2)&&voicedSec>0.8)rate=units/voicedSec;
+    const slowThr=useCjk?2.6:1.5,fastThr=useCjk?5.4:3.2;
+    const rateDesc=!rate?'语速未知':(rate<slowThr?'语速偏慢':(rate>fastThr?'语速偏快':'语速中等'))+'('+rate.toFixed(1)+unitName+'/秒)';
+    const volumeDesc=meanDb<-31?'音量很低':meanDb<-24?'音量偏低':meanDb>-11?'音量较大':'音量中等';
+    const pauseDesc=(pauseRatio>0.42||longPauses>=3)?'停顿较多('+longPauses+'次明显停顿)':(pauseRatio>0.24||longPauses>=1)?'有少量停顿':'停顿较少';
+    const pitchDesc=!f0med?'':(f0spread>0.30?'语调起伏明显':f0spread<0.08?'语调较平':'语调起伏中等');
+
+    /* 声线变化：只描述本段内可观测变化，不建立说话人身份或长期基线 */
+    const voice=[];
+    const soft=meanDb<-21&&energyCv<0.72,strong=meanDb>-14;
+    if(soft)voice.push('声线偏轻柔');else if(strong)voice.push('声线偏有力');
+    if(f0TailDelta>0.14)voice.push('尾音明显上扬');else if(f0TailDelta>0.07)voice.push('尾音轻微上扬');else if(f0TailDelta<-0.14)voice.push('尾音明显下沉');else if(f0TailDelta<-0.07)voice.push('尾音轻微下沉');
+    if(energyTailDb>3.5)voice.push('后段音量渐强');else if(energyTailDb<-3.5)voice.push('后段音量渐弱');
+    if(f0Jitter>0.13&&f0Quality>0.45&&f0spread>0.12)voice.push('音高有轻微颤动倾向');
+    if(!voice.length&&f0med)voice.push(f0spread<0.08?'声线较稳定':'声线有自然起伏');
+
+    /* 本地情绪融合：借鉴“声学特征 + 文字语义”的两阶段思路，但不增加第二次联网调用 */
+    const score={'亲昵/撒娇':0,'开心':0,'兴奋':0,'愤怒/激动':0,'难过/低落':0,'疲惫':0,'紧张/不安':0,'犹豫/不确定':0,'平静/中性':0.8};
+    const add=function(k,v){score[k]+=v};
+    if(/(宝贝|宝宝|亲爱的|老公|老婆|爹地|哥哥|姐姐|想你|爱你|抱抱|亲亲|么么|撒娇|陪我|哄我|叫我)/i.test(txt))add('亲昵/撒娇',3.6);
+    if(/(开心|高兴|好棒|太好|喜欢|幸福|哈哈|嘿嘿|笑死|爱死)/i.test(txt))add('开心',3.4);
+    if(/(激动|兴奋|迫不及待|太爽|绝了|冲啊|哇塞)/i.test(txt))add('兴奋',3.6);
+    if(/(生气|气死|愤怒|烦死|闭嘴|讨厌|滚|凭什么|受够)/i.test(txt))add('愤怒/激动',4.0);
+    if(/(难过|伤心|委屈|想哭|哭了|失落|心疼|痛苦|不开心|崩溃)/i.test(txt))add('难过/低落',4.0);
+    if(/(好累|累死|疲惫|困死|好困|没力气|撑不住|想睡|熬不动)/i.test(txt))add('疲惫',4.2);
+    if(/(紧张|害怕|怕死|担心|焦虑|不安|慌|怎么办|完了)/i.test(txt))add('紧张/不安',3.9);
+    if(/(不知道|不确定|也许|可能吧|要不要|可以吗|行吗|好吗|是不是)/i.test(txt))add('犹豫/不确定',2.8);
+    if(/(没事|还好|没关系|慢慢来|挺好的|平静|放心)/i.test(txt))add('平静/中性',2.2);
+    const endingSoft=/[嘛呀啦呐哟哦诶哼～~]{1,3}[。！？!?]*$/.test(txt);
+    if(endingSoft)add('亲昵/撒娇',0.8);
+    if(rate){
+      if(rate<slowThr){add('疲惫',1.1);add('难过/低落',0.7);add('平静/中性',0.5);add('亲昵/撒娇',0.3)}
+      else if(rate>fastThr){add('兴奋',1.2);add('紧张/不安',0.9);add('愤怒/激动',0.8)}
+    }
+    if(meanDb<-25){add('疲惫',1.1);add('难过/低落',0.8);add('亲昵/撒娇',0.4)}
+    else if(meanDb>-13){add('兴奋',1.2);add('愤怒/激动',1.1);add('开心',0.5)}
+    if(pauseRatio>0.40||longPauses>=3){add('疲惫',1.2);add('难过/低落',0.9);add('紧张/不安',0.5)}
+    else if(pauseRatio<0.12){add('开心',0.4);add('兴奋',0.4)}
+    if(f0spread>0.30){add('兴奋',0.9);add('紧张/不安',0.7);add('亲昵/撒娇',0.4)}
+    else if(f0med&&f0spread<0.08){add('平静/中性',0.9);add('疲惫',0.3)}
+    if(f0TailDelta>0.10){add('亲昵/撒娇',1.1);add('开心',0.3);add('犹豫/不确定',0.3)}
+    else if(f0TailDelta<-0.10){add('难过/低落',0.5);add('疲惫',0.5);add('平静/中性',0.3)}
+    if(soft){add('亲昵/撒娇',0.7);add('平静/中性',0.7);add('疲惫',0.3)}
+    if(strong&&rate>fastThr){add('愤怒/激动',0.9);add('兴奋',0.8)}
+    if(energyCv>0.75){add('兴奋',0.5);add('紧张/不安',0.4);add('愤怒/激动',0.3)}
+    else if(energyCv<0.35){add('平静/中性',0.7);add('疲惫',0.2)}
+    if(endingSoft&&soft&&f0TailDelta>0.05)add('亲昵/撒娇',1.2);
+    const ranked=Object.keys(score).sort(function(a,b){return score[b]-score[a]});
+    const top=ranked[0],second=ranked[1],topScore=score[top],gap=topScore-score[second];
+    let emotion=top;
+    if(topScore<2.2)emotion='平静/中性';
+    else if(score[second]>=2.8&&gap<0.9&&second!=='平静/中性')emotion=top+'，兼有'+second;
+    const confidence=(topScore>=6&&gap>=1.2)?'较高':topScore>=3.5?'中等':'较低';
+
+    const parts=['情绪倾向:'+emotion+'('+confidence+'置信)'];
+    if(voice.length)parts.push('声线/变化:'+voice.slice(0,3).join('、'));
+    parts.push(rateDesc,volumeDesc,pauseDesc);
+    if(f0med)parts.push('基频约'+Math.round(f0med)+'Hz',pitchDesc);
+    return parts.filter(Boolean).join('；');
   }catch(e){return ''}
 }
-
 function _vmInit(){
   ['chat-voice-full','chat-voice-mini'].forEach(function(id){
     var btn=document.getElementById(id);if(!btn)return;
@@ -18486,6 +18561,7 @@ if(!REDUCED)requestAnimationFrame(loop);
   build(); if(built){ vis=true; play(); }
 })();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
