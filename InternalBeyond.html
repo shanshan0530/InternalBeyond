@@ -4093,7 +4093,7 @@ body:not(.theme-infernal) #api-list-container{--ami:rgba(96,136,196,0.24);--amk:
       <p class="internal-only" style="font-size:0.92rem;line-height:1.8;margin-bottom:14px;opacity:0.85;font-weight:400">离开一段时间后再次重新打开页面时TA会收到你的离开时长。</p>
       <p class="infernal-only" style="font-size:0.92rem;line-height:1.8;margin-bottom:14px;opacity:0.85;font-weight:400">让TA注意到你离开了多久后才回来。</p>
       <div class="api-form-group" style="margin-bottom:10px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="api-welcome-toggle" onchange="saveSummarySettings()" style="width:auto;accent-color:var(--accent)"> 启用 Presence</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="api-welcome-toggle" onchange="saveSummarySettings()" style="width:auto;accent-color:var(--accent)"> 启用Presence</label>
       </div>
       <div class="api-form-group">
         <label>触发间隔 <span style="font-weight:400;opacity:0.5;font-size:0.72rem">（默认 2 小时）</span></label>
@@ -4103,6 +4103,11 @@ body:not(.theme-infernal) #api-list-container{--ami:rgba(96,136,196,0.24);--amk:
           <option value="4">4 小时</option>
           <option value="8">8 小时</option>
         </select>
+      </div>
+      <p class="internal-only" style="font-size:0.92rem;line-height:1.8;margin:16px 0 14px;opacity:0.85;font-weight:400">播放音乐时，TA 会收到你正在听的曲目。</p>
+      <p class="infernal-only" style="font-size:0.92rem;line-height:1.8;margin:16px 0 14px;opacity:0.85;font-weight:400">让TA知道你正在听些什么。</p>
+      <div class="api-form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="api-music-toggle" onchange="saveSummarySettings()" style="width:auto;accent-color:var(--accent)"> 启用Sing</label>
       </div>
     </div>
 
@@ -4519,7 +4524,7 @@ i would like the room to be enough.
           <p><strong>图像生成</strong>：每个 API 可独立开启（默认关闭）。开启后 AI 可在对话中生成图片：图片直接显示在聊天里并自动存入 ICode，用量按生图模型名计入 Token 仪表盘（单价可在仪表盘为该模型单独设置）。仅 OpenAI 兼容与 Gemini 接口支持。可随时切换；切换后下一条消息重建一次提示缓存，之后恢复稳定命中。</p>
           <p><strong>对话摘要</strong>：开启后旧消息自动压缩为摘要注入上下文，保持长对话的连贯性。</p>
           <p><strong>语音转写</strong>：为语音消息配置外部转写接口（OpenAI 兼容），文字稿不再依赖浏览器内置识别（国内网络下 Chrome / Edge 的内置识别常连不上）。能听音频的模型（Gemini 等）无需配置，直接收到原声；听不到原声的模型会额外收到本地计算的声学语气特征（不显示在界面上），供其自行判断情绪。</p>
-          <p><strong>Presence</strong>：<span class="internal-only">开启后，你离开再回来时 TA 会收到离开时长。可配置触发间隔。</span><span class="infernal-only">让TA注意到你离开了多久。可配置触发间隔。</span></p>
+          <p><strong>Presence</strong>：<span class="internal-only">开启后，你离开再回来时 TA 会收到离开时长。可配置触发间隔。开启Sing后，TA 会收到当前你当前使用音乐播放器正在播放的曲目。</span><span class="infernal-only">让TA注意到你离开了多久。可配置触发间隔。开启Sing可以让TA知道你正在听些什么。</span></p>
           <p><strong>记忆系统设置</strong>：控制记忆注入的字符预算和截取长度。预算越高 AI 读到的记忆越多，Token 消耗也越大。</p>
           <p><strong>API 排序</strong>：拖拽 API 卡片调整顺序，同步到好友列表。</p>
           <p><strong>聊天记录管理</strong>：按日期查看消息分布，支持单日导出、删除和重新导入。</p>
@@ -4686,6 +4691,7 @@ i would like the room to be enough.
           <p><strong>添加音乐</strong>：点击 <strong>「+」</strong> 按钮，通过本地文件或音频 URL 添加歌曲。</p>
           <p><strong>播放控制</strong>：播放/暂停、上下曲切换、进度拖拽。三种模式：列表循环、单曲循环、随机播放。</p>
           <p><strong>音频可视化</strong>：播放时显示 48 条频率柱状可视化波形。</p>
+          <p><strong>Sing</strong>：<span class="internal-only">播放音乐时 TA 可以收到当前曲目。在 API 页 Presence 中开启。</span><span class="infernal-only">你和TA聊天的时候正在听着什么。在 API 页 Presence 中开启。</span></p>
         </div>
       </div>
     </div>
@@ -9292,6 +9298,8 @@ async function sendChatMessage(voiceMsg){
         let _gTailCtx='';
         /* 时间戳 → tail */
         _gTailCtx+='当前时间：'+new Date().toLocaleString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long',hour:'2-digit',minute:'2-digit'})+'。';
+        /* 「正在播放」（Presence 内开关，默认关）：随播放/暂停变化 → tail，不进 system */
+        try{if(gss.musicEnabled&&currentTrackIdx>=0&&!audioEl.paused&&playlist[currentTrackIdx])_gTailCtx+='正在听：'+playlist[currentTrackIdx].name+'。';}catch(e){}
         /* 上一轮真实思考 → tail：保留延续性且不污染可缓存前缀 */
         if(thinkingOn&&_gLastOwnThinking)_gTailCtx+='\n\n【你上一轮发言时的内心思考（仅供延续思路，勿复述或提及）】\n'+String(_gLastOwnThinking).slice(0,1200);
         /* 群聊摘要 → tail */
@@ -9577,6 +9585,8 @@ async function sendChatMessage(voiceMsg){
     let _tailCtx='';
     /* 时间戳：每分钟都变，必须放在 tail */
     _tailCtx+='当前时间：'+new Date().toLocaleString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long',hour:'2-digit',minute:'2-digit'})+'。';
+    /* 「正在播放」（Presence 内开关，默认关）：随播放/暂停变化 → tail，不进 system */
+    try{if(ss.musicEnabled&&currentTrackIdx>=0&&!audioEl.paused&&playlist[currentTrackIdx])_tailCtx+='正在听：《'+playlist[currentTrackIdx].name+'》。';}catch(e){}
     /* 上一轮真实思考 → tail：保留思路延续，同时不污染可缓存前缀 */
     if(thinkingOn&&_lastOwnThinking)_tailCtx+='\n\n【你上一轮回复时的内心思考（仅供延续思路，勿复述或提及）】\n'+String(_lastOwnThinking).slice(0,1200);
     /* 摘要：每次生成后变化 → 移至 tail */
@@ -11019,7 +11029,7 @@ function truncateContext(text,maxChars){if(!text||text.length<=maxChars)return t
 function _getSummaryTriggerCount(){try{var k=parseInt(document.getElementById('api-read-chat')&&document.getElementById('api-read-chat').value);if(k&&k>=5)return Math.max(8,k);return 10}catch(e){return 10}}
 const SUMMARY_TRIGGER_COUNT=10;/* 兜底默认值，实际运行时用 _getSummaryTriggerCount() */
 async function getSummarySettings(){
-  try{const s=await dbGet('apiSettings','summarySettings');return s||{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,summaryApiId:'',summaryWindow:60}}catch(e){return{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,summaryApiId:'',summaryWindow:60}}
+  try{const s=await dbGet('apiSettings','summarySettings');return s||{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,musicEnabled:false,summaryApiId:'',summaryWindow:60}}catch(e){return{enabled:false,keepCount:6,welcomeEnabled:false,welcomeInterval:2,musicEnabled:false,summaryApiId:'',summaryWindow:60}}
 }
 async function saveSummarySettings(){
   const s={id:'summarySettings',
@@ -11027,6 +11037,7 @@ async function saveSummarySettings(){
     keepCount:parseInt(document.getElementById('api-summary-keep')?.value)||6,
     welcomeEnabled:!!document.getElementById('api-welcome-toggle')?.checked,
     welcomeInterval:parseInt(document.getElementById('api-welcome-interval')?.value)||2,
+    musicEnabled:!!document.getElementById('api-music-toggle')?.checked,
     summaryApiId:document.getElementById('api-summary-api')?.value||'',
     summaryWindow:parseInt(document.getElementById('api-summary-window')?.value)||60};
   await dbPut('apiSettings',s);toast('设置已保存');
@@ -11037,6 +11048,7 @@ async function loadSummarySettingsUI(){
   const k=document.getElementById('api-summary-keep');if(k)k.value=String(s.keepCount||6);
   const w=document.getElementById('api-welcome-toggle');if(w)w.checked=!!s.welcomeEnabled;
   const wi=document.getElementById('api-welcome-interval');if(wi)wi.value=String(s.welcomeInterval||2);
+  const mu=document.getElementById('api-music-toggle');if(mu)mu.checked=!!s.musicEnabled;
   const sw=document.getElementById('api-summary-window');if(sw)sw.value=String(s.summaryWindow||60);
   /* Populate summary API dropdown */
   const sel=document.getElementById('api-summary-api');
@@ -11868,7 +11880,16 @@ const IBMCP = {
 const IBFC = {
   on(){ try{ return localStorage.getItem('ib_fcMode') !== 'off'; }catch(e){ return true; } },
   setOn(v){ try{ localStorage.setItem('ib_fcMode', v ? 'auto' : 'off'); }catch(e){} },
-  maxRounds(){ const n = parseInt((typeof localStorage !== 'undefined' && localStorage.getItem('ib_fcRounds')) || '4', 10); return (n >= 1 && n <= 8) ? n : 4; },
+  maxRounds(){ const n = parseInt((typeof localStorage !== 'undefined' && localStorage.getItem('ib_fcRounds')) || '4', 10); return (n >= 1 && n <= 99) ? n : 4; },
+  /* 逐服务器轮上限(存于 ib_mcp_cfg 内 servers[].maxRounds): 该服务器未设置时为默认值 5, 与外部工具轮上限无关 */
+  mcpServerMaxRounds(alias){
+    try{
+      const s = IBMCP.cfg().servers.find(x => x.alias === alias);
+      const n = s ? parseInt(s.maxRounds, 10) : NaN;
+      if(n >= 1 && n <= 99) return n;
+    }catch(e){}
+    return 5;
+  },
 
   // 接线时由宿主注入:
   execLocalTool: null,      // async (name, args) => {ok, reason, response, ...}  宿主 webhook 执行器
@@ -12083,9 +12104,30 @@ const IBFC = {
     // 把 assistant(tool_use) + 结果 接回对话, 供下一轮
     ctx.messages = ctx.messages.concat(this.buildTurns(ctx, pieceText, calls, results));
     ctx.round++;
-    if(ctx.round >= this.maxRounds()){
-      emit('\n[已达工具调用轮数上限 ' + this.maxRounds() + ', 如需继续请回复"继续"]');
-      return { done: true, hitCap: true };
+    /* 轮数分账: 外部工具(webhook)与 MCP 各自独立计数; MCP 再按服务器别名细分, 支持逐服务器轮上限 */
+    const isMcp = c => String(c.name || '').indexOf('mcp.') === 0;
+    if(calls.some(c => !isMcp(c))){
+      ctx.roundLocal = (ctx.roundLocal || 0) + 1;
+      if(ctx.roundLocal >= this.maxRounds()){
+        emit('\n[已达外部工具调用轮数上限 ' + this.maxRounds() + ', 如需继续请回复"继续"]');
+        return { done: true, hitCap: true };
+      }
+    }
+    const mcpAliases = {};
+    calls.filter(isMcp).forEach(c => {
+      let a = '';
+      try{ const r = IBMCP.resolve(c.name); a = (r && r.server && r.server.alias) || ''; }catch(e){}
+      if(!a) a = String(c.name || '').split('.')[1] || '?';   // 解析失败(服务器已删等)兜底, 仅用于计数与提示
+      mcpAliases[a] = true;
+    });
+    ctx.roundMcp = ctx.roundMcp || {};
+    for(const a in mcpAliases){
+      ctx.roundMcp[a] = (ctx.roundMcp[a] || 0) + 1;
+      const cap = this.mcpServerMaxRounds(a);
+      if(ctx.roundMcp[a] >= cap){
+        emit('\n[已达 MCP 服务器「' + a + '」工具调用轮数上限 ' + cap + ', 如需继续请回复"继续"]');
+        return { done: true, hitCap: true };
+      }
     }
     return { done: false };
   },
@@ -12373,14 +12415,16 @@ const IBDIY = {
     const wrap = document.createElement('label');
     wrap.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;cursor:pointer';
     wrap.innerHTML = '<input type="checkbox" id="ib-fc-toggle" style="width:auto;accent-color:var(--accent)"> 原生函数调用（Anthropic / OpenAI 使用 tools 参数，其余厂商自动回落 XML）' +
-      ' <span style="opacity:.6;margin-left:6px">轮上限</span><input type="number" id="ib-fc-rounds" class="ib-num" min="1" max="8" style="width:44px">';
+      ' <span style="opacity:.6;margin-left:6px" title="Webhook 外部工具连续自动调用的轮数上限">外部工具轮上限</span><input type="number" id="ib-fc-rounds" class="ib-num" min="1" max="99" style="width:52px">';
     anchor.appendChild(wrap);
     const tg = wrap.querySelector('#ib-fc-toggle');
     tg.checked = IBFC.on();
     tg.onchange = () => IBFC.setOn(tg.checked);
     const rd = wrap.querySelector('#ib-fc-rounds');
     rd.value = IBFC.maxRounds();
-    rd.onchange = () => { try{ localStorage.setItem('ib_fcRounds', rd.value); }catch(e){} };
+    rd.onchange = () => {
+      try{ localStorage.setItem('ib_fcRounds', rd.value); }catch(e){}
+    };
   },
 
   /* ---- MCP 卡 ---- */
@@ -12388,10 +12432,13 @@ const IBDIY = {
     const box = document.getElementById('ib-mcp-body');
     if(!box) return;
     const c = IBMCP.cfg();
+    const gcap = 5;   // 逐服务器「轮上限」留空时的默认值, 作为输入框占位提示
     const rows = c.servers.map((s, i) => {
       const st = s.status === 'ok'
         ? '<span style="color:var(--accent)">已连接 · ' + (s.tools || []).length + ' 个工具</span>'
         : (s.lastError ? '<span style="color:#c44">' + this.esc(String(s.lastError).slice(0, 90)) + '</span>' : '<span style="opacity:.55">未连接</span>');
+      const _mr = parseInt(s.maxRounds, 10);
+      const mrv = (_mr >= 1 && _mr <= 99) ? _mr : '';
       const tools = (s.tools || []).map((t, j) =>
         '<label style="display:inline-flex;align-items:center;gap:4px;margin:2px 10px 2px 0;font-size:0.78rem;cursor:pointer">' +
         '<input type="checkbox" data-ib-mcptool="' + i + ':' + j + '"' + (t.enabled !== false ? ' checked' : '') + ' style="width:auto;accent-color:var(--accent)">' +
@@ -12402,6 +12449,7 @@ const IBDIY = {
         '<input data-ib-mcpalias="' + i + '" value="' + this.esc(s.alias) + '" placeholder="别名" style="width:90px">' +
         '<input data-ib-mcpurl="' + i + '" value="' + this.esc(s.url) + '" placeholder="服务器地址（含 token）" style="flex:1;min-width:180px">' +
         '<label style="font-size:0.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap"><input type="checkbox" data-ib-mcpon="' + i + '"' + (s.enabled !== false ? ' checked' : '') + ' style="width:auto;accent-color:var(--accent)">启用</label>' +
+        '<label style="font-size:0.78rem;display:inline-flex;align-items:center;gap:4px;white-space:nowrap" title="该服务器工具连续自动调用的轮数上限（1~99）；留空则为默认值 5">轮上限<input type="number" data-ib-mcprounds="' + i + '" class="ib-num" value="' + mrv + '" placeholder="' + gcap + '" min="1" max="99" style="width:52px"></label>' +
         '<button class="btn" style="padding:3px 12px;font-size:0.75rem" data-ib-mcpconn="' + i + '">连接</button>' +
         '<button class="btn" style="padding:3px 12px;font-size:0.75rem" data-ib-mcpdel="' + i + '">删除</button>' +
         '</div></div><div style="font-size:0.78rem;margin-top:2px">' + st + '</div>' +
@@ -12410,7 +12458,7 @@ const IBDIY = {
     }).join('');
 
     box.innerHTML =
-      '<p style="font-size:0.92rem;line-height:1.8;margin-bottom:14px;opacity:0.85;font-weight:400">连接 MCP 服务器后自动发现可用工具，调用方式与外部工具一致。连接失败时请检查跨域（CORS）设置。</p>' +
+      '<p style="font-size:0.92rem;line-height:1.8;margin-bottom:14px;opacity:0.85;font-weight:400">连接 MCP 服务器后自动发现可用工具，调用方式与外部工具一致。连接失败时请检查跨域（CORS）设置。每个服务器可单独设置「轮上限」（连续自动调用的轮数上限，1~99），留空则为默认值 5。</p>' +
       '<div class="api-form-group" style="margin-bottom:8px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ib-mcp-on"' + (c.enabled !== false ? ' checked' : '') + ' style="width:auto;accent-color:var(--accent)"> 启用 MCP</label></div>' +
       '<div class="api-form-group" style="margin-bottom:14px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ib-mcp-cf"' + (c.confirm !== false ? ' checked' : '') + ' style="width:auto;accent-color:var(--accent)"> 调用前询问（需点击确认卡片后才会执行）</label></div>' +
       rows +
@@ -12423,6 +12471,12 @@ const IBDIY = {
     box.querySelectorAll('[data-ib-mcpalias]').forEach(inp => { inp.onchange = () => { const cc = IBMCP.cfg(); cc.servers[+inp.dataset.ibMcpalias].alias = inp.value.trim() || 'srv'; IBMCP.save(cc); }; });
     box.querySelectorAll('[data-ib-mcpurl]').forEach(inp => { inp.onchange = () => { const cc = IBMCP.cfg(); cc.servers[+inp.dataset.ibMcpurl].url = inp.value.trim(); IBMCP.save(cc); }; });
     box.querySelectorAll('[data-ib-mcpon]').forEach(inp => { inp.onchange = () => { const cc = IBMCP.cfg(); cc.servers[+inp.dataset.ibMcpon].enabled = inp.checked; IBMCP.save(cc); }; });
+    box.querySelectorAll('[data-ib-mcprounds]').forEach(inp => { inp.onchange = () => {
+      const cc = IBMCP.cfg(); const s = cc.servers[+inp.dataset.ibMcprounds]; if(!s) return;
+      const n = parseInt(inp.value, 10);
+      if(n >= 1 && n <= 99){ s.maxRounds = n; } else { delete s.maxRounds; inp.value = ''; }   // 留空/非法 → 清除, 跟随全局
+      IBMCP.save(cc);
+    }; });
     box.querySelectorAll('[data-ib-mcpdel]').forEach(btn => { btn.onclick = () => { const cc = IBMCP.cfg(); cc.servers.splice(+btn.dataset.ibMcpdel, 1); IBMCP.save(cc); self.renderMcp(); }; });
     box.querySelectorAll('[data-ib-mcpconn]').forEach(btn => {
       btn.onclick = async () => {
@@ -12474,7 +12528,7 @@ function ibExtSay(msg){ try{ if(typeof toast === 'function') return toast(msg); 
 
 /* ---------- 重置时的扩展数据清理(接进 resetAllData) ---------- */
 function ibExtReset(){
-  ['ib_mcp_cfg', 'ib_fcMode', 'ib_fcRounds', 'ib_pipAllow'].forEach(k => {
+  ['ib_mcp_cfg', 'ib_fcMode', 'ib_fcRounds', 'ib_mcpRounds', 'ib_pipAllow'].forEach(k => {
     try{ localStorage.removeItem(k); }catch(e){}
   });
   /* 兼容清理: 旧向量方案遗留的键与库 */
