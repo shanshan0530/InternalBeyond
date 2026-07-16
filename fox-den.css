@@ -253,6 +253,29 @@ button, input { font: inherit; }
   box-shadow: 0 0 9px rgba(224, 156, 75, .58);
 }
 
+.cottage-preset {
+  display: block;
+  margin: 11px 0 0 15px;
+  padding: 0;
+  color: rgba(205, 190, 169, .38);
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  font-size: 10px;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: color .25s ease, border-color .25s ease;
+}
+
+.cottage-preset:not(:disabled):hover,
+.cottage-preset:not(:disabled):focus-visible {
+  color: rgba(235, 217, 192, .72);
+  border-color: rgba(196, 101, 78, .38);
+  outline: none;
+}
+
+.cottage-preset:disabled { cursor: wait; opacity: .45; }
+
 .cottage-note {
   margin: 17px 0 0;
   color: rgba(203, 207, 201, .27);
@@ -379,6 +402,7 @@ button, input { font: inherit; }
   .cottage-welcome { margin-bottom: 18px; font-size: 13px; line-height: 1.85; }
   .cottage-enter { width: 100%; min-height: 46px; }
   .cottage-remember { margin-top: 13px; }
+  .cottage-preset { margin-top: 9px; }
   .cottage-note { display: none; }
   .cottage-whisper { display: none; }
   .fireflies i:nth-child(-n+3) { display: none; }

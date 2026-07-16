@@ -6,6 +6,7 @@
   const enter = document.getElementById("cottage-enter");
   const enterLabel = document.getElementById("cottage-enter-label");
   const remember = document.getElementById("cottage-remember");
+  const preset = document.getElementById("cottage-preset");
   const returnSeal = document.getElementById("return-seal");
   const toast = document.getElementById("cottage-toast");
   const skipGateKey = "shanshan-fox-cottage-skip-gate";
@@ -36,6 +37,68 @@
   function reopenGate() {
     shell.classList.remove("has-entered");
     window.setTimeout(() => enter.focus(), 350);
+  }
+
+  async function readProfileWhenReady(app) {
+    let lastError;
+    for (let attempt = 0; attempt < 25; attempt += 1) {
+      try {
+        return await app.dbGet("about", "main");
+      } catch (error) {
+        lastError = error;
+        await new Promise(resolve => window.setTimeout(resolve, 120));
+      }
+    }
+    throw lastError || new Error("Database is not ready");
+  }
+
+  async function applyStarterPreset() {
+    const app = frame.contentWindow;
+    if (!app || typeof app.dbGet !== "function" || typeof app.dbPut !== "function") {
+      showToast("小筑尚未醒来，请稍后再试");
+      return;
+    }
+
+    preset.disabled = true;
+    try {
+      const response = await fetch("presets/shanshan-starter.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("Preset could not be loaded");
+      const data = await response.json();
+      const profile = data.about && data.about[0];
+      if (!profile || profile.id !== "main") throw new Error("Preset is invalid");
+
+      const current = await readProfileWhenReady(app);
+      const hasCustomProfile = current && (
+        (current.name && current.name !== "Sui") || current.bio || current.avatar ||
+        current.bgImage || current.customText ||
+        (Array.isArray(current.galleryImages) && current.galleryImages.some(Boolean))
+      );
+      if (hasCustomProfile && !window.confirm("这里已经住着一份自定义资料。要用珊珊预设覆盖昵称、简介和小签吗？\n\nAPI、聊天、记忆与图片都不会被修改。")) {
+        showToast("好，原来的资料继续住着");
+        return;
+      }
+
+      const nextProfile = Object.assign({}, current || {}, profile, {
+        avatar: current && current.avatar ? current.avatar : profile.avatar,
+        bgImage: current && current.bgImage ? current.bgImage : profile.bgImage,
+        galleryImages: current && Array.isArray(current.galleryImages) && current.galleryImages.some(Boolean)
+          ? current.galleryImages
+          : profile.galleryImages
+      });
+      await app.dbPut("about", nextProfile);
+      if (typeof app._refreshCachedUserName === "function") app._refreshCachedUserName();
+      if (typeof app.loadAboutDisplay === "function") await app.loadAboutDisplay();
+      if (typeof app.navTo === "function") app.navTo("about");
+
+      preset.textContent = "珊珊已入住 · 可再次安置";
+      showToast("珊珊已入住，秘密一件也没动");
+      window.setTimeout(() => enterCottage({ quiet: true }), 650);
+    } catch (error) {
+      console.warn("Starter preset could not be applied:", error);
+      showToast("预设没放好，再试一次吧");
+    } finally {
+      preset.disabled = false;
+    }
   }
 
   function injectCottageTheme() {
@@ -119,6 +182,7 @@
 
     shell.classList.add("is-ready");
     enter.disabled = false;
+    preset.disabled = false;
     enterLabel.textContent = "循灯入内";
 
     const shouldSkip = localStorage.getItem(skipGateKey) === "1";
@@ -132,6 +196,7 @@
   enter.addEventListener("click", () => enterCottage());
   returnSeal.addEventListener("click", reopenGate);
   remember.addEventListener("click", () => setRemember(!rememberIsOn()));
+  preset.addEventListener("click", applyStarterPreset);
 
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && shell.classList.contains("has-entered")) reopenGate();
