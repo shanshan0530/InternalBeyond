@@ -1,14 +1,14 @@
 (() => {
   "use strict";
 
-  const shell = document.getElementById("fox-shell");
+  const shell = document.getElementById("cottage-shell");
   const frame = document.getElementById("ib-frame");
-  const enter = document.getElementById("fox-enter");
-  const enterLabel = document.getElementById("fox-enter-label");
-  const remember = document.getElementById("fox-remember");
-  const charm = document.getElementById("fox-charm");
-  const toast = document.getElementById("fox-toast");
-  const skipGateKey = "shanshan-fox-den-skip-gate";
+  const enter = document.getElementById("cottage-enter");
+  const enterLabel = document.getElementById("cottage-enter-label");
+  const remember = document.getElementById("cottage-remember");
+  const returnSeal = document.getElementById("return-seal");
+  const toast = document.getElementById("cottage-toast");
+  const skipGateKey = "shanshan-fox-cottage-skip-gate";
   let toastTimer;
 
   function showToast(message) {
@@ -18,84 +18,92 @@
     toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 1900);
   }
 
-  function enterDen({ quiet = false } = {}) {
+  function rememberIsOn() {
+    return remember.getAttribute("aria-pressed") === "true";
+  }
+
+  function setRemember(on) {
+    remember.setAttribute("aria-pressed", String(on));
+    localStorage.setItem(skipGateKey, on ? "1" : "0");
+  }
+
+  function enterCottage({ quiet = false } = {}) {
     shell.classList.add("has-entered");
-    localStorage.setItem(skipGateKey, remember.checked ? "1" : "0");
-    window.setTimeout(() => frame.focus(), 120);
-    if (!quiet) showToast("欢迎回家，珊珊");
+    window.setTimeout(() => frame.focus(), 160);
+    if (!quiet) showToast("灯火可亲，欢迎归来");
   }
 
   function reopenGate() {
     shell.classList.remove("has-entered");
-    window.setTimeout(() => enter.focus(), 320);
+    window.setTimeout(() => enter.focus(), 350);
   }
 
-  function injectPersonalTheme() {
+  function injectCottageTheme() {
     const doc = frame.contentDocument;
     if (!doc || !doc.head || !doc.body) return;
 
-    doc.title = "珊珊的小窝 · Internal Beyond";
+    doc.title = "狐隐小筑 · Internal Beyond";
     const loadingTitle = doc.querySelector("#preloader .preloader-text");
     const loadingSub = doc.querySelector("#preloader .preloader-sub");
-    if (loadingTitle) loadingTitle.textContent = "正在把小窝点亮…";
-    if (loadingSub) loadingSub.textContent = "preparing shanshan's private den";
+    if (loadingTitle) loadingTitle.textContent = "正在点亮小筑…";
+    if (loadingSub) loadingSub.textContent = "the lantern is waiting for you";
 
-    if (!doc.getElementById("fox-den-personal-theme")) {
+    if (!doc.getElementById("fox-cottage-theme")) {
       const style = doc.createElement("style");
-      style.id = "fox-den-personal-theme";
+      style.id = "fox-cottage-theme";
       style.textContent = `
         :root {
-          --bg-deep: #18131d;
-          --bg-mid: #302138;
-          --mist: #9f8298;
-          --silver: #c5a8b5;
-          --light: #ddc8cd;
-          --pale: #eee0dc;
-          --white: #f8efea;
-          --accent: #9f657e;
-          --accent-light: #c98ca2;
-          --glass-bg: rgba(126, 78, 105, 0.1);
-          --glass-border: rgba(222, 174, 188, 0.2);
-          --text-primary: #eee2e2;
-          --text-secondary: #cbb3bd;
-          --text-muted: #9e7f92;
+          --bg-deep: #0c171d;
+          --bg-mid: #172832;
+          --mist: #7f9495;
+          --silver: #aebcba;
+          --light: #ccd3cc;
+          --pale: #e3dfd3;
+          --white: #f1ebdf;
+          --accent: #985046;
+          --accent-light: #c77861;
+          --glass-bg: rgba(76, 102, 101, .1);
+          --glass-border: rgba(196, 186, 164, .18);
+          --text-primary: #e7e3d9;
+          --text-secondary: #b9beb7;
+          --text-muted: #829392;
         }
-        ::selection { background: rgba(190, 126, 151, 0.3); color: #fff7f1; }
+        ::selection { background: rgba(164, 76, 62, .34); color: #fff7e9; }
         #preloader {
-          background: radial-gradient(ellipse 90% 70% at 50% 45%, rgba(58, 34, 53, 0.98), rgba(22, 16, 28, 0.99));
+          background: radial-gradient(ellipse 88% 68% at 50% 45%, rgba(27, 48, 56, .98), rgba(7, 16, 21, .995));
         }
-        #preloader .preloader-text { color: rgba(246, 226, 225, 0.9); }
-        #preloader .preloader-sub { color: rgba(215, 177, 190, 0.5); }
+        #preloader .preloader-text { color: rgba(236, 226, 210, .9); }
+        #preloader .preloader-sub { color: rgba(201, 163, 121, .5); }
         #splash::after {
           content: "";
           position: absolute;
           inset: 0;
           z-index: 1;
           pointer-events: none;
-          background: radial-gradient(circle at 74% 18%, rgba(173, 100, 130, 0.13), transparent 30%);
+          background:
+            radial-gradient(circle at 73% 24%, rgba(225, 174, 103, .08), transparent 24%),
+            linear-gradient(90deg, rgba(7, 16, 20, .09), transparent 62%, rgba(93, 38, 31, .07));
           mix-blend-mode: screen;
         }
-        #navbar { border-color: rgba(213, 168, 185, 0.17); }
-        #navbar.on-subpage { background: rgba(48, 27, 45, 0.14); }
-        .splash-action-btn, .nav-btn, .theme-toggle {
-          border-color: rgba(218, 177, 190, 0.3);
-        }
-        .home-rule, .module-intro-rule { filter: sepia(.25) hue-rotate(285deg) saturate(1.25); }
-        * { scrollbar-color: rgba(177, 117, 142, .4) rgba(32, 23, 35, .2); }
+        #navbar { border-color: rgba(206, 192, 168, .16); }
+        #navbar.on-subpage { background: rgba(10, 27, 34, .16); }
+        .splash-action-btn, .nav-btn, .theme-toggle { border-color: rgba(205, 184, 154, .28); }
+        .home-rule, .module-intro-rule { filter: sepia(.18) hue-rotate(345deg) saturate(1.15); }
+        * { scrollbar-color: rgba(158, 84, 70, .4) rgba(13, 28, 34, .22); }
       `;
       doc.head.appendChild(style);
     }
 
-    if (!doc.getElementById("fox-den-stamp")) {
+    if (!doc.getElementById("fox-cottage-stamp")) {
       const stamp = doc.createElement("div");
-      stamp.id = "fox-den-stamp";
+      stamp.id = "fox-cottage-stamp";
       stamp.setAttribute("aria-hidden", "true");
-      stamp.textContent = "珊珊的小窝 · 🦊";
+      stamp.textContent = "珊珊 · 狐隐小筑";
       stamp.style.cssText = [
         "position:fixed", "right:70px", "bottom:18px", "z-index:90",
-        "pointer-events:none", "font:400 10px/1.4 'Noto Sans SC',sans-serif",
-        "letter-spacing:.12em", "color:rgba(232,202,211,.42)",
-        "text-shadow:0 2px 14px rgba(25,12,22,.45)"
+        "pointer-events:none", "font:400 10px/1.4 'Noto Serif SC',serif",
+        "letter-spacing:.16em", "color:rgba(216,198,174,.4)",
+        "text-shadow:0 2px 14px rgba(3,12,16,.5)"
       ].join(";");
       doc.body.appendChild(stamp);
     }
@@ -104,36 +112,33 @@
   function handleFrameReady() {
     if (shell.classList.contains("is-ready")) return;
     try {
-      injectPersonalTheme();
+      injectCottageTheme();
     } catch (error) {
-      console.warn("Fox den theme could not be injected:", error);
+      console.warn("Cottage theme could not be injected:", error);
     }
 
     shell.classList.add("is-ready");
     enter.disabled = false;
-    enterLabel.textContent = "推门进去";
+    enterLabel.textContent = "循灯入内";
 
-    if (localStorage.getItem(skipGateKey) === "1") {
-      remember.checked = true;
-      window.setTimeout(() => enterDen({ quiet: true }), 420);
-    }
+    const shouldSkip = localStorage.getItem(skipGateKey) === "1";
+    setRemember(shouldSkip);
+    if (shouldSkip) window.setTimeout(() => enterCottage({ quiet: true }), 520);
   }
 
   frame.addEventListener("load", handleFrameReady);
-  if (frame.contentDocument && frame.contentDocument.readyState === "complete") {
-    handleFrameReady();
-  }
+  if (frame.contentDocument && frame.contentDocument.readyState === "complete") handleFrameReady();
 
-  enter.addEventListener("click", () => enterDen());
-  charm.addEventListener("click", reopenGate);
-  document.addEventListener("keydown", (event) => {
+  enter.addEventListener("click", () => enterCottage());
+  returnSeal.addEventListener("click", reopenGate);
+  remember.addEventListener("click", () => setRemember(!rememberIsOn()));
+
+  document.addEventListener("keydown", event => {
     if (event.key === "Escape" && shell.classList.contains("has-entered")) reopenGate();
-    if (event.key === "Enter" && !shell.classList.contains("has-entered") && !enter.disabled) enterDen();
+    if (event.key === "Enter" && !shell.classList.contains("has-entered") && !enter.disabled) enterCottage();
   });
 
   window.setTimeout(() => {
-    if (!shell.classList.contains("is-ready")) {
-      enterLabel.textContent = "小窝加载得有点慢，再等等…";
-    }
+    if (!shell.classList.contains("is-ready")) enterLabel.textContent = "雾重，再候片刻…";
   }, 9000);
 })();
