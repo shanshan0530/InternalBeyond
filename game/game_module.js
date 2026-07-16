@@ -329,8 +329,8 @@ body:not(.theme-infernal) #game-mini:hover{background:rgba(255,255,255,0.45);col
 
 /* ── ROOM BACKGROUND ─────────────────────────────────── */
 .game-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 1.5s ease}
-.game-bg-day{background-image:url('game/room_day.png');opacity:1}
-.game-bg-night{background-image:url('game/room_night.png');opacity:0}
+.game-bg-day{background-image:url('game/room_fox_day.webp');opacity:1}
+.game-bg-night{background-image:url('game/room_fox_night.webp');opacity:0}
 body.theme-infernal .game-bg-day{opacity:0}
 body.theme-infernal .game-bg-night{opacity:1}
 
@@ -956,7 +956,7 @@ function injectHTML(){
     const page=document.createElement('div');
     page.className='page';
     page.id='page-game';
-    page.innerHTML='<div class="game-cine"><div class="game-cine-top"><h2>Room</h2><span class="game-cine-sub">Interactive pixel sanctuary</span></div><div class="game-cine-rule"></div><div class="game-cine-desc">古早像素风格的私密房间。点击右侧菜单或房间里的光标，开启塔罗占卜、茶话会与专属冒险剧本。</div></div><div class="game-fullpage-wrap" id="game-fullpage-wrap" style="display:flex"><div id="game-fullpage-container"></div><div class="game-sidebar" id="game-sidebar-page"><div class="game-sidebar-title">Menu</div><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="sui">Sui</button><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="tea">Tea</button><button class="game-sidebar-btn" data-action="desk">Story</button><button class="game-sidebar-btn" data-action="crystal">Tarot</button><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="wardrobe">Wardrobe</button><button class="game-sidebar-btn" data-action="bed">Sleep</button><button class="game-sidebar-btn-reset" data-action="reset">Reset</button></div></div>';
+    page.innerHTML='<div class="game-cine"><div class="game-cine-top"><h2>Room</h2><span class="game-cine-sub">Interactive fox-spirit sanctuary</span></div><div class="game-cine-rule"></div><div class="game-cine-desc">雾色与灯火交叠的精细像素狐妖藏阁。点击右侧菜单或房间里的光标，开启塔罗占卜、茶话会与专属冒险剧本。</div></div><div class="game-fullpage-wrap" id="game-fullpage-wrap" style="display:flex"><div id="game-fullpage-container"></div><div class="game-sidebar" id="game-sidebar-page"><div class="game-sidebar-title">Menu</div><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="sui">Sui</button><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="tea">Tea</button><button class="game-sidebar-btn" data-action="desk">Story</button><button class="game-sidebar-btn" data-action="crystal">Tarot</button><div class="game-sidebar-sep"></div><button class="game-sidebar-btn" data-action="wardrobe">Wardrobe</button><button class="game-sidebar-btn" data-action="bed">Sleep</button><button class="game-sidebar-btn-reset" data-action="reset">Reset</button></div></div>';
     app.appendChild(page);
   }
 
@@ -1110,8 +1110,8 @@ function loadImage(src){
 async function loadAssets(){
   const outfit = OUTFITS[G.outfitIdx];
   const toLoad = {
-    roomDay: 'game/room_day.png',
-    roomNight: 'game/room_night.png',
+    roomDay: 'game/room_fox_day.webp',
+    roomNight: 'game/room_fox_night.webp',
     dialogueBox: 'game/dialogue_box.png',
     walk: outfit.walk,
     idle: outfit.idle,
