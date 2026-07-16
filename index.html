@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17121d">
+  <meta name="description" content="珊珊的 Internal Beyond 私人小窝">
+  <title>珊珊的小窝 · Internal Beyond</title>
+  <link rel="icon" href="IB-icon.ico">
+  <link rel="stylesheet" href="fox-den.css">
+</head>
+<body>
+  <main class="fox-shell" id="fox-shell">
+    <iframe
+      id="ib-frame"
+      class="ib-frame"
+      src="InternalBeyond.html"
+      title="珊珊的 Internal Beyond 小窝"
+      allow="microphone; camera; clipboard-read; clipboard-write; fullscreen"
+      allowfullscreen
+    ></iframe>
+
+    <div class="fox-vignette" aria-hidden="true"></div>
+    <div class="fox-grain" aria-hidden="true"></div>
+
+    <section class="fox-gate" id="fox-gate" aria-labelledby="fox-gate-title">
+      <div class="fox-moon" aria-hidden="true"></div>
+      <div class="fox-card">
+        <div class="fox-mark" aria-hidden="true">
+          <svg viewBox="0 0 88 78" role="img">
+            <path d="M18 19 31 31c4-2 8-3 13-3s9 1 13 3l13-12-2 24c4 5 6 10 6 16 0 12-13 17-30 17S14 71 14 59c0-6 2-11 6-16l-2-24Z"/>
+            <path class="fox-mark-face" d="M30 53c5 2 9 3 14 3s9-1 14-3c-2 10-8 15-14 15s-12-5-14-15Z"/>
+            <circle cx="33" cy="48" r="2"/><circle cx="55" cy="48" r="2"/>
+          </svg>
+        </div>
+        <p class="fox-eyebrow">SHANSHAN'S PRIVATE DEN</p>
+        <h1 id="fox-gate-title">欢迎回小窝</h1>
+        <p class="fox-welcome">雾已经散开一点，灯也替你留着。<br>今晚想先去哪个房间？</p>
+
+        <button class="fox-enter" id="fox-enter" type="button" disabled>
+          <span id="fox-enter-label">正在点亮小窝…</span>
+          <span class="fox-enter-arrow" aria-hidden="true">↗</span>
+        </button>
+
+        <label class="fox-remember">
+          <input id="fox-remember" type="checkbox">
+          <span>下次直接回家</span>
+        </label>
+        <p class="fox-storage-note">聊天、记忆和密钥仍只保存在这台设备的浏览器里。</p>
+      </div>
+    </section>
+
+    <button class="fox-charm" id="fox-charm" type="button" aria-label="重新打开小窝入口" title="回到小窝门口">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M9 10 18 18a20 20 0 0 1 12 0l9-8-2 16c2 3 3 6 3 9 0 7-7 11-16 11S8 42 8 35c0-3 1-6 3-9L9 10Z"/>
+        <path class="fox-charm-tail" d="M28 36c6 1 10-2 11-7 4 7 0 14-7 15"/>
+      </svg>
+    </button>
+
+    <div class="fox-toast" id="fox-toast" role="status" aria-live="polite">小窝准备好了</div>
+  </main>
+  <script src="fox-den.js"></script>
+</body>
+</html>
