@@ -51,7 +51,7 @@ const BED_SLEEP_WALK_X = 450, BED_SLEEP_WALK_Y = 460;
 const OUTFITS = [
   {id:'shanshan', label:'珊珊 · 明艳狐妖',
    walk:'game/sprites/walk_shanshan.png', idle:'game/sprites/idle_shanshan.png',
-   lie:'game/sprites/lie_shanshan.png', portrait:'game/portraits/shanshan.webp'},
+   lie:'game/sprites/lie_shanshan.png', portrait:'game/portraits/shanshan_transparent.webp'},
   {id:'eyepatch_dress', label:'Gothic Dress',
    walk:'game/sprites/walk_eyepatch_dress.png', idle:'game/sprites/idle_eyepatch_dress.png',
    lie:'game/sprites/lie_eyepatch_dress.png', portrait:'game/portraits/eyepatch_dress.png'},
@@ -525,10 +525,6 @@ body:not(.theme-infernal) .game-char-lightcast::before{opacity:0.45}
 /* SUI 立绘单独沿用旧版(V5)右侧定位；自定义立绘保持上面的左侧加大样式不变 */
 .game-dialogue-portrait.sui{left:auto;right:20px;width:400px;height:460px}
 .game-dialogue-portrait.sui img{width:100%;height:100%;object-position:bottom}
-.game-dialogue-portrait.sui.shanshan img{
-  -webkit-mask-image:radial-gradient(ellipse 72% 80% at 50% 45%,#000 54%,rgba(0,0,0,.96) 69%,transparent 100%);
-  mask-image:radial-gradient(ellipse 72% 80% at 50% 45%,#000 54%,rgba(0,0,0,.96) 69%,transparent 100%);
-}
 
 .game-dialogue-box-wrap{position:relative;width:100%;display:flex;justify-content:center;
   padding:0 40px 30px;pointer-events:auto}
@@ -2948,11 +2944,9 @@ function showDialogue(speaker, textArray, onComplete){
   /* Portrait: Sui uses the current outfit portrait; the Story AI narrator
      uses its custom DIY portrait (portrait_[nickname].png) when one exists. */
   portraitEl.classList.remove('sui');
-  portraitEl.classList.remove('shanshan');
   if(speaker==='Sui' && G.assets.portrait){
     portraitImg.src=G.assets.portrait.src;
     portraitEl.classList.add('sui');
-    if(OUTFITS[G.outfitIdx]&&OUTFITS[G.outfitIdx].id==='shanshan')portraitEl.classList.add('shanshan');
     portraitEl.classList.add('show');
   }else if(G._aiPortraitImg && G._aiCfg && speaker===(G._aiCfg.nickname||G._aiCfg.model||'AI')){
     portraitImg.src=G._aiPortraitImg.src;
