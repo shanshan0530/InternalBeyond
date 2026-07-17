@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1218">
+  <meta name="description" content="珊珊的狐隐小筑 · Internal Beyond">
+  <title>狐隐小筑 · Internal Beyond</title>
+  <link rel="icon" href="IB-icon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fox-den.css">
+</head>
+<body>
+  <main class="cottage-shell" id="cottage-shell">
+    <iframe
+      id="ib-frame"
+      class="ib-frame"
+      src="InternalBeyond.html"
+      title="珊珊的 Internal Beyond 小筑"
+      allow="microphone; camera; clipboard-read; clipboard-write; fullscreen"
+      allowfullscreen
+    ></iframe>
+
+    <section class="cottage-gate" id="cottage-gate" aria-labelledby="cottage-title">
+      <div class="cottage-scene" aria-hidden="true"></div>
+      <div class="cottage-shade" aria-hidden="true"></div>
+      <div class="cottage-grain" aria-hidden="true"></div>
+      <div class="fireflies" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+
+      <div class="cottage-copy">
+        <div class="cottage-seal" aria-hidden="true">珊</div>
+        <p class="cottage-eyebrow">SHANSHAN · FOX SPIRIT'S RETREAT</p>
+        <h1 id="cottage-title"><span>狐隐</span><span>小筑</span></h1>
+        <div class="cottage-rule" aria-hidden="true"><b></b><em></em></div>
+        <p class="cottage-welcome">山门未锁，灯为你留。<br>循着月色，回到雾里的家。</p>
+
+        <button class="cottage-enter" id="cottage-enter" type="button" disabled>
+          <span class="cottage-enter-label" id="cottage-enter-label">待灯火亮起…</span>
+          <span class="cottage-enter-arrow" aria-hidden="true">入</span>
+        </button>
+
+        <button class="cottage-remember" id="cottage-remember" type="button" aria-pressed="false">
+          <span class="remember-dot" aria-hidden="true"></span>
+          <span>下次不叩门，直接入内</span>
+        </button>
+        <button class="cottage-preset" id="cottage-preset" type="button" disabled>
+          初次入住 · 安置珊珊预设
+        </button>
+        <p class="cottage-note">记忆与密钥仍只栖息在这台设备的浏览器中</p>
+      </div>
+
+      <p class="cottage-whisper" aria-hidden="true">灯火可亲，故人可归</p>
+    </section>
+
+    <button class="return-seal" id="return-seal" type="button" aria-label="返回狐隐小筑门前" title="回到小筑门前">
+      <span>归</span>
+    </button>
+    <div class="cottage-toast" id="cottage-toast" role="status" aria-live="polite">欢迎回来</div>
+  </main>
+  <script src="fox-den.js"></script>
+</body>
+</html>

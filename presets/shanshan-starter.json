@@ -1,0 +1,17 @@
+{
+  "about": [
+    {
+      "id": "main",
+      "name": "珊珊",
+      "bio": "红毛狐狸珊珊。喜欢唱歌、故事与夜色，也喜欢把喜欢的世界慢慢搭成小窝。",
+      "avatar": "",
+      "bgImage": "",
+      "customText": "山门未锁，灯为故人留。",
+      "galleryImages": ["", "", ""],
+      "nameColor": "theme",
+      "showInNav": true
+    }
+  ],
+  "exportDate": "2026-07-17T00:00:00.000Z",
+  "version": 4
+}
